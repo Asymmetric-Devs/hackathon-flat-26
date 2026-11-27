@@ -3,7 +3,7 @@ import { Entry } from "../chain";
 import { resolve } from "../catalog";
 import { Cartela, Dot, Painting, useView } from "../components/Art";
 import { Intro } from "../components/Intro";
-import { BrickWord } from "../components/BrickWord";
+import { Wordmark } from "../components/Wordmark";
 import { Chars } from "../components/Split";
 import { Wall } from "../components/Wall";
 import { gsap, reduced, ScrollTrigger, scrollToId } from "../fx";
@@ -56,8 +56,7 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
     gsap.set(q(".hung .dot"), { scale: 0 });
     gsap.set(q(".hung .cartela"), { opacity: 0, y: 18 });
     gsap.set(q(".hung .tape"), { scaleX: 0, transformOrigin: "0 50%" });
-    gsap.set(q(".hword .b"), { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" });
-    gsap.set(q(".hword .drip"), { scaleY: 0, transformOrigin: "50% 0%" });
+    gsap.set(q(".hword .l"), { y: 1900 });
     gsap.set(q(".note"), { opacity: 0 });
   }, []);
 
@@ -94,8 +93,7 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
         gsap.to(h.querySelector(".cartela"), { opacity: 1, y: 0, duration: 0.6, delay: 0.12, ease: "expo.out" });
       };
       const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.to(q(".hword .b"), { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(2)", stagger: { amount: 1.1, from: "random" } }, 0)
-        .to(q(".hword .drip"), { scaleY: 1, duration: 0.9, ease: "power2.out", stagger: 0.12 }, 1.1)
+      tl.to(q(".hword .l"), { y: 0, duration: 1.3, ease: "expo.out", stagger: 0.1 }, 0)
         .to(q(".ln-in"), { yPercent: 0, duration: 1, stagger: 0.14 }, 0.1)
         .to(q(".hero-copy mark"), { clipPath: "inset(0 0% 0 0)", duration: 0.75, ease: "expo.inOut", stagger: 0.16 }, 0.3)
         .to(q(".hero-copy p, .hero-cta"), { opacity: 1, y: 0, duration: 0.85, stagger: 0.12 }, 0.75)
@@ -106,18 +104,21 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
           { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.42, ease: "power3.in", onComplete: () => impact(h) }, 0.2 + i * 0.17);
       });
     }, el);
-    // parallax con el mouse: cada afiche se mueve según su "profundidad"
+    // Solo la obra bajo el puntero reacciona: se inclina hacia donde se mueve el mouse y se levanta un poco.
     let off = () => {};
     if (matchMedia("(pointer: fine)").matches) {
-      const hungs = [...el.querySelectorAll<HTMLElement>(".hung")];
-      const move = (ev: PointerEvent) => {
-        const b = el.getBoundingClientRect();
-        const nx = ((ev.clientX - b.left) / b.width) * 2 - 1, ny = ((ev.clientY - b.top) / b.height) * 2 - 1;
-        hungs.forEach((h) => { const d = Number(h.dataset.depth ?? 1); const a = h.querySelector("a"); if (a) gsap.to(a, { x: nx * d * 24, y: ny * d * 15, duration: 0.9, ease: "power3.out", overwrite: "auto" }); });
-        gsap.to(el.querySelector(".word"), { x: -nx * 16, duration: 1.2, ease: "power3.out", overwrite: "auto" });
-      };
-      el.addEventListener("pointermove", move);
-      off = () => el.removeEventListener("pointermove", move);
+      const offs: (() => void)[] = [];
+      el.querySelectorAll<HTMLElement>(".hung > a").forEach((a) => {
+        const move = (ev: PointerEvent) => {
+          const b = a.getBoundingClientRect();
+          const px = (ev.clientX - b.left) / b.width - 0.5, py = (ev.clientY - b.top) / b.height - 0.5;
+          gsap.to(a, { rotateY: px * 12, rotateX: -py * 10, scale: 1.035, transformPerspective: 900, duration: 0.45, ease: "power3.out", overwrite: "auto" });
+        };
+        const leave = () => gsap.to(a, { rotateX: 0, rotateY: 0, scale: 1, duration: 0.8, ease: "elastic.out(1,.5)", overwrite: "auto" });
+        a.addEventListener("pointermove", move); a.addEventListener("pointerleave", leave);
+        offs.push(() => { a.removeEventListener("pointermove", move); a.removeEventListener("pointerleave", leave); });
+      });
+      off = () => offs.forEach((f) => f());
     }
     return () => { off(); ctx.revert(); };
   }, [ready]);
@@ -125,10 +126,7 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
   return (
     <>
       <section className="hero concrete" aria-label="Muro" ref={root}>
-        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-          <filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035 .05" numOctaves="3" seed="4" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="9" /></filter>
-        </svg>
-        <div className="word" aria-hidden="true"><BrickWord className="hword" title="" solid /></div>
+        <div className="word" aria-hidden="true"><Wordmark className="hword" rough clip drips={false} title="" /></div>
         <div className="hang-stage">
           {SLOTS.map((s) => { const e = bySlug.get(s.slug); return e ? <HungPiece key={s.slug} slot={s} e={e.work.id < 0 ? { ...e, work: { ...e.work, id: 0 } } : e} /> : null; })}
           <span className="note hide-m" style={{ left: "64.5vw", top: "22vw", ["--nr" as string]: "-5deg" }}>¡esto cuenta<br />en vivo!
@@ -292,7 +290,7 @@ function Foot() {
         <div>Obras de dominio público, con fuente en <a className="link" href="https://commons.wikimedia.org" target="_blank" rel="noreferrer">Wikimedia Commons</a>.<br />Los datos de cada obra se contrastan antes de usarse fuera de la demo.</div>
         <div><a className="link" href={href.galeria}>Galería</a><br /><a className="link" href={href.publicar}>Publicar una obra</a><br /><a className="link" href={href.evidencia}>Evidencia</a></div>
       </div>
-      <div className="foot-word" aria-hidden="true"><BrickWord className="fword" title="" solid /></div>
+      <div className="foot-word" aria-hidden="true"><Wordmark className="fword" rough title="" /></div>
     </footer>
   );
 }
@@ -329,7 +327,7 @@ function useScrollFx(root: React.RefObject<HTMLElement | null>) {
       // el cuadro de "cómo se cuelga" gira mientras se avanza
       gsap.fromTo(".how-obj", { rotation: -5 }, { rotation: 4, ease: "none", scrollTrigger: { trigger: ".how-steps", start: "top bottom", end: "bottom top", scrub: true } });
       // el MURO del pie se llena de naranja
-      gsap.fromTo(".fword .b:not(.o)", { opacity: 0.1 }, { opacity: 0.9, ease: "none", stagger: { amount: 1, from: "start" }, scrollTrigger: { trigger: ".foot", start: "top 85%", end: "bottom bottom", scrub: true } });
+      gsap.fromTo(".fword .l:not(.o)", { opacity: 0.12 }, { opacity: 1, ease: "none", stagger: 0.25, scrollTrigger: { trigger: ".foot", start: "top 85%", end: "bottom bottom", scrub: true } });
     }, el);
     const refresh = () => ScrollTrigger.refresh();
     document.fonts?.ready.then(refresh);

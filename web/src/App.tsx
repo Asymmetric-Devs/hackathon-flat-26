@@ -17,6 +17,9 @@ function Pages() {
   useEffect(() => { initRouter(); startSmooth(); return stopSmooth; }, []);
   return (
     <>
+      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+        <filter id="rough-wm" x="-4%" y="-8%" width="108%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".012 .018" numOctaves="3" seed="7" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="58" /></filter>
+      </svg>
       <Cursor />
       <Nav route={r} />
       {r.page === "inicio" && <Landing />}

@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import qrcode from "qrcode-generator";
 import { buyNow, claim, confirmReturn, hang, seize, stop, tip, topUp } from "../chain";
 import { Entry } from "../chain";
-import { Meter, Painting, STATUS_CLASS, STATUS_LABEL, useView } from "../components/Art";
+import { Meter, STATUS_CLASS, STATUS_LABEL, useView } from "../components/Art";
+import { ArtStage } from "../components/Explorer";
 import { ASSET, DAY_SECS, INSTANCE, IS_DEMO_CLOCK, UNIT } from "../config";
 import { accountUrl, dur, money, short, toStroops, when } from "../format";
 import { href } from "../router";
@@ -48,7 +49,7 @@ function Detail({ e }: { e: Entry }) {
     <main className="page">
       <p style={{ marginBottom: 26 }}><a className="link" href={href.galeria}>← La galería</a></p>
       <div className="obra">
-        <div className="obra-art"><Painting r={r} eager hero /></div>
+        <ArtStage r={r} />
         <div className="obra-side">
           <span className={`state-chip ${STATUS_CLASS[w.status]}`}>{STATUS_LABEL[w.status]}</span>
           <h1>{r.title}</h1>
