@@ -33,26 +33,5 @@ export function applyAccent(name: string) {
   r.setProperty("--ac-lit", a.lit); r.setProperty("--tinta", a.ink); r.setProperty("--asfalto", a.ink);
   document.documentElement.dataset.acento = a.name;
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", a.ink);
-  const mine = savedColor(); if (mine && name === currentAccent()) applyCustom(mine);
 }
 
-/* ---------- color propio (la ruedita de color) ---------- */
-const CUSTOM = "muro.color.propio";
-const mix = (h: string, to: number, t: number) => {
-  const n = parseInt(h.slice(1), 16), ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => Math.round(v + (to - v) * t));
-  return "#" + ch.map((v) => v.toString(16).padStart(2, "0")).join("");
-};
-const lum = (h: string) => { const n = parseInt(h.slice(1), 16); return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255; };
-export function savedColor(): string | null {
-  try { const v = localStorage.getItem(CUSTOM); return v && /^#[0-9a-f]{6}$/i.test(v) ? v : null; } catch { return null; }
-}
-/** Cambia el color principal (botones, resaltados, círculos de precio, la O del logo) por el que elija la persona. */
-export function applyCustom(hex: string | null) {
-  const r = document.documentElement.style;
-  try { if (hex) localStorage.setItem(CUSTOM, hex); else localStorage.removeItem(CUSTOM); } catch { /* sin storage */ }
-  if (!hex) { applyAccent(currentAccent()); return; }
-  const dark = lum(hex) < 0.5;
-  r.setProperty("--ac", hex); r.setProperty("--ac-2", mix(hex, dark ? 255 : 0, dark ? 0.14 : 0.12));
-  r.setProperty("--on", dark ? "#ffffff" : "#09090d");
-  r.setProperty("--ac-lit", lum(hex) < 0.35 ? mix(hex, 255, 0.4) : hex);
-}
