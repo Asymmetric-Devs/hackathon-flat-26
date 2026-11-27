@@ -3,18 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n/client";
 import { Logo } from "./Logo";
-
-const links = [
-  { href: "/piezas", label: "Piezas" },
-  { href: "/artesanos", label: "Artesanos" },
-  { href: "/#como-funciona", label: "Cómo funciona" },
-  { href: "/#por-que", label: "Por qué Stellar" },
-];
+import { LangSwitch, ThemeSwitch } from "./Prefs";
 
 /** Barra ancha arriba; al bajar se vuelve una píldora flotante. */
 export function Topbar() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const [floating, setFloating] = useState(false);
 
   useEffect(() => {
@@ -24,13 +20,20 @@ export function Topbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const links = [
+    { href: "/piezas", label: t.nav.pieces },
+    { href: "/artesanos", label: t.nav.artisans },
+    { href: "/#como-funciona", label: t.nav.how },
+    { href: "/#por-que", label: t.nav.why },
+  ];
+
   return (
     <header className={floating ? "topbar is-floating" : "topbar"}>
       <div className="topbar-inner">
-        <Link href="/" aria-label="Oficio, inicio">
+        <Link href="/" aria-label={t.nav.home}>
           <Logo />
         </Link>
-        <nav className="nav-links" aria-label="Principal">
+        <nav className="nav-links" aria-label={t.nav.main}>
           {links.map((link) => (
             <Link
               key={link.href}
@@ -41,9 +44,13 @@ export function Topbar() {
             </Link>
           ))}
         </nav>
-        <Link href="/panel" className="btn btn-sm">
-          Asociación
-        </Link>
+        <div className="topbar-end">
+          <LangSwitch />
+          <ThemeSwitch />
+          <Link href="/panel" className="btn btn-sm">
+            {t.nav.panel}
+          </Link>
+        </div>
       </div>
     </header>
   );

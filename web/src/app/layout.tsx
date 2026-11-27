@@ -3,6 +3,8 @@ import { IBM_Plex_Mono, Schibsted_Grotesk } from "next/font/google";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { Topbar } from "@/components/Topbar";
+import { I18nProvider } from "@/lib/i18n/client";
+import { getDict, getTheme } from "@/lib/i18n/server";
 import "./globals.css";
 
 const sans = Schibsted_Grotesk({
@@ -18,62 +20,62 @@ const mono = IBM_Plex_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Oficio · Origen verificado para artesanías",
-    template: "%s · Oficio",
-  },
-  description:
-    "Certificados de origen para artesanías hechas a mano, firmados en Stellar por la asociación que avala a los artesanos. Quien compra escanea el QR y comprueba quién hizo la pieza y de quién aprendió el oficio.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getDict();
+  return {
+    title: { default: t.meta.title, template: "%s · Oficio" },
+    description: t.meta.description,
+  };
+}
 
 const contractId = process.env.SELLO_CONTRACT_ID;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const [{ lang, t }, theme] = await Promise.all([getDict(), getTheme()]);
+
   return (
-    <html lang="es" className={`${sans.variable} ${mono.variable}`}>
+    <html lang={lang} data-theme={theme ?? undefined} className={`${sans.variable} ${mono.variable}`}>
       <body>
-        <Topbar />
-        <main>{children}</main>
+        <I18nProvider lang={lang}>
+          <Topbar />
+          <main>{children}</main>
+        </I18nProvider>
         <footer className="footer">
           <div className="wrap">
             <div className="footer-grid">
               <div>
                 <Logo />
-                <p className="footer-tag">
-                  Origen verificado para artesanías hechas a mano. Un certificado por pieza, firmado por quien avala a
-                  los artesanos.
-                </p>
+                <p className="footer-tag">{t.footer.tagline}</p>
               </div>
               <div>
-                <h4>Producto</h4>
+                <h4>{t.footer.product}</h4>
                 <ul>
                   <li>
-                    <Link href="/piezas">Piezas certificadas</Link>
+                    <Link href="/piezas">{t.footer.certified}</Link>
                   </li>
                   <li>
-                    <Link href="/artesanos">Artesanos</Link>
+                    <Link href="/artesanos">{t.footer.artisans}</Link>
                   </li>
                   <li>
-                    <Link href="/#como-funciona">Cómo funciona</Link>
+                    <Link href="/#como-funciona">{t.footer.how}</Link>
                   </li>
                 </ul>
               </div>
               <div>
-                <h4>Asociaciones</h4>
+                <h4>{t.footer.associations}</h4>
                 <ul>
                   <li>
-                    <Link href="/panel">Panel de certificación</Link>
+                    <Link href="/panel">{t.footer.panel}</Link>
                   </li>
                   <li>
-                    <Link href="/#por-que">Por qué Stellar</Link>
+                    <Link href="/#por-que">{t.footer.why}</Link>
                   </li>
                 </ul>
               </div>
               <div>
-                <h4>Red</h4>
+                <h4>{t.footer.network}</h4>
                 <ul>
-                  <li>Stellar testnet</li>
+                  <li>{t.footer.testnet}</li>
                   {contractId ? (
                     <li>
                       <a href={`https://stellar.expert/explorer/testnet/contract/${contractId}`} className="mono">
@@ -85,8 +87,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </div>
             </div>
             <div className="footer-base">
-              <span>Hackathon FLAT 2026 · BAF × Stellar</span>
-              <span>Primer caso: Plaza de las Artes, Mendoza · Piloto en Corrientes</span>
+              <span>{t.footer.base}</span>
+              <span>{t.footer.cases}</span>
             </div>
           </div>
         </footer>
