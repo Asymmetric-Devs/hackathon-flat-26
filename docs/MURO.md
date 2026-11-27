@@ -79,7 +79,7 @@ scripts/refresh-demo.sh 0 600   # recarga el prepago de la obra #0 para la prese
 
 **Antes de presentar:** el prepago de la obra colgada en la demo dura unos minutos (1 día = 1 minuto). Correr `scripts/refresh-demo.sh` para que el contador siga andando.
 
-El color de acento se cambia con `?acento=violeta|rosa|coral|naranja|lima|azul` o desde el pie de la página.
+El acento de marca es naranja. Se puede probar otro con `?acento=violeta|lima|azul` en la URL.
 
 ## Validación con alguien de afuera
 

@@ -7,11 +7,8 @@ import { useStore } from "../store";
 
 export function Nav({ route }: { route: Route }) {
   const { signer, connecting, connect, disconnect } = useStore();
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
-  const onDark = route.page === "evidencia";
-  useEffect(() => { const on = () => setScrolled(scrollY > 40); on(); addEventListener("scroll", on, { passive: true }); return () => removeEventListener("scroll", on); }, []);
   useEffect(() => {
     if (!open) return;
     const on = (ev: MouseEvent) => { if (!box.current?.contains(ev.target as Node)) setOpen(false); };
@@ -22,14 +19,16 @@ export function Nav({ route }: { route: Route }) {
   if (route.page === "cartela") return null;
   const cur = (p: string) => (route.page === p ? "page" : undefined);
   return (
-    <header className={`top${scrolled ? " solid" : ""}${onDark ? " onDark" : ""}`}>
-      <a className="brand" href={href.inicio} aria-label="Muro, inicio"><Mark /><span className="wm">MURO</span><small title={IS_DEMO_CLOCK ? "En esta demo, 1 día dura 1 minuto" : "Testnet"}>{IS_DEMO_CLOCK ? "testnet · 1 día = 1 min" : "testnet"}</small></a>
+    <header className="top">
+     <div className="bar">
+      <a className="brand" href={href.inicio} aria-label="Muro, inicio"><Mark /><span className="wm">Muro</span></a>
       <nav className="nav" aria-label="Principal">
         <a href={href.galeria} aria-current={cur("galeria")}>Galería</a>
         <a href={href.publicar} aria-current={cur("publicar")}>Publicar una obra</a>
         <a href={`${href.inicio}#como`} onClick={(e) => { if (route.page === "inicio") { e.preventDefault(); document.getElementById("como")?.scrollIntoView({ behavior: "smooth" }); } }}>Cómo funciona</a>
         <a href={href.evidencia} aria-current={cur("evidencia")}>Evidencia</a>
       </nav>
+      <span className="net" title={IS_DEMO_CLOCK ? "En esta demo, 1 día dura 1 minuto" : "Red de pruebas"}><span>{IS_DEMO_CLOCK ? "Testnet · 1 día = 1 min" : "Testnet"}</span></span>
       <div className="wallet" ref={box}>
         <button className="btn sm" onClick={() => (signer ? setOpen(!open) : setOpen(true))} aria-expanded={open} aria-haspopup="menu" disabled={connecting}>
           {connecting ? "Conectando…" : signer ? short(signer.address) : "Conectar"}
@@ -52,6 +51,7 @@ export function Nav({ route }: { route: Route }) {
           </div>
         )}
       </div>
+     </div>
     </header>
   );
 }

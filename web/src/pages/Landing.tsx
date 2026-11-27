@@ -9,17 +9,16 @@ import { useStore } from "../store";
 import { CONTRACT_ID, DAY_SECS, UNIT, ASSET } from "../config";
 import { contractUrl } from "../format";
 import evidence from "../evidence.json";
-import { ACCENTS, applyAccent } from "../theme";
 
 /* ------------------------------------------------------------------ HERO */
 type Slot = { slug: string; x: number; y: number; w: number; r0: number; rt: number; d: number; cx?: string; mw: string; ms: string; v: "paste" | "frame" };
 const SLOTS: Slot[] = [
   { slug: "candido-curupayti", x: 44, y: 8, w: 30, r0: -1.6, rt: -1.2, d: 0.35, cx: "4%", mw: "88%", ms: "end", v: "paste" },
   { slug: "afklint-retablo", x: 79, y: 5, w: 11, r0: 2.4, rt: 2, d: 0.1, mw: "46%", ms: "start", v: "frame" },
-  { slug: "manet-bar", x: 50, y: 29, w: 24, r0: -2.2, rt: 1.4, d: 0.6, cx: "4%", mw: "78%", ms: "center", v: "paste" },
-  { slug: "vangogh-terraza", x: 80, y: 32, w: 10, r0: 3, rt: -2.5, d: 0.85, mw: "42%", ms: "end", v: "frame" },
-  { slug: "pueyrredon-alto", x: 4, y: 41, w: 22, r0: 1.8, rt: -1.6, d: 1.05, mw: "92%", ms: "start", v: "paste" },
-  { slug: "fader-mantones", x: 30, y: 38, w: 14, r0: -2.8, rt: 2.2, d: 1.25, mw: "58%", ms: "center", v: "frame" },
+  { slug: "manet-bar", x: 50, y: 30, w: 24, r0: -2.2, rt: 1.4, d: 0.6, cx: "4%", mw: "78%", ms: "center", v: "paste" },
+  { slug: "vangogh-terraza", x: 80, y: 34, w: 10, r0: 3, rt: -2.5, d: 0.85, mw: "42%", ms: "end", v: "frame" },
+  { slug: "pueyrredon-alto", x: 6, y: 50, w: 22, r0: 1.8, rt: -1.6, d: 1.05, mw: "92%", ms: "start", v: "paste" },
+  { slug: "fader-mantones", x: 30, y: 44, w: 14, r0: -2.8, rt: 2.2, d: 1.25, mw: "58%", ms: "center", v: "frame" },
 ];
 
 function HungPiece({ slot, e, go }: { slot: Slot; e: Entry; go: boolean }) {
@@ -60,7 +59,7 @@ function Hero({ entries, source }: { entries: Entry[]; source: string }) {
           </span>
         </div>
         <div className="hero-copy">
-          <h1>La obra <mark>cobra por día</mark>.</h1>
+          <h1>La obra<br /><mark>cobra</mark><br /><mark>por día.</mark></h1>
           <p>Colgá una obra en tu bar. Pagá el alquiler por día. Cuando llegás al precio, es tuya.</p>
           <div className="hero-cta">
             <a className="btn" href={href.galeria}>Ver la galería</a>
@@ -153,7 +152,7 @@ function How() {
           <ol className="how-steps">
             {STEPS.map((st, i) => (
               <li key={i} data-i={i} className={s === i ? "on" : ""} ref={(n) => { items.current[i] = n; }}>
-                <span className="num">{i + 1} de 4</span>
+                <span className="step">Paso {i + 1} de 4</span>
                 <h3>{st.t}</h3>
                 <p>{st.p}</p>
               </li>
@@ -224,7 +223,7 @@ function Curriculum({ entries, source }: { entries: Entry[]; source: string }) {
     <section className="sec wall" id="curriculum">
       <div className="wrap">
         <p className="kicker">El currículum de la obra</p>
-        <h2 className="big" style={{ maxWidth: "20ch" }}>Cada pago es una exposición que <em>costó plata de verdad</em>.</h2>
+        <h2 className="big" style={{ maxWidth: "20ch" }}>Cada pago es una exposición que <em>costó plata de verdad.</em></h2>
         <p className="lead">Un artista emergente casi nunca puede probar dónde estuvo su obra. En Muro el historial se arma solo, es público y no lo puede editar ni el artista ni el espacio.</p>
         <div className="cv">
           <div>
@@ -267,8 +266,8 @@ function Evidence() {
           <table className="tbl" style={{ color: "var(--tinta)" }}>
             <thead><tr><th>Qué pasó</th><th>Hash</th></tr></thead>
             <tbody>
-              <tr><td>Contrato Muro (instancia de demo)</td><td>{CONTRACT_ID && CONTRACT_ID !== "PENDIENTE" ? <a className="mono" style={{ color: "var(--ultramar)" }} href={contractUrl(CONTRACT_ID)} target="_blank" rel="noreferrer">{short(CONTRACT_ID)}</a> : "pendiente"}</td></tr>
-              {rows.map((r) => (<tr key={r.hash}><td>{r.label}</td><td><a className="mono" style={{ color: "var(--ultramar)" }} href={`https://stellar.expert/explorer/testnet/tx/${r.hash}`} target="_blank" rel="noreferrer">{r.hash.slice(0, 10)}…</a></td></tr>))}
+              <tr><td>Contrato Muro (instancia de demo)</td><td>{CONTRACT_ID && CONTRACT_ID !== "PENDIENTE" ? <a className="mono" style={{ color: "var(--tinta)" }} href={contractUrl(CONTRACT_ID)} target="_blank" rel="noreferrer">{short(CONTRACT_ID)}</a> : "pendiente"}</td></tr>
+              {rows.map((r) => (<tr key={r.hash}><td>{r.label}</td><td><a className="mono" style={{ color: "var(--tinta)" }} href={`https://stellar.expert/explorer/testnet/tx/${r.hash}`} target="_blank" rel="noreferrer">{r.hash.slice(0, 10)}…</a></td></tr>))}
             </tbody>
           </table>
         </div>
@@ -289,10 +288,6 @@ function Foot() {
         <div><b>Muro</b><br />Hackathon FLAT 2026 · BAF × Stellar<br />Mendoza, 26 al 28 de noviembre</div>
         <div>Obras de dominio público, con fuente en <a className="link" href="https://commons.wikimedia.org" target="_blank" rel="noreferrer">Wikimedia Commons</a>.<br />Los datos de cada obra se contrastan antes de usarse fuera de la demo.</div>
         <div><a className="link" href={href.galeria}>Galería</a><br /><a className="link" href={href.publicar}>Publicar una obra</a><br /><a className="link" href={href.evidencia}>Evidencia</a></div>
-      </div>
-      <div className="swatches" role="group" aria-label="Color de la pared">
-        <span>Probá otro color para la pared</span>
-        {ACCENTS.map((a) => <button key={a.name} title={a.label} aria-label={a.label} style={{ background: a.c }} onClick={() => applyAccent(a.name)} />)}
       </div>
       <div className="foot-word" aria-hidden="true">MURO</div>
     </footer>

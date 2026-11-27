@@ -49,7 +49,7 @@ export function Cartela({ e, r, l, compact = false }: { e: Entry; r: Resolved; l
       ) : l.hung ? (
         <>
           <div className="row"><span>Cobró {money(l.credited, 1)}</span><span>{Math.floor(l.pct)} %</span></div>
-          <div className="bar"><span style={{ width: `${l.pct}%` }} /></div>
+          <div className="bar-p"><span style={{ width: `${l.pct}%` }} /></div>
         </>
       ) : (
         <div className="row"><span>Precio {money(e.work.price, 0)}</span><span>{STATUS_LABEL[e.work.status]}</span></div>
