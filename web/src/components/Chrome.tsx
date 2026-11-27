@@ -13,6 +13,7 @@ export function Nav({ route }: { route: Route }) {
   const [dark, setDark] = useState(false);
   const [solid, setSolid] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
   const box = useRef<HTMLDivElement>(null);
 
   // La barra se esconde al bajar y vuelve al subir (siempre visible arriba de todo), y cambia de color
@@ -62,7 +63,7 @@ export function Nav({ route }: { route: Route }) {
   return (
     <header className={`top${hidden && !open && !menu ? " away" : ""}${dark && !menu ? " dark" : ""}${solid ? " solid" : ""}${menu ? " menu-open" : ""}`}>
       <div className="bar">
-        <a className="brand" href={href.inicio} aria-label="Muro, inicio"><Mark className="logo-mark" /><Wordmark className="logo-word" drips={false} tight rough="sm" title="" /></a>
+        <a className="brand" href={href.inicio} aria-label="Muro, inicio"><Mark className="logo-mark" /><Wordmark className="logo-word" drips={false} tight title="" /></a>
         <nav className="nav" aria-label="Principal">
           <a href={href.galeria} aria-current={cur("galeria")}>Galería</a>
           <a href={href.publicar} aria-current={cur("publicar")}>Publicar una obra</a>
@@ -78,16 +79,20 @@ export function Nav({ route }: { route: Route }) {
             <div className="menu" role="menu">
               {signer ? (
                 <>
-                  <div style={{ padding: "8px 12px" }}><b>{signer.kind === "guest" ? "Cuenta de invitado" : "Freighter"}</b><small className="mono" style={{ wordBreak: "break-all" }}>{signer.address}</small></div>
-                  <hr />
-                  <a className="item" role="menuitem" href={href.cuenta} onClick={() => setOpen(false)}>Mis obras y paredes<small>Las que publicaste y las que colgaste, con sus acciones.</small></a>
-                  <button role="menuitem" onClick={() => { disconnect(); setOpen(false); }}>Desconectar{signer.kind === "guest" ? <small>Se descarta la cuenta de invitado de este navegador.</small> : null}</button>
+                  <div className="menu-id">
+                    <span className="menu-kind">{signer.kind === "guest" ? "Cuenta de invitado" : "Freighter"}</span>
+                    <span className="menu-addr"><b className="mono">{short(signer.address)}</b>
+                      <button type="button" onClick={() => { navigator.clipboard?.writeText(signer.address).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1600); }).catch(() => {}); }}>{copied ? "Copiado" : "Copiar"}</button>
+                    </span>
+                  </div>
+                  <a className="menu-item" role="menuitem" href={href.cuenta} onClick={() => setOpen(false)}>Mis obras y paredes</a>
+                  <button className="menu-item" role="menuitem" type="button" onClick={() => { disconnect(); setOpen(false); }}>Desconectar</button>
+                  {signer.kind === "guest" && <p className="menu-note">Se descarta la cuenta de invitado de este navegador.</p>}
                 </>
               ) : (
                 <>
-                  <button role="menuitem" onClick={() => { setOpen(false); connect("guest"); }}>Probar como invitado<small>Crea una cuenta en este navegador, sin instalar nada.</small></button>
-                  <button role="menuitem" onClick={() => { setOpen(false); connect("freighter"); }}>Conectar Freighter<small>Con tu propia billetera.</small></button>
-                  
+                  <button className="menu-item" role="menuitem" type="button" onClick={() => { setOpen(false); connect("guest"); }}>Probar como invitado<small>Sin instalar nada.</small></button>
+                  <button className="menu-item" role="menuitem" type="button" onClick={() => { setOpen(false); connect("freighter"); }}>Conectar Freighter<small>Con tu propia billetera.</small></button>
                 </>
               )}
             </div>

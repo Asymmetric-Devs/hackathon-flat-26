@@ -125,7 +125,7 @@ function Hero({ entries, source, ready, landed, withIntro }: { entries: Entry[];
   return (
     <>
       <section className="hero concrete" aria-label="Muro" ref={root}>
-        <div className="word" aria-hidden="true"><Wordmark className="hword" rough drips={false} title="" /></div>
+        <div className="word" aria-hidden="true"><Wordmark className="hword"  drips={false} title="" /></div>
         <div className="hang-stage">
           {SLOTS.map((s) => { const e = bySlug.get(s.slug); return e ? <HungPiece key={s.slug} slot={s} e={e.work.id < 0 ? { ...e, work: { ...e.work, id: 0 } } : e} /> : null; })}
         </div>
@@ -286,7 +286,7 @@ function Foot() {
         <div>Obras de dominio público, con fuente en <a className="link" href="https://commons.wikimedia.org" target="_blank" rel="noreferrer">Wikimedia Commons</a>.<br />Los datos de cada obra se contrastan antes de usarse fuera de la demo.</div>
         <div><nav className="foot-links" aria-label="Pie"><a href={href.galeria}>Galería</a><a href={href.publicar}>Publicar una obra</a><a href={href.evidencia}>Evidencia</a></nav></div>
       </div>
-      <div className="foot-word" aria-hidden="true"><Wordmark className="fword" rough tight title="" /></div>
+      <div className="foot-word" aria-hidden="true"><Wordmark className="fword"  tight title="" /></div>
     </footer>
   );
 }

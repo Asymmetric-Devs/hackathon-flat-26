@@ -60,7 +60,7 @@ export function Intro({ onReady, onLanded, onDone }: { onReady: () => void; onLa
   return (
     <div className="intro" ref={root} role="presentation">
       <div className="ink">
-        <div className="iwrap"><Wordmark className="iword" rough paint title="" /></div>
+        <div className="iwrap"><Wordmark className="iword"  paint title="" /></div>
       </div>
     </div>
   );

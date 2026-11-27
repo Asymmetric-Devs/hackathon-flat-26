@@ -4,7 +4,8 @@ import { WM } from "./wordmarkData";
 /**
  * El logotipo: la palabra MURO con las letras de los titulares (trazados reales de Big Shoulders
  * Display Black), la O pintada de naranja, borde irregular de pintura y chorreados.
- * - `rough`: borde irregular ("sm" para tamaños chicos).  - `drips`: chorreados.
+ * El borde irregular está dibujado una sola vez en el trazado (wordmarkData.ts), así que se ve idéntico
+ * en cualquier tamaño. - `drips`: chorreados.
  * - `paint`: cada letra lleva una máscara con un trazo de pincel en zigzag (clase "brush") que se
  *   anima con stroke-dashoffset para que la letra parezca pintarse.  - `tight`: sin margen abajo.
  * Cada letra es un <path class="l">; los chorreados son <g class="drip">.
@@ -31,10 +32,9 @@ function brush(x0: number, x1: number) {
   return d;
 }
 
-export function Wordmark({ className = "wordmark", drips = true, rough = false, clip = false, paint = false, tight = false, title = "Muro" }: { className?: string; drips?: boolean; rough?: boolean | "sm"; clip?: boolean; paint?: boolean; tight?: boolean; title?: string }) {
+export function Wordmark({ className = "wordmark", drips = true, clip = false, paint = false, tight = false, title = "Muro" }: { className?: string; drips?: boolean; clip?: boolean; paint?: boolean; tight?: boolean; title?: string }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const h = tight ? WM.cap : WM.cap + (drips ? DRIP_ROOM : 60);
-  const filter = rough === "sm" ? "url(#rough-wm-sm)" : rough ? "url(#rough-wm)" : undefined;
   return (
     <svg className={className} viewBox={`0 ${-WM.cap} ${WM.w} ${h}`} role={title ? "img" : "presentation"} aria-label={title || undefined} aria-hidden={title ? undefined : true}>
       <defs>
@@ -45,7 +45,7 @@ export function Wordmark({ className = "wordmark", drips = true, rough = false, 
           </mask>
         ))}
       </defs>
-      <g className="wm-g" filter={filter}>
+      <g className="wm-g">
         <g className="lets" clipPath={clip ? `url(#${uid}c)` : undefined}>
           {WM.letters.map((l, i) => <path key={l.ch} className={i === 3 ? "l o" : "l"} d={l.d} mask={paint ? `url(#${uid}m${i})` : undefined} />)}
         </g>
