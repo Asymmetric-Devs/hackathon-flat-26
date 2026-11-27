@@ -13,18 +13,31 @@ export function useView(e: Entry): { r: Resolved; l: Live } {
   return { r: resolve(e.work.meta), l: live(e, now) };
 }
 
-export function Painting({ r, matted = true, eager = false }: { r: Resolved; matted?: boolean; eager?: boolean }) {
+export type Variant = "paste" | "frame";
+/** Afiche pegado con cinta (calle) o enmarcado (galería). */
+export function Painting({ r, variant = "paste", eager = false, children }: { r: Resolved; variant?: Variant; eager?: boolean; children?: React.ReactNode }) {
+  const img = r.img ? (
+    <img src={r.img} alt={`${r.title}, ${r.artist}${r.year ? ", " + r.year : ""}`} loading={eager ? "eager" : "lazy"} decoding="async" width={1000} height={Math.round(1000 * r.ratio)} />
+  ) : <span style={{ display: "block", aspectRatio: `1 / ${r.ratio}`, background: "var(--asfalto-2)" }} />;
+  if (variant === "frame") return <span className="frame"><span className="mat">{img}</span>{children}</span>;
   return (
-    <span className={`frame${matted ? "" : " nomat"}`}>
-      <span className="mat" style={{ display: "block" }}>
-        {r.img ? <img src={r.img} alt={`${r.title}, ${r.artist}${r.year ? ", " + r.year : ""}`} loading={eager ? "eager" : "lazy"} decoding="async" width={1000} height={Math.round(1000 * r.ratio)} />
-          : <span style={{ display: "block", aspectRatio: `1 / ${r.ratio}`, background: "var(--pared-3)" }} />}
-      </span>
+    <span className="paste">
+      <i className="tape a" aria-hidden="true" /><i className="tape b" aria-hidden="true" />
+      <span className="sheet">{img}</span>
+      {children}
     </span>
   );
 }
 
-/** Cartela de museo: título, autor, y la cuenta viva de lo cobrado. */
+/** Sticker redondo sobre la esquina del cuadro: lo cobrado, o el alquiler si está libre. */
+export function Dot({ e, l }: { e: Entry; l: Live }) {
+  if (e.work.status === "Sold") return <span className="dot" aria-hidden="true"><b>✓</b><small>vendida</small></span>;
+  if (l.hung) return <span className="dot" aria-hidden="true"><b>{Math.floor(l.pct)}%</b><small>cobrado</small></span>;
+  return <span className="dot" aria-hidden="true"><b>{xlmShort(e.work.rate)}</b><small>XLM/día</small></span>;
+}
+const xlmShort = (v: bigint) => { const n = Number(v) / 1e7; return n >= 10 ? Math.round(n).toString() : n.toLocaleString("es-AR", { maximumFractionDigits: 1 }); };
+
+/** Cartela: título, autor y la cuenta viva de lo cobrado. */
 export function Cartela({ e, r, l, compact = false }: { e: Entry; r: Resolved; l: Live; compact?: boolean }) {
   return (
     <div className="cartela">
@@ -39,7 +52,7 @@ export function Cartela({ e, r, l, compact = false }: { e: Entry; r: Resolved; l
           <div className="bar"><span style={{ width: `${l.pct}%` }} /></div>
         </>
       ) : (
-        <div className="row"><span>{money(e.work.rate, 1)} por día</span><span>{STATUS_LABEL[e.work.status]}</span></div>
+        <div className="row"><span>Precio {money(e.work.price, 0)}</span><span>{STATUS_LABEL[e.work.status]}</span></div>
       )}
     </div>
   );

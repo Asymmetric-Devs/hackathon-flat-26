@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Entry } from "../chain";
-import { Painting, STATUS_CLASS, STATUS_LABEL, useView } from "../components/Art";
+import { Dot, Painting, STATUS_CLASS, STATUS_LABEL, useView } from "../components/Art";
 import { money } from "../format";
 import { href } from "../router";
 import { useStore } from "../store";
@@ -9,7 +9,7 @@ function Card({ e }: { e: Entry }) {
   const { r, l } = useView(e);
   return (
     <a href={href.obra(e.work.id)} aria-label={`${r.title}, ${r.artist}`}>
-      <Painting r={r} />
+      <Painting r={r}><Dot e={e} l={l} /></Painting>
       <div className="cartela">
         <span className={`state-chip ${STATUS_CLASS[e.work.status]}`}>{STATUS_LABEL[e.work.status]}</span>
         <b>{r.title}</b>

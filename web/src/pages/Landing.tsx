@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Entry } from "../chain";
 import { resolve } from "../catalog";
-import { Cartela, Painting, STATUS_LABEL, useView } from "../components/Art";
+import { Cartela, Dot, Painting, STATUS_LABEL, useView } from "../components/Art";
 import { demoEntries, live } from "../live";
 import { money, short, when, accountUrl } from "../format";
 import { href } from "../router";
@@ -9,66 +9,71 @@ import { useStore } from "../store";
 import { CONTRACT_ID, DAY_SECS, UNIT, ASSET } from "../config";
 import { contractUrl } from "../format";
 import evidence from "../evidence.json";
+import { ACCENTS, applyAccent } from "../theme";
 
 /* ------------------------------------------------------------------ HERO */
-type Slot = { slug: string; x: number; y: number; w: number; r0: number; d: number; cx?: string; mw: string; ms: string };
+type Slot = { slug: string; x: number; y: number; w: number; r0: number; rt: number; d: number; cx?: string; mw: string; ms: string; v: "paste" | "frame" };
 const SLOTS: Slot[] = [
-  { slug: "candido-curupayti", x: 44, y: 9, w: 32, r0: -1.6, d: 0.5, mw: "88%", ms: "end" },
-  { slug: "afklint-retablo", x: 83.5, y: 8.5, w: 12, r0: 2.4, d: 0.15, cx: "-95%", mw: "46%", ms: "start" },
-  { slug: "manet-bar", x: 51, y: 31, w: 23, r0: -2.2, d: 0.85, mw: "78%", ms: "center" },
-  { slug: "vangogh-terraza", x: 84.5, y: 34.5, w: 10.5, r0: 3, d: 1.1, cx: "-110%", mw: "42%", ms: "end" },
-  { slug: "pueyrredon-alto", x: 7, y: 43, w: 20, r0: 1.8, d: 1.35, mw: "92%", ms: "start" },
-  { slug: "fader-mantones", x: 33.5, y: 38, w: 12.5, r0: -2.8, d: 1.6, mw: "58%", ms: "center" },
+  { slug: "candido-curupayti", x: 44, y: 8, w: 30, r0: -1.6, rt: -1.2, d: 0.35, cx: "4%", mw: "88%", ms: "end", v: "paste" },
+  { slug: "afklint-retablo", x: 79, y: 5, w: 11, r0: 2.4, rt: 2, d: 0.1, mw: "46%", ms: "start", v: "frame" },
+  { slug: "manet-bar", x: 50, y: 29, w: 24, r0: -2.2, rt: 1.4, d: 0.6, cx: "4%", mw: "78%", ms: "center", v: "paste" },
+  { slug: "vangogh-terraza", x: 80, y: 32, w: 10, r0: 3, rt: -2.5, d: 0.85, mw: "42%", ms: "end", v: "frame" },
+  { slug: "pueyrredon-alto", x: 4, y: 41, w: 22, r0: 1.8, rt: -1.6, d: 1.05, mw: "92%", ms: "start", v: "paste" },
+  { slug: "fader-mantones", x: 30, y: 38, w: 14, r0: -2.8, rt: 2.2, d: 1.25, mw: "58%", ms: "center", v: "frame" },
 ];
 
 function HungPiece({ slot, e, go }: { slot: Slot; e: Entry; go: boolean }) {
   const { r, l } = useView(e);
+  const vars = { ["--x" as string]: `${slot.x}vw`, ["--y" as string]: `${slot.y}vw`, ["--w" as string]: `${slot.w}vw`, ["--r0" as string]: `${slot.r0}deg`, ["--rt" as string]: `${slot.rt}deg`, ["--d" as string]: `${slot.d}s`, ["--cx" as string]: slot.cx ?? "0", ["--mw" as string]: slot.mw, ["--ms" as string]: slot.ms, ["--cr" as string]: `${-slot.rt * 0.8}deg` };
   return (
-    <div className={`hung${go ? " in" : ""}`}
-      style={{ ["--x" as string]: `${slot.x}vw`, ["--y" as string]: `${slot.y}vw`, ["--w" as string]: `${slot.w}vw`, ["--r0" as string]: `${slot.r0}deg`, ["--d" as string]: `${slot.d}s`, ["--cx" as string]: slot.cx ?? "0", ["--mw" as string]: slot.mw, ["--ms" as string]: slot.ms }}>
-      <svg className="wire" viewBox="0 0 100 90" preserveAspectRatio="none" aria-hidden="true"><path d="M2 88 L50 6 L98 88" vectorEffect="non-scaling-stroke" /><circle cx="50" cy="6" r="3.2" /></svg>
-      <a href={href.obra(e.work.id)} className="frame" aria-label={`${r.title}, ${r.artist}. Ver la obra.`}>
-        <span className="mat" style={{ display: "block" }}><img src={r.img} alt="" width={1000} height={Math.round(1000 * r.ratio)} loading="eager" decoding="async" /></span>
+    <div className={`hung${go ? " in" : ""}`} style={vars}>
+      <a href={href.obra(e.work.id)} aria-label={`${r.title}, ${r.artist}. Ver la obra.`}>
+        <Painting r={r} variant={slot.v} eager><Dot e={e} l={l} /></Painting>
       </a>
       <Cartela e={e} r={r} l={l} compact />
     </div>
   );
 }
 
+const TICKER = ["La obra cobra por día", "El depósito vuelve", "Cada día es una cuota", "Si te enamorás, es tuya", "Sin intermediarios", "El historial no se puede editar"];
+
 function Hero({ entries, source }: { entries: Entry[]; source: string }) {
-  const ref = useRef<HTMLElement>(null);
   const [go, setGo] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setGo(true), 250); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => setGo(true), 200); return () => clearTimeout(t); }, []);
   const bySlug = useMemo(() => {
     const m = new Map<string, Entry>();
     for (const e of entries) m.set(e.work.meta, e);
     for (const d of demoEntries()) if (!m.has(d.work.meta)) m.set(d.work.meta, { ...d, work: { ...d.work, id: -1 } });
     return m;
   }, [entries]);
-  const onMove = (ev: React.PointerEvent) => {
-    const el = ref.current; if (!el) return; const b = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${ev.clientX - b.left}px`); el.style.setProperty("--my", `${ev.clientY - b.top}px`);
-  };
   return (
-    <section className="hero" ref={ref} onPointerMove={onMove} aria-label="Muro">
-      <div className="word" aria-hidden="true">Muro</div>
-      <div className="hang-stage">
-        {SLOTS.map((s) => { const e = bySlug.get(s.slug); return e ? <HungPiece key={s.slug} slot={s} e={e.work.id < 0 ? { ...e, work: { ...e.work, id: 0 } } : e} go={go} /> : null; })}
-      </div>
-      <div className="glow" aria-hidden="true" /><div className="light-mask" aria-hidden="true" />
-      <div className="hero-copy">
-        <h1>Una obra colgada en un bar <em>cobra por día</em>. Si se enamoran, es suya.</h1>
-        <p>Muro le paga a cada obra un alquiler diario mientras cuelga de la pared de un bar, una bodega o un hotel. Cada día pagado cuenta como cuota de su precio.</p>
-        <div className="hero-cta">
-          <a className="btn" href={href.galeria}>Entrar a la galería</a>
-          <a className="btn line" href="#como" onClick={(e) => { e.preventDefault(); document.getElementById("como")?.scrollIntoView({ behavior: "smooth" }); }}>Cómo se cuelga</a>
+    <>
+      <section className="hero concrete" aria-label="Muro">
+        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+          <filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035 .05" numOctaves="3" seed="4" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="9" /></filter>
+        </svg>
+        <div className="word" aria-hidden="true">MURO</div>
+        <div className="hang-stage">
+          {SLOTS.map((s) => { const e = bySlug.get(s.slug); return e ? <HungPiece key={s.slug} slot={s} e={e.work.id < 0 ? { ...e, work: { ...e.work, id: 0 } } : e} go={go} /> : null; })}
+          <span className="note hide-m" style={{ left: "64.5vw", top: "22vw", ["--nr" as string]: "-5deg" }}>¡esto cuenta<br />en vivo!
+            <svg width="80" height="50" viewBox="0 0 80 50" style={{ left: "92px", top: "6px" }}><path d="M2 8 C 30 -4, 62 4, 74 36" /><path d="M60 28 L75 40 L78 22" /></svg>
+          </span>
         </div>
-      </div>
-      <div className="hero-foot">
-        <span className="ital">“Antes de existir en el mundo, existió en la imaginación de alguien.”</span>
-        <span className="simtag">{source === "chain" ? "Cifras en vivo desde Stellar Testnet" : "Cifras de ejemplo (sin conexión a la red)"} · obras de dominio público</span>
-      </div>
-    </section>
+        <div className="hero-copy">
+          <h1>La obra <mark>cobra por día</mark>.</h1>
+          <p>Colgá una obra en tu bar. Pagá el alquiler por día. Cuando llegás al precio, es tuya.</p>
+          <div className="hero-cta">
+            <a className="btn" href={href.galeria}>Ver la galería</a>
+            <a className="btn line" href="#como" onClick={(e) => { e.preventDefault(); document.getElementById("como")?.scrollIntoView({ behavior: "smooth" }); }}>Cómo funciona</a>
+          </div>
+        </div>
+        <div className="hero-foot">
+          <span>{source === "chain" ? "Cifras en vivo desde Stellar Testnet" : "Cifras de ejemplo (sin conexión a la red)"}</span>
+          <span>Obras de dominio público · FLAT 2026</span>
+        </div>
+      </section>
+      <div className="marquee" aria-hidden="true"><div className="belt">{[...TICKER, ...TICKER, ...TICKER, ...TICKER].map((t, i) => <span key={i}>{t}</span>)}</div></div>
+    </>
   );
 }
 
@@ -133,10 +138,8 @@ function How() {
         <div className="how">
           <div className="how-stage">
             <div className="how-obj" aria-hidden="true">
-              <svg className="wires" viewBox="0 0 100 34" preserveAspectRatio="none" style={{ opacity: s >= 1 ? 1 : 0 }}><path d="M12 34 L50 2 L88 34" vectorEffect="non-scaling-stroke" /></svg>
-              <span className="nail" style={{ opacity: s >= 1 ? 1 : 0, transform: s >= 1 ? "none" : "translateY(-12px)" }} />
               <div className="how-frame" data-s={s}>
-                <Painting r={r} />
+                <Painting r={r} variant="paste" />
               </div>
               <div className="cartela">
                 <b>{r.title}</b><i>{r.artist}, {r.year}</i>
@@ -287,7 +290,11 @@ function Foot() {
         <div>Obras de dominio público, con fuente en <a className="link" href="https://commons.wikimedia.org" target="_blank" rel="noreferrer">Wikimedia Commons</a>.<br />Los datos de cada obra se contrastan antes de usarse fuera de la demo.</div>
         <div><a className="link" href={href.galeria}>Galería</a><br /><a className="link" href={href.publicar}>Publicar una obra</a><br /><a className="link" href={href.evidencia}>Evidencia</a></div>
       </div>
-      <div className="foot-word" aria-hidden="true">Muro</div>
+      <div className="swatches" role="group" aria-label="Color de la pared">
+        <span>Probá otro color para la pared</span>
+        {ACCENTS.map((a) => <button key={a.name} title={a.label} aria-label={a.label} style={{ background: a.c }} onClick={() => applyAccent(a.name)} />)}
+      </div>
+      <div className="foot-word" aria-hidden="true">MURO</div>
     </footer>
   );
 }

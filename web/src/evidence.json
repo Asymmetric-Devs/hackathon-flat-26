@@ -1,51 +1,51 @@
 {
  "rows": [
   {
-   "label": "Se publica. Manet-bar -> obra #0 (precio 300 XLM, 3 XLM/día, depósito 40 XLM)",
+   "label": "Se publica. Un bar aux Folies-Bergère → obra #0 (precio 300 XLM, 3 XLM/día, depósito 40 XLM)",
    "hash": "7257cedd5c78b0488c5ef9b0d51bb03b02ae45cdac20cf341989aca6bdc89289"
   },
   {
-   "label": "Se publica. Candido-curupayti -> obra #1 (precio 150 XLM, 2 XLM/día, depósito 20 XLM)",
+   "label": "Se publica. Después de la batalla de Curupaytí → obra #1 (precio 150 XLM, 2 XLM/día, depósito 20 XLM)",
    "hash": "a16622b18d69dda12c3c315e9c57de082c71f14555efc6b0134bfaf7f042d9c6"
   },
   {
-   "label": "Se publica. Fader-mantones -> obra #2 (precio 200 XLM, 2 XLM/día, depósito 30 XLM)",
+   "label": "Se publica. Los mantones de Manila → obra #2 (precio 200 XLM, 2 XLM/día, depósito 30 XLM)",
    "hash": "e1849fd058a9c1e79be060116be96a4356baa512d2da711ae4199d58dcad4ef5"
   },
   {
-   "label": "Se publica. Pueyrredon-alto -> obra #3 (precio 400 XLM, 4 XLM/día, depósito 60 XLM)",
+   "label": "Se publica. Un alto en el campo → obra #3 (precio 400 XLM, 4 XLM/día, depósito 60 XLM)",
    "hash": "580f416fab3b99fca81366ce47e3b9610709bd8a7c2e2bcb23c6745e395e1f4b"
   },
   {
-   "label": "Se publica. Afklint-retablo -> obra #4 (precio 250 XLM, 3 XLM/día, depósito 40 XLM)",
+   "label": "Se publica. Retablo n.º 1 → obra #4 (precio 250 XLM, 3 XLM/día, depósito 40 XLM)",
    "hash": "a9c32b717acd51d29e129e1f98518307d288afa4e71a4e255fb0325588fb09bd"
   },
   {
-   "label": "Se publica. Vangogh-terraza -> obra #5 (precio 100 XLM, 1 XLM/día, depósito 25 XLM)",
+   "label": "Se publica. Terraza de café por la noche → obra #5 (precio 100 XLM, 1 XLM/día, depósito 25 XLM)",
    "hash": "5c179ef17b7ade3fabb0925be38a12edb70bf12d965d7d5b6a6ea01a6ed3d62e"
   },
   {
-   "label": "Se cuelga. Muro-venue cuelga manet-bar por 30 días (depósito 40 XLM + 90 XLM prepago)",
+   "label": "Se cuelga. El espacio cuelga Un bar aux Folies-Bergère por 30 días (depósito 40 XLM + 90 XLM prepago)",
    "hash": "8e816acf95dbf82716fcd45f985998027d6999dd4ff3001e5db767d8b0589a27"
   },
   {
-   "label": "Se cuelga. Muro-venue cuelga candido-curupayti por 3 días (depósito 20 XLM + 6 XLM)",
+   "label": "Se cuelga. El espacio cuelga Después de la batalla de Curupaytí por 3 días (depósito 20 XLM + 6 XLM)",
    "hash": "58299c7d8d6118bccc5c10dd044b66e60255db5bbecbc980a4cdb880cadc70d7"
   },
   {
-   "label": "Se frena y se devuelve. Muro-venue devuelve candido-curupayti (liquida lo devengado, reembolsa prepago, retiene depósito)",
+   "label": "Se frena y se devuelve. El espacio devuelve Después de la batalla de Curupaytí (liquida lo devengado, reembolsa prepago, retiene depósito)",
    "hash": "880185b680c342c32b501ff064b62bf2794ffb5da5f78c323245871621e9c0af"
   },
   {
-   "label": "El artista confirma la devolución. Muro-artist confirma la devolución (depósito 20 XLM vuelve al venue; queda en el historial)",
+   "label": "El artista confirma la devolución. El artista confirma la devolución (depósito 20 XLM vuelve al venue; queda en el historial)",
    "hash": "1d9f046c95a76c492766efb7aab471b0c4bb8bd68a95c48eedcea901754f1f0b"
   },
   {
-   "label": "Cobro de lo devengado. Muro-guest (cualquiera) ejecuta claim sobre manet-bar: devengado previo 65000000 stroops, pagado al artista 67500000 stroops",
+   "label": "Cobro de lo devengado. Un visitante ejecuta claim sobre Un bar aux Folies-Bergère: devengado previo 65000000 stroops, pagado al artista 67500000 stroops",
    "hash": "a2d38c9a36dfeadae13d3d15bfda98760be4de7102596cfe316fe0e2f8ac7470"
   },
   {
-   "label": "Propina al artista. Muro-guest da propina de 5 XLM al artista por manet-bar",
+   "label": "Propina al artista. Un visitante da propina de 5 XLM al artista por Un bar aux Folies-Bergère",
    "hash": "42edee1a09d0d523a956e29a46a707fb329ace36612f97e230d5f7e51c7cb699"
   }
  ]

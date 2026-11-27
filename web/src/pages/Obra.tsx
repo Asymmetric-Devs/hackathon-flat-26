@@ -7,6 +7,7 @@ import { ASSET, DAY_SECS, INSTANCE, UNIT } from "../config";
 import { accountUrl, dur, money, short, toStroops, when } from "../format";
 import { href } from "../router";
 import { useStore } from "../store";
+import type { Signer } from "../wallet";
 
 export default function Obra({ id }: { id: number }) {
   const { entries, loading } = useStore();
@@ -17,7 +18,7 @@ export default function Obra({ id }: { id: number }) {
 
 function Detail({ e }: { e: Entry }) {
   const { r, l } = useView(e);
-  const { signer, refresh, toast, now, connect } = useStore();
+  const { signer, ensure, refresh, toast, now } = useStore();
   const [busy, setBusy] = useState<string | null>(null);
   const [days, setDays] = useState(10);
   const [tipAmt, setTipAmt] = useState(2);
@@ -29,10 +30,9 @@ function Detail({ e }: { e: Entry }) {
   const plaqueUrl = `${location.origin}${location.pathname}#/cartela/${w.id}`;
   const qr = useMemo(() => { const q = qrcode(0, "M"); q.addData(plaqueUrl); q.make(); return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }, [plaqueUrl]);
 
-  const run = async (key: string, ok: string, fn: () => Promise<string>) => {
-    if (!signer) { toast("error", "Conectá una cuenta primero: podés entrar como invitado en un clic."); return; }
+  const run = async (key: string, ok: string, fn: (s: Signer) => Promise<string>) => {
     setBusy(key);
-    try { const h = await fn(); toast("ok", ok, h); await refresh(); }
+    try { const h = await fn(await ensure()); toast("ok", ok, h); await refresh(); }
     catch (err) { toast("error", err instanceof Error ? err.message : String(err)); }
     finally { setBusy(null); }
   };
@@ -56,7 +56,7 @@ function Detail({ e }: { e: Entry }) {
           {r.collection && <p style={{ fontSize: ".85rem", color: "var(--tinta-2)" }}>Original en {r.collection}. {r.demo ? "Obra de dominio público usada como ejemplo." : ""}</p>}
 
           {(l.hung || w.status === "Sold") && <Meter e={e} l={l} />}
-          {l.hung && e.lease && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Colgada hace {dur(l.secsHung, DAY_SECS)} en <a className="link mono" href={accountUrl(e.lease.venue)} target="_blank" rel="noreferrer">{short(e.lease.venue)}</a>.{runout ? ` El prepago alcanza hasta el ${when(runout, true)}` : ""}{runout ? "." : ""}</p>}
+          {l.hung && e.lease && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Colgada hace {dur(l.secsHung, DAY_SECS)} en <a className="link mono" href={accountUrl(e.lease.venue)} target="_blank" rel="noreferrer">{short(e.lease.venue)}</a>.{runout ? ` El prepago alcanza hasta el ${when(runout, true).replace(/\.$/, "")}.` : ""}</p>}
           {w.status === "Sold" && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Hoy es de <a className="link mono" href={accountUrl(w.owner)} target="_blank" rel="noreferrer">{short(w.owner)}</a>. La compra quedó pagada en cuotas de alquiler.</p>}
 
           <div className="facts">
@@ -72,7 +72,7 @@ function Detail({ e }: { e: Entry }) {
                 <input type="number" min={1} max={365} value={days} onChange={(ev) => setDays(Math.max(1, Math.min(365, Number(ev.target.value) || 1)))} />
               </label>
               <p className="hint">Dejás {money(w.deposit, 0)} de depósito más {money(w.rate * BigInt(days), 0)} de alquiler por adelantado: <b>{money(total, 0)}</b> en total. El depósito vuelve cuando el artista confirma que la recibió.</p>
-              <div className="actions"><button className="btn" disabled={!!busy} onClick={() => (signer ? run("hang", "La obra quedó colgada. El contador ya está corriendo.", () => hang(signer, w.id, days)) : connect("guest"))}>{signer ? (busy === "hang" ? "Colgando…" : "Colgar la obra") : "Conectar como invitado para colgar"}</button></div>
+              <div className="actions"><button className="btn" disabled={!!busy} onClick={() => run("hang", "La obra quedó colgada. El contador ya está corriendo.", (s) => hang(s, w.id, days))}>{busy === "hang" ? "Colgando…" : "Colgar la obra"}</button></div>
             </section>
           )}
           {w.status === "Available" && isArtist && <p className="notice" style={{ marginTop: 22 }}>Tu obra está disponible. Cuando un espacio la cuelgue, vas a empezar a cobrar por día.</p>}
@@ -82,16 +82,16 @@ function Detail({ e }: { e: Entry }) {
               <h3 id="h-obra">{isVenue ? "Tu pared" : isArtist ? "Tu obra" : "Qué se puede hacer"}</h3>
               <p className="hint">Lo devengado hasta ahora: <b>{money(l.accruedNow, 2)}</b>. Cualquiera puede ejecutar el cobro: el dinero siempre va al artista.</p>
               <div className="actions">
-                <button className="btn sm" disabled={!!busy || l.accruedNow === 0n} onClick={() => run("claim", "Se cobró lo devengado y se acreditó al precio.", () => claim(signer!, w.id))}>{busy === "claim" ? "Cobrando…" : "Cobrar lo devengado"}</button>
+                <button className="btn sm" disabled={!!busy || l.accruedNow === 0n} onClick={() => run("claim", "Se cobró lo devengado y se acreditó al precio.", (s) => claim(s, w.id))}>{busy === "claim" ? "Cobrando…" : "Cobrar lo devengado"}</button>
                 {isVenue && <>
-                  <button className="btn sm line" disabled={!!busy} onClick={() => run("topup", `Sumaste ${days} días de prepago.`, () => topUp(signer!, w.id, days))}>Sumar {days} días</button>
-                  <button className="btn sm line" disabled={!!busy} onClick={() => run("buy", "La obra es tuya. El depósito volvió a tu cuenta.", () => buyNow(signer!, w.id))}>Quedármela por {money(buyCost > 0n ? buyCost : 0n, 0)}</button>
-                  <button className="btn sm line" disabled={!!busy} onClick={() => run("stop", "Frenaste el alquiler. Ahora hay que devolver la obra.", () => stop(signer!, w.id))}>Devolver la obra</button>
+                  <button className="btn sm line" disabled={!!busy} onClick={() => run("topup", `Sumaste ${days} días de prepago.`, (s) => topUp(s, w.id, days))}>Sumar {days} días</button>
+                  <button className="btn sm line" disabled={!!busy} onClick={() => run("buy", "La obra es tuya. El depósito volvió a tu cuenta.", (s) => buyNow(s, w.id))}>Quedármela por {money(buyCost > 0n ? buyCost : 0n, 0)}</button>
+                  <button className="btn sm line" disabled={!!busy} onClick={() => run("stop", "Frenaste el alquiler. Ahora hay que devolver la obra.", (s) => stop(s, w.id))}>Devolver la obra</button>
                 </>}
-                {canSeizeHung && isArtist && <button className="btn sm" disabled={!!busy} onClick={() => run("seize", "Se ejecutó el depósito a tu favor.", () => seize(signer!, w.id))}>Ejecutar el depósito</button>}
+                {canSeizeHung && isArtist && <button className="btn sm" disabled={!!busy} onClick={() => run("seize", "Se ejecutó el depósito a tu favor.", (s) => seize(s, w.id))}>Ejecutar el depósito</button>}
               </div>
               {isVenue && <label className="field" style={{ maxWidth: 220 }}>Días a sumar<input type="number" min={1} max={365} value={days} onChange={(ev) => setDays(Math.max(1, Math.min(365, Number(ev.target.value) || 1)))} /></label>}
-              {!signer && <p className="hint">Conectate para operar. Si sos el espacio o el artista, usá la misma cuenta que usaste al publicar o colgar.</p>}
+              {!signer && <p className="hint">Sin cuenta, se crea una de invitado al primer toque. Para operar como el espacio o el artista de esta obra, conectate con la cuenta que usaste al publicar o colgar.</p>}
             </section>
           )}
 
@@ -100,8 +100,8 @@ function Detail({ e }: { e: Entry }) {
               <h3>Esperando la devolución</h3>
               <p className="hint">El espacio frenó el alquiler. Cuando el artista la tenga en la mano, confirma y el depósito vuelve. Si pasan {INSTANCE.graceDays} días de gracia sin devolverla, el depósito es del artista.</p>
               <div className="actions">
-                {isArtist && <button className="btn sm" disabled={!!busy} onClick={() => run("ret", "Confirmaste la devolución. El depósito volvió al espacio.", () => confirmReturn(signer!, w.id))}>Confirmo que la recibí</button>}
-                {isArtist && canSeizeRet && <button className="btn sm line" disabled={!!busy} onClick={() => run("seize", "Se ejecutó el depósito a tu favor.", () => seize(signer!, w.id))}>Ejecutar el depósito</button>}
+                {isArtist && <button className="btn sm" disabled={!!busy} onClick={() => run("ret", "Confirmaste la devolución. El depósito volvió al espacio.", (s) => confirmReturn(s, w.id))}>Confirmo que la recibí</button>}
+                {isArtist && canSeizeRet && <button className="btn sm line" disabled={!!busy} onClick={() => run("seize", "Se ejecutó el depósito a tu favor.", (s) => seize(s, w.id))}>Ejecutar el depósito</button>}
               </div>
             </section>
           )}
@@ -109,7 +109,7 @@ function Detail({ e }: { e: Entry }) {
           <section className="panel" aria-labelledby="h-tip">
             <h3 id="h-tip">Dejarle una propina al artista</h3>
             <div className="actions" role="group" aria-label="Monto">{[1, 2, 5, 10].map((n) => <button key={n} className="chip" style={tipAmt === n ? undefined : { boxShadow: "inset 0 0 0 1px var(--tinta-2)" }} aria-pressed={tipAmt === n} onClick={() => setTipAmt(n)}>{n} {ASSET}</button>)}</div>
-            <div className="actions"><button className="btn sm" disabled={!!busy} onClick={() => (signer ? run("tip", `Le dejaste ${tipAmt} ${ASSET} a ${r.artist}.`, () => tip(signer, w.id, toStroops(tipAmt))) : connect("guest"))}>{signer ? (busy === "tip" ? "Enviando…" : `Enviar ${tipAmt} ${ASSET}`) : "Conectar como invitado"}</button></div>
+            <div className="actions"><button className="btn sm" disabled={!!busy} onClick={() => run("tip", `Le dejaste ${tipAmt} ${ASSET} a ${r.artist}.`, (s) => tip(s, w.id, toStroops(tipAmt)))}>{busy === "tip" ? "Enviando…" : `Enviar ${tipAmt} ${ASSET}`}</button></div>
             <p className="hint">Propinas recibidas por esta obra: {money(e.tips, 1)}.</p>
           </section>
         </div>

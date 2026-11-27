@@ -4,6 +4,12 @@ Edición virtual · **26 al 28 de noviembre de 2026** · Transmitida desde el Mu
 
 Sitio oficial: https://sincoordenada-argentina.netlify.app/
 
+## Nuestro proyecto: Muro
+
+**La obra cobra por día. Si se enamoran, es suya.** Un alquiler diario para obras que cuelgan de la pared de un bar, una bodega o un hotel, con depósito en garantía, cuotas que se descuentan del precio y un currículum público de exposiciones. Contrato Soroban en Stellar Testnet y web en `web/`.
+
+Todo el detalle (problema, por qué blockchain, cómo correrlo, validación, guion del video y checklist de entrega) está en [`docs/MURO.md`](docs/MURO.md). Evidencia en testnet: [`docs/evidencia-testnet.md`](docs/evidencia-testnet.md).
+
 ## Datos clave
 
 | | |

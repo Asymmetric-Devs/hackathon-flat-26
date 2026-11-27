@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { publish } from "../chain";
+import { count, publish } from "../chain";
 import { CATALOG } from "../catalog";
 import { ASSET } from "../config";
 import { toStroops } from "../format";
@@ -7,7 +7,7 @@ import { href } from "../router";
 import { useStore } from "../store";
 
 export default function Publicar() {
-  const { signer, connect, refresh, toast, entries } = useStore();
+  const { ensure, refresh, toast } = useStore();
   const [busy, setBusy] = useState(false);
   const [f, setF] = useState({ cat: "", title: "", artist: "", year: "", medium: "", img: "", price: 200, rate: 2, deposit: 30 });
   const set = (k: string, v: string | number) => setF((x) => ({ ...x, [k]: v }));
@@ -18,14 +18,14 @@ export default function Publicar() {
   const valid = f.title.trim() && f.artist.trim() && f.price > 0 && f.rate > 0 && f.deposit >= 0 && (f.cat || !f.img || /^https:\/\//.test(f.img));
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    if (!signer) { connect("guest"); return; }
     setBusy(true);
     try {
+      const signer = await ensure();
       const meta = f.cat || JSON.stringify({ title: f.title.trim(), artist: f.artist.trim(), year: f.year.trim(), medium: f.medium.trim(), img: f.img.trim() });
       const h = await publish(signer, toStroops(f.price), toStroops(f.rate), toStroops(f.deposit), meta);
       toast("ok", "Tu obra quedó publicada y disponible para colgar.", h);
       await refresh();
-      location.hash = href.obra(entries.length);
+      location.hash = href.obra((await count()) - 1);
     } catch (err) { toast("error", err instanceof Error ? err.message : String(err)); }
     finally { setBusy(false); }
   };
@@ -55,7 +55,7 @@ export default function Publicar() {
         </div>
         <label className="field">Depósito en garantía ({ASSET})<input type="number" min={0} step="any" value={f.deposit} onChange={(e) => set("deposit", +e.target.value)} /></label>
         <p className="hint">Con estos números, la obra es del espacio a los {f.rate > 0 ? Math.ceil(f.price / f.rate) : "…"} días de alquiler. El depósito lo retiene el contrato y vuelve cuando confirmás que la recibiste.</p>
-        <div className="actions"><button className="btn" type="submit" disabled={busy || !valid}>{busy ? "Publicando…" : signer ? "Publicar la obra" : "Conectar como invitado y publicar"}</button></div>
+        <div className="actions"><button className="btn" type="submit" disabled={busy || !valid}>{busy ? "Publicando…" : "Publicar la obra"}</button></div>
       </form>
     </main>
   );

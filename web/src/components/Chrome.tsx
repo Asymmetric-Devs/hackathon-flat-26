@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { INSTANCE_KEY, IS_DEMO_CLOCK } from "../config";
 import { short } from "../format";
 import { href, Route } from "../router";
+import { Mark } from "./Logo";
 import { useStore } from "../store";
 
 export function Nav({ route }: { route: Route }) {
@@ -9,7 +10,7 @@ export function Nav({ route }: { route: Route }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
-  const paper = route.page !== "inicio" && route.page !== "cartela" && !(route.page === "evidencia");
+  const onDark = route.page === "evidencia";
   useEffect(() => { const on = () => setScrolled(scrollY > 40); on(); addEventListener("scroll", on, { passive: true }); return () => removeEventListener("scroll", on); }, []);
   useEffect(() => {
     if (!open) return;
@@ -21,8 +22,8 @@ export function Nav({ route }: { route: Route }) {
   if (route.page === "cartela") return null;
   const cur = (p: string) => (route.page === p ? "page" : undefined);
   return (
-    <header className={`top${scrolled ? " solid" : ""}${paper && scrolled ? " paper" : ""}${paper && !scrolled ? " paper-top" : ""}`} style={paper && !scrolled ? { color: "var(--tinta)" } : undefined}>
-      <a className="brand" href={href.inicio} aria-label="Muro, inicio">Muro<small title={IS_DEMO_CLOCK ? "En esta demo, 1 día dura 1 minuto" : "Testnet"}>{IS_DEMO_CLOCK ? "testnet · 1 día = 1 min" : "testnet"}</small></a>
+    <header className={`top${scrolled ? " solid" : ""}${onDark ? " onDark" : ""}`}>
+      <a className="brand" href={href.inicio} aria-label="Muro, inicio"><Mark /><span className="wm">MURO</span><small title={IS_DEMO_CLOCK ? "En esta demo, 1 día dura 1 minuto" : "Testnet"}>{IS_DEMO_CLOCK ? "testnet · 1 día = 1 min" : "testnet"}</small></a>
       <nav className="nav" aria-label="Principal">
         <a href={href.galeria} aria-current={cur("galeria")}>Galería</a>
         <a href={href.publicar} aria-current={cur("publicar")}>Publicar una obra</a>

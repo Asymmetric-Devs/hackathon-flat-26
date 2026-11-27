@@ -7,7 +7,7 @@ import { connectFreighter, errText, forgetGuest, guestSigner, Signer, WalletErro
 type Toast = { id: number; kind: "ok" | "error"; text: string; tx?: string };
 type Ctx = {
   entries: Entry[]; source: "chain" | "demo"; loading: boolean; now: number; refresh: () => Promise<void>;
-  signer: Signer | null; connecting: boolean; connect: (kind: "freighter" | "guest") => Promise<void>; disconnect: () => void;
+  signer: Signer | null; ensure: () => Promise<Signer>; connecting: boolean; connect: (kind: "freighter" | "guest") => Promise<void>; disconnect: () => void;
   toasts: Toast[]; toast: (kind: Toast["kind"], text: string, tx?: string) => void; dismiss: (id: number) => void;
 };
 const Store = createContext<Ctx>(null!);
@@ -56,6 +56,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     } finally { setConnecting(false); }
   }, [toast]);
   const disconnect = useCallback(() => { setSigner(null); forgetGuest(); }, []);
+  /** Devuelve la cuenta conectada; si no hay ninguna, crea la de invitado (Testnet) en el momento. */
+  const ensure = useCallback(async () => {
+    if (signer) return signer;
+    const g = await guestSigner();
+    setSigner(g);
+    return g;
+  }, [signer]);
 
   // Si ya hay una cuenta de invitado en este navegador, se retoma sola al recargar.
   useEffect(() => {
@@ -64,7 +71,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (has) guestSigner().then(setSigner).catch(() => { /* se reconecta a mano */ });
   }, []);
 
-  const value = useMemo(() => ({ entries, source, loading, now, refresh, signer, connecting, connect, disconnect, toasts, toast, dismiss }),
-    [entries, source, loading, now, refresh, signer, connecting, connect, disconnect, toasts, toast, dismiss]);
+  const value = useMemo(() => ({ entries, source, loading, now, refresh, signer, ensure, connecting, connect, disconnect, toasts, toast, dismiss }),
+    [entries, source, loading, now, refresh, signer, ensure, connecting, connect, disconnect, toasts, toast, dismiss]);
   return <Store.Provider value={value}>{children}</Store.Provider>;
 }
