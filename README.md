@@ -86,10 +86,10 @@ npm run dev -- -p 3100         # http://localhost:3100 · panel en /panel (contr
 
 Fotos de Wikimedia Commons usadas en la portada:
 
-- Tejedoras en la Fiesta Nacional del Poncho, Catamarca. Autor: GtPLzcat89. CC0.
-- Artesanías de la Cooperativa de Artesanas Qom. Autor: Ashazam. CC BY-SA 4.0.
-- Feria artesanal y comercial de Tilcara, Jujuy. Autora: Eugenialodi. CC BY-SA 4.0.
-- Poncho del Bicentenario 2010. Autor: Museo de la Fiesta Nacional del Poncho. CC BY-SA 4.0.
+- Manos en el torno de cerámica. Autor: Quino Al. CC0.
+- Cucharas de madera hechas a mano. Autora: Gabriela Sellart. CC BY-SA 4.0.
+- Recuerdos en estantes de un local de Tromsø. Autor: Harald Groven. CC BY-SA 2.0.
+- Banco de trabajo de platería. Autor: Thomas Farley. CC0.
 
 ## Uso de IA (declarado)
 
