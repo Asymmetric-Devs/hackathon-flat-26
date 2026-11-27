@@ -4,7 +4,7 @@
  */
 export function Mark({ className = "mark" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 58 48" role="img" aria-label="Muro" overflow="visible">
+    <svg className={className} viewBox="0 0 58 38" role="img" aria-label="Muro" overflow="visible">
       <g fill="currentColor">
         <rect x="0" y="1" width="17" height="10" rx="1.6" /><rect x="20" y="1" width="17" height="10" rx="1.6" /><rect x="40" y="1" width="18" height="10" rx="1.6" />
         <rect x="0" y="14" width="7" height="10" rx="1.6" /><rect x="40" y="14" width="18" height="10" rx="1.6" />

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { Cursor } from "./components/Cursor";
 import { Nav, Toasts } from "./components/Chrome";
 import Cartela from "./pages/Cartela";
 import Evidencia from "./pages/Evidencia";
@@ -19,8 +18,8 @@ function Pages() {
     <>
       <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
         <filter id="rough-wm" x="-4%" y="-8%" width="108%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".012 .018" numOctaves="3" seed="7" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="58" /></filter>
+        <filter id="rough-wm-sm" x="-4%" y="-12%" width="108%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".02 .03" numOctaves="2" seed="7" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="80" /></filter>
       </svg>
-      <Cursor />
       <Nav route={r} />
       {r.page === "inicio" && <Landing />}
       {r.page === "galeria" && <Galeria />}

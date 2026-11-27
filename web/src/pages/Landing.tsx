@@ -36,7 +36,7 @@ function HungPiece({ slot, e }: { slot: Slot; e: Entry }) {
   );
 }
 
-function Hero({ entries, source, ready }: { entries: Entry[]; source: string; ready: boolean }) {
+function Hero({ entries, source, ready, landed, withIntro }: { entries: Entry[]; source: string; ready: boolean; landed: boolean; withIntro: boolean }) {
   const root = useRef<HTMLElement>(null);
   const bySlug = useMemo(() => {
     const m = new Map<string, Entry>();
@@ -56,9 +56,10 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
     gsap.set(q(".hung .dot"), { scale: 0 });
     gsap.set(q(".hung .cartela"), { opacity: 0, y: 18 });
     gsap.set(q(".hung .tape"), { scaleX: 0, transformOrigin: "0 50%" });
-    gsap.set(q(".hword .l"), { y: 1900 });
-    gsap.set(q(".note"), { opacity: 0 });
-  }, []);
+    if (withIntro) gsap.set(q(".word"), { opacity: 0 }); // la palabra gigante llega volando desde la intro
+      }, []);
+
+  useLayoutEffect(() => { if (landed) gsap.set(root.current!.querySelector(".word"), { opacity: 1 }); }, [landed]);
 
   // Parallax con el scroll (contenedores, para no pisar las entradas).
   useLayoutEffect(() => {
@@ -93,11 +94,9 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
         gsap.to(h.querySelector(".cartela"), { opacity: 1, y: 0, duration: 0.6, delay: 0.12, ease: "expo.out" });
       };
       const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.to(q(".hword .l"), { y: 0, duration: 1.3, ease: "expo.out", stagger: 0.1 }, 0)
-        .to(q(".ln-in"), { yPercent: 0, duration: 1, stagger: 0.14 }, 0.1)
+      tl.to(q(".ln-in"), { yPercent: 0, duration: 1, stagger: 0.14 }, 0.1)
         .to(q(".hero-copy mark"), { clipPath: "inset(0 0% 0 0)", duration: 0.75, ease: "expo.inOut", stagger: 0.16 }, 0.3)
-        .to(q(".hero-copy p, .hero-cta"), { opacity: 1, y: 0, duration: 0.85, stagger: 0.12 }, 0.75)
-        .to(q(".note"), { opacity: 1, duration: 0.6 }, 1.6);
+        .to(q(".hero-copy p, .hero-cta"), { opacity: 1, y: 0, duration: 0.85, stagger: 0.12 }, 0.75);
       q<HTMLElement>(".hung").forEach((h, i) => {
         const r0 = Number(h.dataset.r0 ?? 0);
         tl.fromTo(h, { opacity: 0, y: -170, scale: 1.45, rotation: r0 * 3, transformOrigin: "50% 0%" },
@@ -126,12 +125,9 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
   return (
     <>
       <section className="hero concrete" aria-label="Muro" ref={root}>
-        <div className="word" aria-hidden="true"><Wordmark className="hword" rough clip drips={false} title="" /></div>
+        <div className="word" aria-hidden="true"><Wordmark className="hword" rough drips={false} title="" /></div>
         <div className="hang-stage">
           {SLOTS.map((s) => { const e = bySlug.get(s.slug); return e ? <HungPiece key={s.slug} slot={s} e={e.work.id < 0 ? { ...e, work: { ...e.work, id: 0 } } : e} /> : null; })}
-          <span className="note hide-m" style={{ left: "64.5vw", top: "22vw", ["--nr" as string]: "-5deg" }}>¡esto cuenta<br />en vivo!
-            <svg width="80" height="50" viewBox="0 0 80 50" style={{ left: "92px", top: "6px" }}><path d="M2 8 C 30 -4, 62 4, 74 36" /><path d="M60 28 L75 40 L78 22" /></svg>
-          </span>
         </div>
         <div className="hero-copy">
           <h1 aria-label="La obra cobra por día.">
@@ -286,7 +282,7 @@ function Foot() {
       <p className="quote" data-scrub aria-label="Antes de existir en el mundo, existió en la imaginación de alguien."><Chars text="Antes de existir en el mundo, existió en la imaginación de alguien." /></p>
       <p className="cite">Texto del sitio de FLAT 2026, junto al Retablo n.º 1 de Hilma af Klint (1915).</p>
       <div className="foot-grid">
-        <div><b>Muro</b><br />Hackathon FLAT 2026 · BAF × Stellar<br />Mendoza, 26 al 28 de noviembre<br />Funciona en Stellar Testnet (red de pruebas).</div>
+        <div><b>Muro</b><br />Hackathon FLAT 2026 · BAF × Stellar<br />Mendoza, 26 al 28 de noviembre</div>
         <div>Obras de dominio público, con fuente en <a className="link" href="https://commons.wikimedia.org" target="_blank" rel="noreferrer">Wikimedia Commons</a>.<br />Los datos de cada obra se contrastan antes de usarse fuera de la demo.</div>
         <div><a className="link" href={href.galeria}>Galería</a><br /><a className="link" href={href.publicar}>Publicar una obra</a><br /><a className="link" href={href.evidencia}>Evidencia</a></div>
       </div>
@@ -346,14 +342,16 @@ export default function Landing() {
   // si se navega fuera antes de terminar la intro, no vuelve a bloquear el scroll al volver
   useEffect(() => () => { introPlayed = true; }, []);
   const [ready, setReady] = useState(!intro);
+  const [landed, setLanded] = useState(!intro);
   const root = useRef<HTMLElement>(null);
   const onReady = useCallback(() => setReady(true), []);
+  const onLanded = useCallback(() => setLanded(true), []);
   const onDone = useCallback(() => { introPlayed = true; setIntro(false); }, []);
   useScrollFx(root);
   return (
     <main ref={root}>
-      {intro && <Intro onReady={onReady} onDone={onDone} />}
-      <Hero entries={entries} source={source} ready={ready} />
+      {intro && <Intro onReady={onReady} onLanded={onLanded} onDone={onDone} />}
+      <Hero entries={entries} source={source} ready={ready} landed={landed} withIntro={intro} />
       <Question />
       <How />
       <Wall entries={entries} />

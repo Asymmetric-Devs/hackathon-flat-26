@@ -6,7 +6,7 @@ export default function Evidencia() {
   const rows = evidence.rows as { label: string; hash: string }[];
   const inst = deployed.instances as { [k: string]: { contractId: string; daySecs: number; graceDays: number; deployTx?: string } };
   return (
-    <main className="page dark">
+    <main className="page">
       <h1>Evidencia</h1>
       <p className="sub">Todo lo que Muro afirma se puede comprobar en Stellar Expert, sin creernos.</p>
       <div className="tbl-wrap">
@@ -31,7 +31,7 @@ export default function Evidencia() {
         </table>
       </div>
       <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)", letterSpacing: "-.025em", margin: "56px 0 12px" }}>Cómo verificar</h2>
-      <ol style={{ display: "grid", gap: 10, maxWidth: "60ch", color: "rgba(239,237,230,.8)", listStyle: "decimal", paddingLeft: 22 }}>
+      <ol style={{ display: "grid", gap: 10, maxWidth: "60ch", color: "var(--tinta-2)", listStyle: "decimal", paddingLeft: 22 }}>
         <li>Abrí un hash en Stellar Expert (red Testnet).</li>
         <li>Mirá la operación: es una invocación al contrato Muro, con la función y sus argumentos.</li>
         <li>Revisá los eventos: <span className="mono">hung</span>, <span className="mono">claimed</span>, <span className="mono">sold</span>, <span className="mono">returned</span>, <span className="mono">tipped</span>.</li>

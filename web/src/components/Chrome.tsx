@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { INSTANCE_KEY } from "../config";
 import { short } from "../format";
 import { lockScroll, scrollToId } from "../fx";
 import { href, Route } from "../router";
@@ -38,8 +37,8 @@ export function Nav({ route }: { route: Route }) {
     addEventListener("scroll", on, { passive: true });
     addEventListener("resize", on);
     on();
-    const t = setTimeout(theme, 300);
-    return () => { removeEventListener("scroll", on); removeEventListener("resize", on); cancelAnimationFrame(raf); clearTimeout(t); };
+    const ts = [80, 250, 600, 1200].map((ms) => setTimeout(theme, ms));
+    return () => { removeEventListener("scroll", on); removeEventListener("resize", on); cancelAnimationFrame(raf); ts.forEach(clearTimeout); };
   }, [route]);
   useEffect(() => { setHidden(false); setMenu(false); }, [route]);
   useEffect(() => {
@@ -63,7 +62,7 @@ export function Nav({ route }: { route: Route }) {
   return (
     <header className={`top${hidden && !open && !menu ? " away" : ""}${dark && !menu ? " dark" : ""}${solid ? " solid" : ""}${menu ? " menu-open" : ""}`}>
       <div className="bar">
-        <a className="brand" href={href.inicio} aria-label="Muro, inicio"><Mark className="logo-mark" /><Wordmark className="logo-word" drips={false} title="" /></a>
+        <a className="brand" href={href.inicio} aria-label="Muro, inicio"><Mark className="logo-mark" /><Wordmark className="logo-word" drips={false} tight rough="sm" title="" /></a>
         <nav className="nav" aria-label="Principal">
           <a href={href.galeria} aria-current={cur("galeria")}>Galería</a>
           <a href={href.publicar} aria-current={cur("publicar")}>Publicar una obra</a>
@@ -86,9 +85,9 @@ export function Nav({ route }: { route: Route }) {
                 </>
               ) : (
                 <>
-                  <button role="menuitem" onClick={() => { setOpen(false); connect("guest"); }}>Probar como invitado<small>Crea una cuenta de Testnet en este navegador y la fondea sola. Sin instalar nada.</small></button>
-                  <button role="menuitem" onClick={() => { setOpen(false); connect("freighter"); }}>Conectar Freighter<small>Tu billetera, en red Testnet.</small></button>
-                  <hr /><small style={{ padding: "0 12px 4px", color: "var(--tinta-2)" }}>Red de pruebas (Testnet, {INSTANCE_KEY}). Ningún dinero real participa.</small>
+                  <button role="menuitem" onClick={() => { setOpen(false); connect("guest"); }}>Probar como invitado<small>Crea una cuenta en este navegador, sin instalar nada.</small></button>
+                  <button role="menuitem" onClick={() => { setOpen(false); connect("freighter"); }}>Conectar Freighter<small>Con tu propia billetera.</small></button>
+                  
                 </>
               )}
             </div>
