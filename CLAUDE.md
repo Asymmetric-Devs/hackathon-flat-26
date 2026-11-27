@@ -6,7 +6,7 @@ Se trabaja en la rama `propuesta-tobias`. Entrega final: sábado 28/11 a las 23:
 
 ## Commits
 
-Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`…), atómicos (un cambio lógico por commit), mensajes cortos, sin línea `Co-Authored-By`.
+Conventional Commits con el tipo en inglés (`feat:`, `fix:`, `docs:`, `chore:`…) y la descripción en español, atómicos (un cambio lógico por commit), mensajes cortos, sin línea `Co-Authored-By`.
 
 ## Agent skills
 
