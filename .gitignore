@@ -1,0 +1,22 @@
+# Rust / contratos
+target/
+contracts/target/
+
+# Claves y configuración local (nunca commitear)
+.env
+.env.local
+*.env.local
+web/.env.local
+.stellar/
+.soroban/
+keys/
+*.secret
+
+# Web (Next.js)
+web/.data/
+web/.next/
+web/node_modules/
+node_modules/
+
+# Snapshots que generan los tests de soroban-sdk
+contracts/**/test_snapshots/
