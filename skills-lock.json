@@ -36,6 +36,20 @@
       "skillPath": "skills/data/SKILL.md",
       "computedHash": "235b6e9ec2ce6c6375cd8fdf3c9d8c9886e259fd39f9b8f2748349d2da21bcc3"
     },
+    "emil-design-eng": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "e1b377ccde1d32743d1d3f7d8626629deb8055c9114d180c184697928cc66cc6"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "commit": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "83485963700bcf11d5bf78118facb301676b69d918fee2e45a95e7f1a2840f6c"
+    },
     "smart-contracts": {
       "source": "stellar/stellar-dev-skill",
       "commit": "9098e8ba24de3299cda24b21bb5cb80aa1cb5d2b",
@@ -49,6 +63,13 @@
       "sourceType": "github",
       "skillPath": "skills/standards/SKILL.md",
       "computedHash": "e7629e4d50d9bd2ece79e94af181d1ffe76f3d9767214f015b8e4685382080e7"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "5a37a6329fbad3666c3207392a6a7c0110e92efb",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "5994e4cfd86144903d2ba750f862b9e36af15e3297aac983679e347b99f6cb71"
     },
     "zk-proofs": {
       "source": "stellar/stellar-dev-skill",
