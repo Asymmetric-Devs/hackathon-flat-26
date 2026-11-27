@@ -603,6 +603,11 @@ h3 {
   justify-self: start;
 }
 
+.hero-seal svg {
+  width: clamp(8.5rem, 38vw, 13.75rem);
+  height: auto;
+}
+
 @media (min-width: 52rem) {
   .hero-seal {
     justify-self: end;
