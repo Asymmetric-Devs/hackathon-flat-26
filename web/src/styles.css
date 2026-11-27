@@ -541,3 +541,6 @@ footer.foot { padding-bottom: 0; }
 #pregunta .q-side .lead { font-size: clamp(1.05rem, 1.35vw, 1.25rem); max-width: 36ch; }
 #pregunta .twocol { columns: 2 22ch; color: rgba(251, 250, 245, .78); font-size: 1rem; line-height: 1.55; }
 @media (max-width: 900px) { #pregunta .q-side { grid-template-columns: 1fr; } }
+
+/* el lugar de la barra de scroll siempre está reservado: bloquear el scroll (intro, visor) no cambia el ancho */
+html { scrollbar-gutter: stable; overflow-x: clip; }

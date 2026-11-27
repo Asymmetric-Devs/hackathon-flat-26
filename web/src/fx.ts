@@ -24,7 +24,12 @@ export function stopSmooth() {
   lenis?.destroy();
   lenis = null; tick = null;
 }
-export const lockScroll = (on: boolean) => { if (on) lenis?.stop(); else lenis?.start(); document.documentElement.style.overflow = on ? "hidden" : ""; };
+export const lockScroll = (on: boolean) => {
+  if (on) lenis?.stop(); else lenis?.start();
+  document.documentElement.style.overflow = on ? "hidden" : "";
+  // al desbloquear, recalcular los anclajes (miden el ancho de la ventana)
+  if (!on) requestAnimationFrame(() => requestAnimationFrame(() => ScrollTrigger.refresh()));
+};
 export const toTop = () => { if (lenis) lenis.scrollTo(0, { immediate: true, force: true }); else window.scrollTo(0, 0); };
 export const scrollToId = (id: string) => {
   const el = document.getElementById(id); if (!el) return;
