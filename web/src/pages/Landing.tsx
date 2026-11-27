@@ -284,9 +284,9 @@ function Foot() {
       <div className="foot-grid">
         <div><b>Muro</b><br />Hackathon FLAT 2026 · BAF × Stellar<br />Mendoza, 26 al 28 de noviembre</div>
         <div>Obras de dominio público, con fuente en <a className="link" href="https://commons.wikimedia.org" target="_blank" rel="noreferrer">Wikimedia Commons</a>.<br />Los datos de cada obra se contrastan antes de usarse fuera de la demo.</div>
-        <div><a className="link" href={href.galeria}>Galería</a><br /><a className="link" href={href.publicar}>Publicar una obra</a><br /><a className="link" href={href.evidencia}>Evidencia</a></div>
+        <div><nav className="foot-links" aria-label="Pie"><a href={href.galeria}>Galería</a><a href={href.publicar}>Publicar una obra</a><a href={href.evidencia}>Evidencia</a></nav></div>
       </div>
-      <div className="foot-word" aria-hidden="true"><Wordmark className="fword" rough title="" /></div>
+      <div className="foot-word" aria-hidden="true"><Wordmark className="fword" rough tight title="" /></div>
     </footer>
   );
 }

@@ -505,3 +505,12 @@ small.bad { color: #c24a22; font-weight: 500; }
 .intro .ink { position: absolute; inset: 0; background: var(--crema); color: var(--asfalto); }
 .intro .iwrap { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 4vw 6vh; pointer-events: none; }
 .iword { width: min(80vw, 1180px); height: auto; overflow: visible; }
+
+/* pie: la palabra se corta a media altura y la página termina ahí */
+footer.foot { padding-bottom: 0; }
+.foot-word { margin: clamp(48px, 7vw, 96px) 0 0; aspect-ratio: 4339 / 700; overflow: hidden; }
+.fword { display: block; width: 100%; height: auto; }
+.foot-links { display: grid; gap: 6px; justify-items: end; }
+.foot-links a { font: 600 .78rem var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--papel); opacity: .8; transition: opacity .2s, color .2s; }
+.foot-links a:hover { opacity: 1; color: var(--ac); }
+@media (max-width: 700px) { .foot-links { justify-items: start; } }
