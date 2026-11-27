@@ -34,7 +34,8 @@ function Plaque({ e, id, busy, setBusy, amt, setAmt, signer, connect, refresh, t
   return (
     <main className="plaque">
       <article className="plaque-card">
-        <div style={{ maxWidth: 260, marginBottom: 24 }}><Painting r={r} /></div>
+        <div className="pc-art"><Painting r={r} eager /></div>
+        <div className="pc-info">
         <h1>{r.title}</h1>
         <p style={{ marginTop: 8, color: "var(--tinta-2)" }}>{r.artist}{r.year ? `, ${r.year}` : ""}{r.medium ? ` · ${r.medium}` : ""}</p>
         {r.epigraph && <p className="epi" style={{ fontSize: "1.05rem", margin: "18px 0 0" }}>{r.epigraph}</p>}
@@ -52,6 +53,7 @@ function Plaque({ e, id, busy, setBusy, amt, setAmt, signer, connect, refresh, t
           <p style={{ fontSize: ".8rem", color: "var(--tinta-2)", marginTop: 12 }}>La primera vez se crea una cuenta de invitado de Testnet en tu navegador, sin instalar nada y sin dinero real.</p>
         </div>
         <p style={{ marginTop: 22, fontSize: ".85rem" }}><a className="link" href={href.obra(id)}>Ver la obra completa y su currículum</a></p>
+        </div>
       </article>
     </main>
   );

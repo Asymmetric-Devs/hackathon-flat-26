@@ -7,7 +7,7 @@
   /* Pared de calle, criterio de estudio: crema, asfalto, papel y un solo acento naranja. */
   --crema: #f6f1e5; --crema-2: #ece5d3; --papel: #fdfbf4; --asfalto: #0d1024; --asfalto-2: color-mix(in srgb, var(--asfalto) 86%, #fff);
   --tinta: #0d1024; --tinta-2: #4b4a44; --gris: #6b6a62;
-  --ac: #8f9bff; --ac-2: #7a87f2; --on: #0d1024; --ac-lit: #8f9bff;
+  --ac: #e8d282; --ac-2: #ccb972; --on: #09090d; --ac-lit: #e8d282;
   --display: "Big Shoulders Display Variable", "Arial Narrow", system-ui, sans-serif;
   --sans: "Geist Variable", system-ui, -apple-system, sans-serif;
   --mono: "Geist Mono Variable", ui-monospace, monospace;
@@ -266,7 +266,7 @@ footer.foot .cite { margin-top: 18px; font: 450 .8rem var(--mono); color: var(--
 .notice { font-size: .9rem; padding: 12px 16px; background: #fff0c9; border-radius: 12px; }
 
 .plaque { min-height: 100svh; background-color: var(--crema); color: var(--tinta); display: grid; place-items: center; padding: 28px var(--gutter); }
-.plaque-card { width: min(520px, 100%); background: #fff; border-radius: 24px; padding: clamp(24px, 6vw, 42px); box-shadow: 0 0 0 1px rgba(18, 18, 18, .06), 0 50px 80px -40px rgba(18, 18, 18, .55); }
+.plaque-card { width: min(1040px, 100%); background: #fff; border-radius: 24px; padding: clamp(24px, 6vw, 42px); box-shadow: 0 0 0 1px rgba(18, 18, 18, .06), 0 50px 80px -40px rgba(18, 18, 18, .55); }
 .plaque-card h1 { font-size: clamp(3.4rem, 15vw, 5.4rem); }
 .plaque-card .btn { width: 100%; }
 .skeleton { background: linear-gradient(90deg, var(--crema-2), var(--crema), var(--crema-2)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: 12px; }
@@ -499,7 +499,8 @@ small.bad { color: #c24a22; font-weight: 500; }
 
 /* intro: solo la palabra, sobre el mismo fondo que la página */
 .intro { position: fixed; inset: 0; z-index: 200; overflow: hidden; touch-action: none; }
-.intro .ink { position: absolute; inset: 0; background: var(--crema); color: var(--asfalto); }
+.intro .ink { position: absolute; inset: 0; color: var(--asfalto); }
+.intro .ink-bg { position: absolute; inset: 0; background-color: var(--crema); }
 .intro .iwrap { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 4vw 6vh; pointer-events: none; }
 .iword { width: min(80vw, 1180px); height: auto; overflow: visible; }
 
@@ -560,3 +561,79 @@ html { scrollbar-gutter: stable; overflow-x: clip; }
 .dot { --d: clamp(50px, 4.6vw, 68px); width: var(--d); height: var(--d); right: calc(var(--d) * -.2); top: calc(var(--d) * -.2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 0; font-size: calc(var(--d) * .16); line-height: 1; text-align: center; }
 .dot b { display: block; font-size: 2.15em; line-height: .86; letter-spacing: 0; transform: translateY(.04em); }
 .dot small { display: block; font: 600 .8em var(--mono); line-height: 1; margin-top: .22em; white-space: nowrap; letter-spacing: -.02em; }
+
+/* ---------- tema "acuarela": manchas suaves de color sobre el lienzo (prueba, sin commit) ---------- */
+:root[data-acento="acuarela"] {
+  --crema: #fbf6ee; --crema-2: #f1e6d6; --papel: #fffdf8;
+  --concreto: var(--crema); --concreto-2: var(--crema-2); --cal: var(--crema); --cal-2: var(--crema-2); --yeso: var(--papel);
+}
+:root[data-acento="acuarela"] .hero.concrete,
+:root[data-acento="acuarela"] .page:not(.dark),
+:root[data-acento="acuarela"] .sec.light {
+  background-image:
+    radial-gradient(38% 34% at 16% 20%, rgba(255, 74, 43, .26), transparent 70%),
+    radial-gradient(34% 40% at 86% 30%, rgba(60, 80, 230, .22), transparent 70%),
+    radial-gradient(40% 36% at 62% 92%, rgba(255, 196, 40, .30), transparent 70%);
+}
+
+/* ---------- tema "lila-pastel": violeta clarito, más negro, papel claro con vetas casi invisibles (prueba, sin commit) ---------- */
+:root[data-acento="lila-pastel"] {
+  --crema: #fdfbf7; --crema-2: #f3f0e9; --papel: #fffefc; --tinta-2: #3d3c44;
+  --concreto: var(--crema); --concreto-2: var(--crema-2); --cal: var(--crema); --cal-2: var(--crema-2); --yeso: var(--papel);
+  --vetas: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.02 .5' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .32  0 0 0 0 .28  0 0 0 .12 -.033'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>");
+}
+:root[data-acento="lila-pastel"] .hero.concrete,
+:root[data-acento="lila-pastel"] .page:not(.dark),
+:root[data-acento="lila-pastel"] .sec.light,
+:root[data-acento="lila-pastel"] .plaque,
+:root[data-acento="lila-pastel"] .intro .ink-bg {
+  background-image: var(--vetas), radial-gradient(40% 34% at 14% 18%, rgba(232, 210, 130, .22), transparent 70%);
+  background-size: 600px 600px, auto;
+}
+:root[data-acento="lila-pastel"] .logo-word .o { fill: var(--ac); }
+
+/* ---------- cartela: vista al escanear (ancha en pantallas grandes) ---------- */
+.plaque-card { display: grid; gap: 28px; }
+.pc-art { display: grid; place-items: center; }
+.pc-art > * { width: 100%; max-width: 420px; }
+.pc-info { min-width: 0; }
+.plaque-card .actions { gap: 8px; }
+@media (min-width: 860px) {
+  .plaque-card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 64px); align-items: center; padding: clamp(36px, 4.5vw, 64px); }
+  .pc-art { background: var(--crema); border-radius: 18px; padding: clamp(24px, 3.5vw, 48px); align-self: center; }
+  .pc-art > * { max-width: none; }
+  .plaque-card h1 { font-size: clamp(3.4rem, 6vw, 5.6rem); }
+}
+
+/* ---------- cartela imprimible (ficha de la obra) ---------- */
+.label-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+.label-print { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; background: #fff; color: #09090d; border-radius: 6px; padding: 28px 30px; box-shadow: 0 0 0 1px rgba(18, 18, 18, .08), 0 30px 50px -30px rgba(18, 18, 18, .45); }
+.label-print small { font: 600 .66rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #6b6a62; }
+.label-print h3 { margin: 12px 0 6px; font: 900 clamp(1.7rem, 2.4vw, 2.2rem)/.95 var(--display); text-transform: uppercase; }
+.label-print p { margin: 0; font-size: .92rem; color: #3d3c44; }
+.label-print .lp-cta { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(18, 18, 18, .14); font-size: .82rem; }
+.label-print .lp-qr svg { display: block; width: 112px; height: 112px; }
+.label-actions { display: flex; flex-wrap: wrap; gap: 10px; align-content: center; }
+.label-actions .btn { white-space: nowrap; }
+.label-actions p { flex-basis: 100%; margin: 6px 0 0; font-size: .85rem; color: var(--tinta-2); max-width: 44ch; }
+@media (max-width: 520px) { .label-print { grid-template-columns: 1fr; } .label-print .lp-qr svg { width: 160px; height: 160px; } }
+.print-root { display: none; }
+@media print {
+  @page { size: A5 landscape; margin: 0; }
+  html, body { height: auto !important; overflow: visible !important; background: #fff !important; }
+  body::before { display: none !important; }
+  body > *:not(.print-root) { display: none !important; }
+  .print-root { display: block; padding: 12mm; }
+  .print-root .label-print { box-shadow: none; border: 2px solid #09090d; border-radius: 0; padding: 10mm; gap: 10mm; grid-template-columns: minmax(0, 1fr) auto !important; break-inside: avoid; page-break-inside: avoid; }
+  .label-print h3 { font-size: 40pt; }
+  .label-print p { font-size: 12pt; }
+  .label-print .lp-cta { font-size: 11pt; }
+  .label-print .lp-qr svg { width: 52mm; height: 52mm; }
+}
+
+/* ---------- ruedita de color ---------- */
+.cw { position: fixed; left: 18px; bottom: 18px; z-index: 90; width: 46px; height: 46px; border-radius: 50%; padding: 0; cursor: pointer; border: 3px solid #fff; background: conic-gradient(#ff5d5d, #ffb84d, #f4f063, #5be37d, #4dd0e1, #5a7bff, #b56bff, #ff6bd0, #ff5d5d); box-shadow: 0 0 0 1px rgba(9, 9, 13, .18), 0 10px 22px -8px rgba(9, 9, 13, .5); transition: transform .2s var(--ease); overflow: hidden; }
+.cw:hover { transform: scale(1.08) rotate(25deg); }
+.cw input { position: absolute; inset: -10px; width: 70px; height: 70px; opacity: 0; cursor: pointer; }
+.cw-reset { position: fixed; left: 72px; bottom: 26px; z-index: 90; padding: .4em .85em; border-radius: 999px; background: #fff; color: #09090d; font: 600 .78rem/1 var(--sans); box-shadow: 0 0 0 1px rgba(9, 9, 13, .14), 0 8px 18px -8px rgba(9, 9, 13, .4); }
+@media print { .cw, .cw-reset { display: none !important; } }

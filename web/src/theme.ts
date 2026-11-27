@@ -5,6 +5,8 @@
  */
 export type Accent = { name: string; label: string; c: string; c2: string; on: string; ink: string; lit: string };
 export const ACCENTS: Accent[] = [
+  { name: "lila-pastel", label: "Dorado suave", c: "#e8d282", c2: "#ccb972", on: "#09090d", ink: "#09090d", lit: "#e8d282" },
+  { name: "acuarela", label: "Acuarela naranja y azul", c: "#ff4a2b", c2: "#e03a1d", on: "#ffffff", ink: "#0f1a3a", lit: "#ff6a4d" },
   { name: "lila", label: "Violeta suave", c: "#8f9bff", c2: "#7a87f2", on: "#0d1024", ink: "#0d1024", lit: "#8f9bff" },
   { name: "ultramar", label: "Ultramar", c: "#2236ff", c2: "#1828d6", on: "#ffffff", ink: "#0d1024", lit: "#8f9bff" },
   { name: "bermellon", label: "Bermellón", c: "#e8341c", c2: "#c92a14", on: "#ffffff", ink: "#171210", lit: "#ff6a52" },
@@ -13,7 +15,7 @@ export const ACCENTS: Accent[] = [
   { name: "viridian", label: "Viridian", c: "#0a8f68", c2: "#07765a", on: "#ffffff", ink: "#0e1914", lit: "#2fd0a0" },
   { name: "naranja", label: "Naranja", c: "#ff7a00", c2: "#e86c00", on: "#121212", ink: "#121212", lit: "#ff7a00" },
 ];
-const KEY = "muro.acento.v6";
+const KEY = "muro.acento.v9";
 
 export function currentAccent(): string {
   try {
@@ -31,4 +33,26 @@ export function applyAccent(name: string) {
   r.setProperty("--ac-lit", a.lit); r.setProperty("--tinta", a.ink); r.setProperty("--asfalto", a.ink);
   document.documentElement.dataset.acento = a.name;
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", a.ink);
+  const mine = savedColor(); if (mine && name === currentAccent()) applyCustom(mine);
+}
+
+/* ---------- color propio (la ruedita de color) ---------- */
+const CUSTOM = "muro.color.propio";
+const mix = (h: string, to: number, t: number) => {
+  const n = parseInt(h.slice(1), 16), ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => Math.round(v + (to - v) * t));
+  return "#" + ch.map((v) => v.toString(16).padStart(2, "0")).join("");
+};
+const lum = (h: string) => { const n = parseInt(h.slice(1), 16); return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255; };
+export function savedColor(): string | null {
+  try { const v = localStorage.getItem(CUSTOM); return v && /^#[0-9a-f]{6}$/i.test(v) ? v : null; } catch { return null; }
+}
+/** Cambia el color principal (botones, resaltados, círculos de precio, la O del logo) por el que elija la persona. */
+export function applyCustom(hex: string | null) {
+  const r = document.documentElement.style;
+  try { if (hex) localStorage.setItem(CUSTOM, hex); else localStorage.removeItem(CUSTOM); } catch { /* sin storage */ }
+  if (!hex) { applyAccent(currentAccent()); return; }
+  const dark = lum(hex) < 0.5;
+  r.setProperty("--ac", hex); r.setProperty("--ac-2", mix(hex, dark ? 255 : 0, dark ? 0.14 : 0.12));
+  r.setProperty("--on", dark ? "#ffffff" : "#09090d");
+  r.setProperty("--ac-lit", lum(hex) < 0.35 ? mix(hex, 255, 0.4) : hex);
 }

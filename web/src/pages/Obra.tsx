@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import qrcode from "qrcode-generator";
 import { buyNow, claim, confirmReturn, hang, seize, stop, tip, topUp } from "../chain";
 import { Entry } from "../chain";
@@ -31,6 +32,39 @@ function Detail({ e }: { e: Entry }) {
   const graceSecs = INSTANCE.graceDays * DAY_SECS;
   const plaqueUrl = `${location.origin}${location.pathname}#/cartela/${w.id}`;
   const qr = useMemo(() => { const q = qrcode(0, "M"); q.addData(plaqueUrl); q.make(); return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }, [plaqueUrl]);
+  /** QR con zona de silencio (4 módulos), listo para imprimir o bajar como imagen. */
+  const qrFile = useMemo(() => { const q = qrcode(0, "M"); q.addData(plaqueUrl); q.make(); return q.createSvgTag({ cellSize: 4, margin: 16, scalable: true }).replace("<svg ", `<svg width="1024" height="1024" shape-rendering="crispEdges" `); }, [plaqueUrl]);
+  const qrImage = () => new Promise<HTMLImageElement>((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrFile)}`; });
+  const download = (c: HTMLCanvasElement, name: string) => { const a = document.createElement("a"); a.href = c.toDataURL("image/png"); a.download = name; a.click(); };
+  const savePng = async () => {
+    const q = await qrImage();
+    const c = document.createElement("canvas"); c.width = c.height = 1024;
+    const x = c.getContext("2d")!; x.fillStyle = "#fff"; x.fillRect(0, 0, 1024, 1024); x.drawImage(q, 0, 0, 1024, 1024);
+    download(c, `muro-qr-${w.id}.png`);
+  };
+  /** La cartela entera como imagen (A5 apaisado a 150 ppp), lista para imprimir en cualquier lado sin encabezados del navegador. */
+  const saveLabel = async () => {
+    const q = await qrImage();
+    try { await document.fonts.load('900 100px "Big Shoulders Display Variable"'); } catch { /* usa la tipografía de reserva */ }
+    const W = 1748, H = 1240, P = 110;
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d")!;
+    x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
+    x.strokeStyle = "#09090d"; x.lineWidth = 8; x.strokeRect(40, 40, W - 80, H - 80);
+    const qs = 520, qx = W - P - qs, tw = qx - P - 60;
+    x.drawImage(q, qx, (H - qs) / 2, qs, qs);
+    const wrap = (t: string, font: string, max: number) => { x.font = font; const out: string[] = []; let line = ""; for (const wd of t.split(" ")) { const tr = line ? `${line} ${wd}` : wd; if (x.measureText(tr).width > max && line) { out.push(line); line = wd; } else line = tr; } if (line) out.push(line); return out; };
+    let y = P + 40;
+    x.fillStyle = "#6b6a62"; x.font = '600 26px "Geist Mono Variable", monospace'; x.fillText("MURO · EN ESTA PARED", P, y); y += 40;
+    x.fillStyle = "#09090d";
+    const tf = '900 150px "Big Shoulders Display Variable", "Arial Narrow", sans-serif';
+    for (const ln of wrap(r.title.toUpperCase(), tf, tw)) { y += 138; x.font = tf; x.fillText(ln, P, y); }
+    y += 52; x.fillStyle = "#3d3c44";
+    for (const ln of wrap(`${r.artist}${r.year ? `, ${r.year}` : ""}${r.medium ? ` · ${r.medium}` : ""}`, '400 38px "Geist Variable", sans-serif', tw)) { x.font = '400 38px "Geist Variable", sans-serif'; x.fillText(ln, P, y); y += 50; }
+    y += 20; x.fillStyle = "rgba(18,18,18,.18)"; x.fillRect(P, y, tw, 3); y += 52; x.fillStyle = "#3d3c44";
+    for (const ln of wrap("Escaneá y dejale una propina al artista. Cada día colgada cuenta como cuota de su precio.", '400 34px "Geist Variable", sans-serif', tw)) { x.font = '400 34px "Geist Variable", sans-serif'; x.fillText(ln, P, y); y += 46; }
+    download(c, `muro-cartela-${w.id}.png`);
+  };
 
   const run = async (key: string, ok: string, fn: (s: Signer) => Promise<string>) => {
     setBusy(key);
@@ -45,6 +79,17 @@ function Detail({ e }: { e: Entry }) {
   const canSeizeHung = !!e.lease && w.status === "Hung" && l.runsOutIn !== null && l.runsOutIn <= -graceSecs;
   const canSeizeRet = !!e.lease && w.status === "Returning" && now >= Number(e.lease.ended_at) + graceSecs;
 
+  const label = (
+    <article className="label-print" aria-label="Cartela para imprimir">
+              <div className="lp-text">
+                <small>Muro · en esta pared</small>
+                <h3>{r.title}</h3>
+                <p>{r.artist}{r.year ? `, ${r.year}` : ""}{r.medium ? ` · ${r.medium}` : ""}</p>
+                <p className="lp-cta">Escaneá y dejale una propina al artista. Cada día colgada cuenta como cuota de su precio.</p>
+              </div>
+              <div className="lp-qr" dangerouslySetInnerHTML={{ __html: qr }} aria-label="Código QR de la cartela" role="img" />
+            </article>
+  );
   return (
     <main className="page">
       <p style={{ marginBottom: 26 }}><a className="link" href={href.galeria}>← La galería</a></p>
@@ -149,14 +194,20 @@ function Detail({ e }: { e: Entry }) {
             {e.history.length === 0 && !l.hung && <li><h4>Todavía sin exposiciones</h4><p>La primera que se pague va a quedar acá, con fecha, monto y espacio. No se puede editar ni borrar.</p></li>}
           </ol>
         </section>
-        <section aria-labelledby="h-qr">
-          <h2 id="h-qr" className="serif" style={{ fontSize: "clamp(1.8rem, 3vw, 2.8rem)", letterSpacing: "-.025em", marginBottom: 20 }}>La cartela de la pared</h2>
-          <div className="qr">
-            <div dangerouslySetInnerHTML={{ __html: qr }} aria-label="Código QR de la cartela" role="img" />
-            <p className="hint" style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Imprimí este código y pegalo junto a la obra. Quien lo escanee ve cuánto lleva cobrado y puede dejarle una propina al artista, sin instalar nada. <a className="link" href={href.cartela(w.id)}>Abrir la cartela</a></p>
+        <section aria-labelledby="h-qr" className="label-sec">
+          <h2 id="h-qr" className="serif" style={{ fontSize: "clamp(1.8rem, 3vw, 2.8rem)", letterSpacing: "-.025em", marginBottom: 8 }}>La cartela de la pared</h2>
+          <p className="hint" style={{ color: "var(--tinta-2)", maxWidth: "58ch", marginBottom: 22 }}>Es la tarjetita que va junto a la obra, como en un museo. Quien escanee el código ve cuánto lleva cobrado y le puede dejar una propina al artista, sin instalar nada. <a className="link" href={href.cartela(w.id)}>Ver cómo se ve al escanear</a>.</p>
+          <div className="label-wrap">
+            {label}
+            <div className="label-actions">
+              <button className="btn sm" type="button" onClick={() => window.print()}>Imprimir</button>
+              <button className="btn sm line" type="button" onClick={saveLabel}>Bajar cartela</button>
+              <button className="btn sm line" type="button" onClick={savePng}>Bajar solo el QR</button>
+            </div>
           </div>
         </section>
       </div>
+      {createPortal(<div className="print-root" aria-hidden="true">{label}</div>, document.body)}
     </main>
   );
 }

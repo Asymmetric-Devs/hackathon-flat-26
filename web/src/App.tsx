@@ -7,6 +7,7 @@ import Landing from "./pages/Landing";
 import Obra from "./pages/Obra";
 import Cuenta from "./pages/Cuenta";
 import Publicar from "./pages/Publicar";
+import { ColorWheel } from "./components/ColorWheel";
 import { startSmooth, stopSmooth } from "./fx";
 import { initRouter, useRoute } from "./router";
 import { StoreProvider } from "./store";
@@ -25,6 +26,7 @@ function Pages() {
       {r.page === "evidencia" && <Evidencia />}
       {r.page === "cuenta" && <Cuenta />}
       <Toasts />
+      {r.page !== "cartela" && <ColorWheel />}
     </>
   );
 }

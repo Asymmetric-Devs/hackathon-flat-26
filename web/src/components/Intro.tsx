@@ -20,7 +20,7 @@ export function Intro({ onReady, onLanded, onDone }: { onReady: () => void; onLa
       const svg = el.querySelector<SVGSVGElement>(".iword")!;
       const brushes = el.querySelectorAll<SVGElement>(".iword .brush");
       const drips = el.querySelectorAll<SVGElement>(".iword .drip");
-      const ink = el.querySelector<HTMLElement>(".ink")!;
+      const ink = el.querySelector<HTMLElement>(".ink-bg")!;
       gsap.set(brushes, { strokeDashoffset: 1 });
       gsap.set(drips, { y: (_i: number, t: Element) => -(Number((t as SVGElement).getAttribute("data-len")) + 80) });
       const tl = gsap.timeline({ onComplete: () => { lockScroll(false); onDone(); } });
@@ -46,7 +46,7 @@ export function Intro({ onReady, onLanded, onDone }: { onReady: () => void; onLa
       }, 2.35);
       tl.to(svg, { x: () => tx, y: () => ty, scale: () => ts, duration: 1, ease: "expo.inOut" }, 2.4);
       tl.to(drips, { opacity: 0, duration: 0.4, ease: "power1.out" }, 2.4);
-      tl.to(ink, { backgroundColor: "rgba(240,236,225,0)", duration: 0.75, ease: "power2.out" }, 2.45);
+      tl.to(ink, { opacity: 0, duration: 0.75, ease: "power2.out" }, 2.45);
       tl.call(onLanded, [], 3.38);
       tl.set(el, { opacity: 0 }, 3.42);
     }, el);
@@ -60,6 +60,7 @@ export function Intro({ onReady, onLanded, onDone }: { onReady: () => void; onLa
   return (
     <div className="intro" ref={root} role="presentation">
       <div className="ink">
+        <div className="ink-bg" />
         <div className="iwrap"><Wordmark className="iword"  paint title="" /></div>
       </div>
     </div>
