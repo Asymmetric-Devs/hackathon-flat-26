@@ -47,7 +47,7 @@ function Hero({ entries, source, ready, landed, withIntro }: { entries: Entry[];
 
   // Estado inicial: todo escondido antes del primer pintado, a la espera de la intro.
   useLayoutEffect(() => {
-    if (reduced()) return;
+    if (reduced() || !withIntro) return;
     const q = gsap.utils.selector(root.current!);
     gsap.set(q(".ln-in"), { yPercent: 118 });
     gsap.set(q(".hero-copy mark"), { clipPath: "inset(0 100% 0 0)" });
@@ -83,9 +83,11 @@ function Hero({ entries, source, ready, landed, withIntro }: { entries: Entry[];
       gsap.set(el.querySelectorAll(".hung"), { opacity: 1 });
       return;
     }
+    if (!withIntro) gsap.set(el.querySelectorAll(".hung"), { opacity: 1 });
     const stage = el.querySelector<HTMLElement>(".hang-stage")!;
     const ctx = gsap.context(() => {
       const q = gsap.utils.selector(el);
+      if (!withIntro) return; // al volver a la portada no se repite la entrada
       const impact = (h: HTMLElement) => {
         gsap.fromTo(h, { scaleY: 0.94, scaleX: 1.025, transformOrigin: "50% 100%" }, { scaleY: 1, scaleX: 1, duration: 0.85, ease: "elastic.out(1,.35)" });
         gsap.fromTo(stage, { x: 0, y: 0 }, { x: gsap.utils.random(-5, 5), y: gsap.utils.random(2, 5), duration: 0.04, repeat: 3, yoyo: true, ease: "none", onComplete: () => { gsap.set(stage, { x: 0, y: 0 }); } });

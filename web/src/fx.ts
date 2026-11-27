@@ -30,6 +30,7 @@ export const lockScroll = (on: boolean) => {
   // al desbloquear, recalcular los anclajes (miden el ancho de la ventana)
   if (!on) requestAnimationFrame(() => requestAnimationFrame(() => ScrollTrigger.refresh()));
 };
+export const scrollJump = (y: number) => { if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y); };
 export const toTop = () => { if (lenis) lenis.scrollTo(0, { immediate: true, force: true }); else window.scrollTo(0, 0); };
 export const scrollToId = (id: string) => {
   const el = document.getElementById(id); if (!el) return;

@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
-import { reduced, toTop } from "./fx";
+import { reduced, scrollJump, toTop } from "./fx";
 
 export type Route =
   | { page: "inicio" } | { page: "galeria" } | { page: "obra"; id: number }
@@ -37,6 +37,10 @@ const emit = () => subs.forEach((f) => f());
 const same = (a: Route, b: Route) => JSON.stringify(a) === JSON.stringify(b);
 const heroId = (r: Route) => (r.page === "obra" ? r.id : null);
 const NAME = "hero";
+/** Posición de scroll de cada página al salir, para volver exactamente donde estaba la obra. */
+const scrollPos = new Map<string, number>();
+const key = (r: Route) => (r.page === "obra" ? `obra/${r.id}` : r.page);
+const anyWork = (id: number) => document.querySelector<HTMLElement>(`[data-work="${id}"]:not([data-hero])`);
 
 function clearNames() {
   document.querySelectorAll<HTMLElement>("[data-vt]").forEach((e) => { e.style.viewTransitionName = ""; e.removeAttribute("data-vt"); });
@@ -56,10 +60,18 @@ function go(next: Route, source?: Element | null) {
   const prev = current;
   if (same(next, target)) return;
   target = next;
+  scrollPos.set(key(prev), scrollY);
   const swap = () => {
     flushSync(() => { current = next; emit(); });
-    toTop();
     const nid = heroId(next), pid = heroId(prev);
+    // Al volver a un listado: se restaura el scroll de antes y, si la obra a la que se vuelve
+    // no queda a la vista (las de abajo de la galería), se centra. Si no, no hay a qué animar.
+    const saved = scrollPos.get(key(next));
+    if (nid === null && saved !== undefined) scrollJump(saved); else toTop();
+    if (nid === null && pid !== null && !visibleWork(pid)) {
+      const el = anyWork(pid);
+      if (el) { const b = el.getBoundingClientRect(); scrollJump(Math.max(0, scrollY + b.top - (innerHeight - b.height) / 2)); }
+    }
     if (nid !== null) tag(document.querySelector("[data-hero]"));
     else if (pid !== null) tag(visibleWork(pid));
     else clearNames();

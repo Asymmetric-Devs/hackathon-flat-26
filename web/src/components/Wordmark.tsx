@@ -10,7 +10,19 @@ import { WM } from "./wordmarkData";
  *   anima con stroke-dashoffset para que la letra parezca pintarse.  - `tight`: sin margen abajo.
  * Cada letra es un <path class="l">; los chorreados son <g class="drip">.
  */
-const DRIP_ROOM = 820;
+/** Chorreado clásico: tallo parejo que se afina un poco antes de una gota redonda. Liso, como pintura fresca. */
+const DRIPS = [
+  { x: 215, len: 400, w: 112, o: false },
+  { x: 1953, len: 560, w: 124, o: false },
+  { x: 3195, len: 270, w: 108, o: false },
+  { x: 3690, len: 480, w: 118, o: true },
+  { x: 4010, len: 210, w: 100, o: true },
+];
+function dripPath(cx: number, len: number, w: number) {
+  const r = w * 0.74, by = len - r, yn = by - r * 1.55, y0 = -90, h = w / 2, hn = w * 0.4;
+  return `M${cx - h} ${y0} L${cx - h} ${yn - 40} Q${cx - hn} ${yn} ${cx - hn} ${by - r * 1.05} Q${cx - hn} ${by - r * 0.75} ${cx - r} ${by} A${r} ${r} 0 0 0 ${cx + r} ${by} Q${cx + hn} ${by - r * 0.75} ${cx + hn} ${by - r * 1.05} Q${cx + hn} ${yn} ${cx + h} ${yn - 40} L${cx + h} ${y0} Z`;
+}
+const DRIP_ROOM = 760;
 
 /** Zigzag de pincel que cubre la caja de una letra, de arriba hacia abajo. */
 function brush(x0: number, x1: number) {
@@ -31,6 +43,7 @@ export function Wordmark({ className = "wordmark", drips = true, clip = false, p
   return (
     <svg className={className} viewBox={`0 ${-WM.cap} ${WM.w} ${h}`} role={title ? "img" : "presentation"} aria-label={title || undefined} aria-hidden={title ? undefined : true}>
       <defs>
+        <clipPath id={`${uid}d`}><rect x={-60} y={-70} width={WM.w + 120} height={900} /></clipPath>
         <clipPath id={`${uid}c`}><rect x={-20} y={-WM.cap - 20} width={WM.w + 40} height={WM.cap + 20} /></clipPath>
         {paint && WM.letters.map((l, i) => (
           <mask key={l.ch} id={`${uid}m${i}`} maskUnits="userSpaceOnUse" x={l.x0 - 160} y={-WM.cap - 120} width={l.x1 - l.x0 + 320} height={WM.cap + 300}>
@@ -43,9 +56,9 @@ export function Wordmark({ className = "wordmark", drips = true, clip = false, p
           {WM.letters.map((l, i) => <path key={l.ch} className={i === 3 ? "l o" : "l"} d={l.d} mask={paint ? `url(#${uid}m${i})` : undefined} />)}
         </g>
         {drips && !tight && (
-          <g className="drips">
-            {WM.drips.map((d, i) => (
-              <g key={i} className={`drip${d.o ? " o" : ""}`}><path d={d.d} /></g>
+          <g className="drips" clipPath={`url(#${uid}d)`}>
+            {DRIPS.map((d, i) => (
+              <g key={i} className={`drip${d.o ? " o" : ""}`} data-len={d.len}><path d={dripPath(d.x, d.len, d.w)} /></g>
             ))}
           </g>
         )}

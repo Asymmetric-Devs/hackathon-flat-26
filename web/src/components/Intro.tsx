@@ -22,13 +22,13 @@ export function Intro({ onReady, onLanded, onDone }: { onReady: () => void; onLa
       const drips = el.querySelectorAll<SVGElement>(".iword .drip");
       const ink = el.querySelector<HTMLElement>(".ink")!;
       gsap.set(brushes, { strokeDashoffset: 1 });
-      gsap.set(drips, { scaleY: 0, transformOrigin: "50% 0%", transformBox: "fill-box" });
+      gsap.set(drips, { y: (_i: number, t: Element) => -(Number((t as SVGElement).getAttribute("data-len")) + 80) });
       const tl = gsap.timeline({ onComplete: () => { lockScroll(false); onDone(); } });
       tlRef.current = tl;
       // 1) cada letra se pinta con un pincel en zigzag
       tl.to(brushes, { strokeDashoffset: 0, duration: 0.95, ease: "power2.inOut", stagger: 0.2 }, 0.25);
       // 2) la O (y las demás) chorrean
-      tl.to(drips, { scaleY: 1, duration: 1, ease: "power3.out", stagger: 0.1 }, 1.45);
+      tl.to(drips, { y: 0, duration: 1.15, ease: "power2.out", stagger: 0.12 }, 1.45);
       // 3) la palabra viaja hasta su lugar en el hero; el fondo se desvanece
       let tx = 0, ty = 0, ts = 1;
       tl.add(() => {
