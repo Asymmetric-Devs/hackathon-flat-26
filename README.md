@@ -43,6 +43,25 @@ El proyecto debe conectar con al menos uno de tres ejes, y construirse para una 
 **Desempate:** mejor puntaje en ejecución técnica; si sigue empatado, producto y validación.
 **Jurado:** jueces del ecosistema Stellar y del mundo del arte y la tecnología. Un juez que mentoreó a un equipo no lo puntúa.
 
+## Checklist de entrega en Apex (según los briefings en `docs/`)
+
+Plataforma: https://stellarapex.org/ (registrarse, crear proyecto, **publicarlo en "FLAT Stellar 2026"** y dejarlo **público** antes del cierre).
+
+- [ ] Alcance y modelo de negocio claros, y justificación de **por qué blockchain**
+- [ ] Al menos **un componente existente de Stellar** (ej. Trustless Work para escrow); si se reconstruye algo, justificarlo
+- [ ] App funcionando en **testnet** (no solo en local)
+- [ ] Al menos **un hash de transacción** en testnet, verificable en https://stellar.expert
+- [ ] **Video público de 2 a 3 minutos**
+- [ ] README del repo: qué es, modelo de negocio, por qué blockchain, beneficios para el usuario
+- [ ] Prueba con alguien de afuera del equipo y qué se aprendió
+- [ ] Haber consultado **Raven** (el jurado espera verlo): ¿ya existe algo así en Stellar?
+
+Lo que mira el jurado en el código: costo de recursos (lo mínimo en cadena, el resto off-chain), tipos de storage (instance / persistent / temporary + TTL), autorizaciones por función, eventos, tests.
+
+Sábado 28: tres equipos presentan en vivo. Ganadores por track (Stellar y Hedera), anunciados la semana siguiente.
+
+Stack: Rust, Stellar CLI, Node, Docker, Stellar Scaffold (`stellar scaffold init mi-proyecto`). Ver `docs/Stellar Hackathon.docx` para links.
+
 ## Skills instaladas
 
 Instaladas con `npx skills add https://github.com/stellar/stellar-dev-skill` en `.agents/skills/` (enlazadas en `.claude/skills/`):
