@@ -4,35 +4,35 @@
    carácter para títulos, monoespaciada solo para datos en cadena. */
 
 :root {
-  --bg: #f6f3ec;
+  --bg: #ffffff;
   --surface: #ffffff;
-  --subtle: #efebe2;
-  --ink: #18150f;
-  --ink-2: #5a5448;
-  --ink-3: #8c8577;
-  --line: #e3ded3;
-  --line-strong: #cfc8ba;
-  --brand: #d2522a;
-  --brand-deep: #a93e1c;
-  --brand-soft: #d2522a17;
-  --ok: #1e7a46;
-  --ok-soft: #1e7a4617;
+  --subtle: #f6f5f2;
+  --ink: #141311;
+  --ink-2: #57534c;
+  --ink-3: #8f8a81;
+  --line: #ebe9e4;
+  --line-strong: #d9d5cd;
+  --brand: #7a4a2b;
+  --brand-deep: #5c3620;
+  --brand-soft: #7a4a2b12;
+  --ok: #1d7a45;
+  --ok-soft: #1d7a4514;
   --bad: #c0341d;
-  --bad-soft: #c0341d17;
-  --night: #17140f;
-  --night-2: #221e18;
-  --on-night: #f4efe6;
-  --on-night-2: #b3ab9c;
+  --bad-soft: #c0341d14;
+  --night: #141311;
+  --night-2: #1f1d1a;
+  --on-night: #f5f3ef;
+  --on-night-2: #aaa59c;
 
   --sans: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: var(--font-mono), ui-monospace, "Cascadia Mono", Menlo, monospace;
 
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow: 0 1px 2px rgb(24 21 15 / 0.05), 0 18px 40px -20px rgb(24 21 15 / 0.28);
-  --shadow-lg: 0 2px 4px rgb(24 21 15 / 0.05), 0 40px 80px -32px rgb(24 21 15 / 0.45);
+  --shadow: 0 1px 2px rgb(20 19 17 / 0.05), 0 16px 40px -20px rgb(20 19 17 / 0.25);
+  --shadow-lg: 0 2px 4px rgb(20 19 17 / 0.05), 0 32px 64px -28px rgb(20 19 17 / 0.4);
   --gutter: clamp(1rem, 4vw, 2rem);
-  --max: 74rem;
+  --max: 76rem;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   color-scheme: light;
@@ -40,23 +40,23 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #110f0c;
-    --surface: #1a1713;
-    --subtle: #221e19;
-    --ink: #f4efe6;
-    --ink-2: #b3ab9c;
-    --ink-3: #7e7769;
-    --line: #2c2822;
-    --line-strong: #3a352d;
-    --brand: #ee6b3f;
-    --brand-deep: #f5875f;
-    --brand-soft: #ee6b3f1f;
+    --bg: #0f0e0d;
+    --surface: #171614;
+    --subtle: #1e1c1a;
+    --ink: #f3f1ed;
+    --ink-2: #b1aca3;
+    --ink-3: #7d786f;
+    --line: #2a2825;
+    --line-strong: #383530;
+    --brand: #c89470;
+    --brand-deep: #ddb08f;
+    --brand-soft: #c894701f;
     --ok: #57d08a;
     --ok-soft: #57d08a1a;
     --bad: #f2735c;
     --bad-soft: #f2735c1a;
-    --night: #0b0a08;
-    --night-2: #1a1713;
+    --night: #0a0908;
+    --night-2: #171614;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 18px 40px -20px rgb(0 0 0 / 0.7);
     --shadow-lg: 0 2px 4px rgb(0 0 0 / 0.4), 0 40px 80px -32px rgb(0 0 0 / 0.8);
     color-scheme: dark;
@@ -454,7 +454,6 @@ h4 {
   border-color: var(--brand);
   color: #fff;
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px -12px var(--brand);
 }
 
 .btn:active {
@@ -469,9 +468,9 @@ h4 {
 }
 
 .btn-brand {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: #fff;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
 }
 
 .btn-brand:hover {
@@ -2398,7 +2397,6 @@ h4 {
   align-items: end;
   color: #fff;
   background: #1b1712;
-  margin-top: -4.5rem;
   overflow: hidden;
 }
 
@@ -2708,4 +2706,349 @@ h4 {
   max-height: 34rem;
   object-fit: cover;
   border-radius: var(--radius-sm);
+}
+
+
+/* ---------- Portada: intro sobre blanco ---------- */
+
+.intro {
+  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3rem, 6vw, 4.5rem);
+}
+
+.intro-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+  margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+@media (min-width: 60rem) {
+  .intro-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 4rem;
+  }
+}
+
+.intro .display {
+  font-size: clamp(2.9rem, 7vw, 6rem);
+  max-width: 12ch;
+}
+
+.intro .display em {
+  font-style: normal;
+  color: var(--brand);
+}
+
+.intro-side {
+  display: grid;
+  gap: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.band {
+  position: relative;
+  margin: 0;
+}
+
+.band img {
+  width: 100%;
+  height: clamp(20rem, 46vw, 34rem);
+  object-fit: cover;
+  object-position: 50% 45%;
+  border-radius: var(--radius);
+  background: var(--subtle);
+}
+
+.band .credit {
+  margin-top: 0.6rem;
+}
+
+.cert-card {
+  display: grid;
+  gap: 0.9rem;
+  width: min(100%, 21rem);
+  margin: -5rem 1rem 0 auto;
+  position: relative;
+  padding: 1.15rem 1.2rem 1.2rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+}
+
+@media (min-width: 46rem) {
+  .cert-card {
+    position: absolute;
+    right: clamp(1rem, 3vw, 2.5rem);
+    bottom: clamp(2.5rem, 4vw, 3.5rem);
+    margin: 0;
+  }
+}
+
+.cert-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cert-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.cert-rows {
+  margin: 0;
+  display: grid;
+  border-top: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+
+.cert-rows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.cert-rows dt {
+  color: var(--ink-3);
+}
+
+.cert-rows dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+.cert-rows .ok {
+  color: var(--ok);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+
+/* ---------- Detalles y animaciones sobre blanco ---------- */
+
+.intro {
+  position: relative;
+  isolation: isolate;
+}
+
+.intro::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 30%;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 75% 85% at 30% 0%, #000 25%, transparent 72%);
+  mask-image: radial-gradient(ellipse 75% 85% at 30% 0%, #000 25%, transparent 72%);
+  opacity: 0.7;
+}
+
+/* Marcas de registro, como en un plano de taller */
+.marks {
+  position: relative;
+}
+
+.marks::before,
+.marks::after {
+  content: "+";
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+.marks::before {
+  top: -1.4rem;
+  left: -0.35rem;
+}
+
+.marks::after {
+  top: -1.4rem;
+  right: -0.35rem;
+}
+
+.intro .display .line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+
+.intro .display .line > span {
+  display: inline-block;
+  animation: rise-in 0.9s var(--ease) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes rise-in {
+  from {
+    transform: translateY(105%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.intro .display em {
+  position: relative;
+}
+
+.intro .display em::after {
+  content: "";
+  position: absolute;
+  left: 0.03em;
+  right: 0.03em;
+  bottom: 0.02em;
+  border-bottom: 0.06em dashed currentColor;
+  transform-origin: left center;
+  animation: sew 1s var(--ease) 1.1s both;
+}
+
+.fade-up {
+  animation: fade-up 0.8s var(--ease) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.band-frame {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.band-frame img {
+  border-radius: 0;
+  filter: grayscale(1) contrast(1.05);
+  animation: settle 2.4s var(--ease) both;
+}
+
+@keyframes settle {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.cert-card {
+  animation: card-in 0.9s var(--ease) 0.9s both;
+}
+
+.cert-card-inner {
+  display: grid;
+  gap: 0.9rem;
+}
+
+@media (min-width: 46rem) {
+  .cert-card-inner {
+    animation: bob 6s ease-in-out 2s infinite;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.cert-rows .ok svg {
+  animation: pop 0.5s var(--ease) 1.8s both;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.diptych .frame {
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.diptych .frame img {
+  border-radius: 0;
+  transition: transform 0.8s var(--ease);
+}
+
+.diptych figure:hover .frame img {
+  transform: scale(1.04);
+}
+
+.steps-plain li {
+  transition: border-color 0.3s ease;
+}
+
+.steps-plain li:hover {
+  border-top-color: var(--brand);
+}
+
+.marquee {
+  background: var(--subtle);
+}
+
+.marquee-item {
+  font-size: 1rem;
+}
+
+.section-dots {
+  position: relative;
+  isolation: isolate;
+}
+
+.section-dots::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(var(--line-strong) 1px, transparent 1.3px);
+  background-size: 20px 20px;
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 85% 50%, #000 10%, transparent 70%);
+  mask-image: radial-gradient(ellipse 60% 70% at 85% 50%, #000 10%, transparent 70%);
 }

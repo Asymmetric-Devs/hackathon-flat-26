@@ -25,7 +25,7 @@ export function Topbar() {
   }, []);
 
   return (
-    <header className={["topbar", floating && "is-floating", pathname === "/" && "on-cover"].filter(Boolean).join(" ")}>
+    <header className={floating ? "topbar is-floating" : "topbar"}>
       <div className="topbar-inner">
         <Link href="/" aria-label="Oficio, inicio">
           <Logo />
