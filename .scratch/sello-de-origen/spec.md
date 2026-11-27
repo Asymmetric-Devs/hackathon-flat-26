@@ -1,6 +1,6 @@
-# Spec: Hilo · sello de origen con historia del oficio (MVP)
+# Spec: Oficio · sello de origen con historia del oficio (MVP)
 
-Proyecto C de [docs/ideas-proyecto.md](../../docs/ideas-proyecto.md). Nombre de trabajo: **Hilo**.
+Proyecto C de [docs/ideas-proyecto.md](../../docs/ideas-proyecto.md). Nombre: **Oficio** (antes "Hilo").
 
 ## Objetivo del MVP
 
@@ -141,7 +141,7 @@ Interfaz única en `web/src/lib/store/` (guardar y leer fichas, fotos y registro
 
 ## Diseño
 
-Referencia de calidad (no de estilo): la página ganadora del ideathon. Dirección propia: **ficha de catálogo de archivo / rótulo de museo**. Papel cálido, tinta casi negra, filetes finos, una sola tinta de acento color lacre (el sello). Tipografía serif editorial para contenido y monoespaciada para números de catálogo y datos en cadena. Sin gradientes, sin glassmorphism, sin emojis como íconos, sin sombras difusas. Mucho aire, grilla estricta, jerarquía por tamaño y peso, no por color. Claro y oscuro.
+Referencia de calidad (no de estilo): la página ganadora del ideathon (Dosel). Dirección propia: **documental**. Fotos reales de artesanías con su crédito, grotesca con carácter (Schibsted Grotesk), un acento terracota, composición editorial y poca decoración. Claro y oscuro.
 
 ## Criterios de aceptación
 
