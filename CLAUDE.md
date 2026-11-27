@@ -1,8 +1,12 @@
 # Hackathon FLAT 2026 · BAF × Stellar
 
-Reglas, fechas y checklist de entrega: [README.md](README.md). Ideas evaluadas y los cinco proyectos principales: [docs/ideas-proyecto.md](docs/ideas-proyecto.md).
+Reglas, fechas y checklist de entrega: [docs/hackathon.md](docs/hackathon.md). Ideas evaluadas y los cinco proyectos principales: [docs/ideas-proyecto.md](docs/ideas-proyecto.md).
 
 Se trabaja en la rama `propuesta-tobias`. Entrega final: sábado 28/11 a las 23:59 en Apex.
+
+## Commits
+
+Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`…), atómicos (un cambio lógico por commit), mensajes cortos, sin línea `Co-Authored-By`.
 
 ## Agent skills
 
