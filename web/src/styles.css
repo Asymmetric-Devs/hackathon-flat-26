@@ -555,3 +555,8 @@ html { scrollbar-gutter: stable; overflow-x: clip; }
 .sec.deep .chip[aria-pressed="true"], .sec.wall .chip[aria-pressed="true"] { background: var(--ac-lit); color: var(--asfalto); }
 .sec.wall .btn:not(.line), .sec.deep .btn:not(.line), footer .btn:not(.line) { background: var(--ac-lit); color: var(--asfalto); }
 .hw-bar i { background: var(--ac-lit); }
+
+/* sticker de precio: círculo y texto escalan juntos y el contenido queda centrado */
+.dot { --d: clamp(62px, 6vw, 88px); width: var(--d); height: var(--d); right: calc(var(--d) * -.2); top: calc(var(--d) * -.2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 0; font-size: calc(var(--d) * .16); line-height: 1; text-align: center; }
+.dot b { display: block; font-size: 2.15em; line-height: .86; letter-spacing: 0; transform: translateY(.04em); }
+.dot small { display: block; font: 600 .8em var(--mono); line-height: 1; margin-top: .22em; white-space: nowrap; letter-spacing: -.02em; }
