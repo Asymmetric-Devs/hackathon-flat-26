@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
 import { LineageTree } from "@/components/LineageTree";
+import { Logo } from "@/components/Logo";
 import { CountUp, Reveal } from "@/components/Motion";
 import { PieceCard } from "@/components/PieceCard";
 import { ScanDemo, type DemoSlide } from "@/components/ScanDemo";
@@ -11,29 +12,34 @@ export const dynamic = "force-dynamic";
 
 const EXAMPLES: DemoSlide[] = [
   {
-    title: "Poncho de telar criollo",
-    artisan: "Rosa B.",
-    place: "Telar · Corrientes",
-    number: 112,
-    art: "textile",
-    palette: ["#8a3a22", "#d6b07a", "#2f4234", "#efe3cc"],
+    title: "Cuenco de gres esmaltado",
+    artisan: "Taller de cerámica",
+    place: "Torno · Mendoza",
+    number: 1,
+    photoUrl: "/img/torno.jpg",
   },
   {
-    title: "Vasija de barro cocido",
-    artisan: "Miguel A.",
-    place: "Alfarería · Mendoza",
-    number: 87,
-    art: "ceramic",
-    palette: ["#b5673f", "#7a3d22", "#e9c9a6", "#2b2620"],
+    title: "Juego de cucharas talladas",
+    artisan: "Taller de madera",
+    place: "Tallado · Corrientes",
+    number: 2,
+    photoUrl: "/img/cucharas.jpg",
   },
-  {
-    title: "Mate de alpaca cincelado",
-    artisan: "Lucía O.",
-    place: "Platería criolla · Corrientes",
-    number: 143,
-    art: "silver",
-    palette: ["#d9d6cf", "#a8a39a", "#3c3a36", "#1f1d1a"],
-  },
+]
+
+const CRAFTS = [
+  "Cerámica",
+  "Tallado en madera",
+  "Platería",
+  "Marroquinería",
+  "Tejido",
+  "Cestería",
+  "Orfebrería",
+  "Vidrio soplado",
+  "Talabartería",
+  "Cuchillería",
+  "Encuadernación",
+  "Luthería",
 ];
 
 const STEPS: { icon: IconName; tag: string; title: string; text: string }[] = [
@@ -98,34 +104,95 @@ export default async function Home() {
 
   return (
     <>
-      <section className="cover">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="cover-img" src="/img/tejedoras.jpg" alt="Dos tejedoras trabajando en sus telares" />
-        <div className="cover-shade" />
-        <div className="wrap cover-body">
-          <p className="cover-kicker">Certificados de origen para artesanías</p>
-          <h1 className="display">Lo hecho a mano, ahora se puede comprobar.</h1>
-          <p className="cover-lead">
-            Cada pieza lleva un certificado firmado por la asociación que avala a sus artesanos. Quien compra escanea el
-            QR y ve quién la hizo, con qué técnica y de quién aprendió el oficio.
-          </p>
-          <div className="btn-row">
-            <Link className="btn btn-brand" href="/piezas">
-              Ver piezas certificadas
-            </Link>
-            <Link className="btn btn-light" href="#como-funciona">
-              Cómo funciona
-            </Link>
+      <section className="intro">
+        <div className="wrap intro-grid">
+          <h1 className="display marks">
+            <span className="line">
+              <span style={{ ["--d" as string]: "0ms" }}>Lo hecho a</span>
+            </span>
+            <span className="line">
+              <span style={{ ["--d" as string]: "110ms" }}>mano, ahora</span>
+            </span>
+            <span className="line">
+              <span style={{ ["--d" as string]: "220ms" }}>se puede</span>
+            </span>
+            <span className="line">
+              <span style={{ ["--d" as string]: "330ms" }}>
+                <em>comprobar</em>.
+              </span>
+            </span>
+          </h1>
+          <div className="intro-side fade-up" style={{ ["--d" as string]: "450ms" }}>
+            <p className="lead">
+              Oficio emite un certificado por cada artesanía, firmado en Stellar por la asociación que avala a sus
+              artesanos. Quien compra escanea el QR y ve quién la hizo, cómo, y de quién aprendió el oficio.
+            </p>
+            <div className="btn-row">
+              <Link className="btn btn-brand" href="/piezas">
+                Ver piezas certificadas
+              </Link>
+              <Link className="btn btn-secondary" href="#como-funciona">
+                Cómo funciona
+              </Link>
+            </div>
+            <p className="faint small">Primer caso: Plaza de las Artes, Mendoza · Piloto con artesanos de Corrientes</p>
           </div>
         </div>
-        <p className="credit cover-credit">
-          Tejedoras en la Fiesta Nacional del Poncho, Catamarca. Foto: GtPLzcat89, CC0, Wikimedia Commons.
-        </p>
+        <div className="wrap">
+          <figure className="band">
+            <div className="band-frame">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/torno.jpg" alt="Manos de un ceramista dando forma a una pieza en el torno" />
+            </div>
+            <div className="cert-card" aria-label="Vista previa de un certificado">
+              <div className="cert-card-inner">
+              <div className="cert-head">
+                <Logo size={20} />
+                <span className="badge badge-ok">
+                  <span className="dot" /> Vigente
+                </span>
+              </div>
+              <div>
+                <p className="faint small">Certificado de origen · N.º 0001</p>
+                <p className="cert-title">Cuenco de gres esmaltado</p>
+              </div>
+              <dl className="cert-rows">
+                <div>
+                  <dt>Técnica</dt>
+                  <dd>Torno y esmalte a mano</dd>
+                </div>
+                <div>
+                  <dt>Huella de la foto</dt>
+                  <dd className="ok">
+                    <Icon name="check" size={14} stroke={2.6} /> Coincide
+                  </dd>
+                </div>
+                <div>
+                  <dt>Firmado por</dt>
+                  <dd>Asociación de artesanos</dd>
+                </div>
+              </dl>
+                <p className="faint small">Vista previa ilustrativa</p>
+              </div>
+            </div>
+            <figcaption className="credit">Foto: Quino Al, CC0, Wikimedia Commons.</figcaption>
+          </figure>
+        </div>
       </section>
 
-      <section className="section">
+      <div className="marquee" aria-label="Oficios">
+        <div className="marquee-track">
+          {[...CRAFTS, ...CRAFTS].map((craft, i) => (
+            <span key={`${craft}-${i}`} className="marquee-item" aria-hidden={i >= CRAFTS.length}>
+              {craft}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <section className="section section-dots">
         <div className="wrap buyer">
-          <div className="stack" style={{ ["--gap" as string]: "1.5rem" }}>
+          <Reveal className="stack">
             <p className="kicker">Del lado de quien compra</p>
             <h2 className="h2">Escanea la etiqueta. En diez segundos sabe qué tiene en la mano.</h2>
             <p className="lead">
@@ -150,7 +217,7 @@ export default async function Home() {
                 <dd>La firma de la asociación, verificada en vivo.</dd>
               </div>
             </dl>
-          </div>
+          </Reveal>
           <ScanDemo slides={slides} illustrative={slides === EXAMPLES} />
         </div>
       </section>
@@ -175,29 +242,37 @@ export default async function Home() {
 
       <section className="section" style={{ borderTop: "1px solid var(--line)" }}>
         <div className="wrap">
-          <div className="section-head">
+          <Reveal className="section-head">
             <p className="kicker">El problema</p>
             <h2 className="h2">En la feria, las dos cosas se venden una al lado de la otra.</h2>
-          </div>
+          </Reveal>
           <div className="diptych">
+            <Reveal>
             <figure>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/qom.jpg" alt="Cestería y cerámica artesanal de la Cooperativa de Artesanas Qom" />
+              <div className="frame">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/img/cucharas.jpg" alt="Cucharas y espátulas de madera talladas a mano" />
+              </div>
               <figcaption>
-                <strong>Hecho a mano.</strong> Cestería y cerámica de la Cooperativa de Artesanas Qom.
-                <span className="credit">Foto: Ashazam, CC BY-SA 4.0, Wikimedia Commons.</span>
+                <strong>Hecho a mano.</strong> Utensilios de madera tallados uno por uno.
+                <span className="credit">Foto: Gabriela Sellart, CC BY-SA 4.0, Wikimedia Commons.</span>
               </figcaption>
             </figure>
+            </Reveal>
+            <Reveal delay={140}>
             <figure>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/feria-serie.jpg" alt="Puesto de feria con peluches y productos industriales" />
+              <div className="frame">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/img/serie.jpg" alt="Estantes de un local de recuerdos con figuras fabricadas en serie" />
+              </div>
               <figcaption>
-                <strong>Hecho en serie.</strong> Productos industriales en un puesto de feria de Tilcara, Jujuy.
-                <span className="credit">Foto: Eugenialodi, CC BY-SA 4.0, Wikimedia Commons.</span>
+                <strong>Hecho en serie.</strong> Recuerdos fabricados por miles, idénticos entre sí.
+                <span className="credit">Foto: Harald Groven, CC BY-SA 2.0, Wikimedia Commons.</span>
               </figcaption>
             </figure>
+            </Reveal>
           </div>
-          <div className="columns-3">
+          <Reveal className="columns-3">
             <div>
               <h3 className="h3">Quien compra no puede distinguirlas.</h3>
               <p className="muted">
@@ -213,25 +288,25 @@ export default async function Home() {
               <h3 className="h3">El oficio se transmite sin dejar rastro.</h3>
               <p className="muted">De quién se aprende cada técnica no queda escrito en ningún lado.</p>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section id="como-funciona" className="section how">
         <div className="wrap">
-          <div className="section-head">
+          <Reveal className="section-head">
             <p className="kicker">Cómo funciona</p>
             <h2 className="h2">Del taller a quien compra, con una firma en el medio.</h2>
-          </div>
+          </Reveal>
           <ol className="steps-plain">
             {STEPS.map((step, i) => (
-              <li key={step.tag}>
+              <Reveal as="li" key={step.tag} delay={i * 110}>
                 <span className="steps-plain-n">
                   {i + 1}. {step.tag}
                 </span>
                 <h3 className="h3">{step.title}</h3>
                 <p className="muted">{step.text}</p>
-              </li>
+              </Reveal>
             ))}
           </ol>
         </div>
@@ -239,7 +314,7 @@ export default async function Home() {
 
       <section className="section night">
         <div className="wrap lineage-split">
-          <div className="stack" style={{ ["--gap" as string]: "1.5rem" }}>
+          <Reveal className="stack">
             <p className="kicker">La línea del oficio</p>
             <h2 className="h2">Cada pieza viene de alguien que aprendió de alguien.</h2>
             <p className="lead">
@@ -250,7 +325,7 @@ export default async function Home() {
               El vínculo maestro-aprendiz queda en el contrato. Si el maestro no está registrado, su nombre queda igual
               en la ficha. Quien compra ve la línea completa en la página de la pieza.
             </p>
-          </div>
+          </Reveal>
           <Reveal>
             <LineageTree />
           </Reveal>
@@ -259,15 +334,15 @@ export default async function Home() {
 
       <section id="por-que" className="section">
         <div className="wrap">
-          <div className="section-head">
+          <Reveal className="section-head">
             <p className="kicker">Por qué Stellar</p>
             <h2 className="h2">Una base de datos con QR mostraría lo mismo. No probaría lo mismo.</h2>
             <p className="lead">
               El problema no es de pagos, es de confianza. Lo que importa es que nadie, ni siquiera quien administra
               Oficio, pueda cambiar un certificado después de firmado.
             </p>
-          </div>
-          <div className="compare">
+          </Reveal>
+          <Reveal className="compare">
             <div className="compare-row compare-head">
               <span />
               <span>
@@ -288,7 +363,7 @@ export default async function Home() {
                 </span>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -317,12 +392,12 @@ export default async function Home() {
         <div className="wrap closing-row">
           <figure className="closing-photo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/poncho.jpg" alt="Poncho tejido a mano exhibido en un museo" />
+            <img src="/img/plateria.jpg" alt="Banco de trabajo de un platero con herramientas" />
             <figcaption className="credit">
-              Poncho del Bicentenario, Museo de la Fiesta Nacional del Poncho. CC BY-SA 4.0, Wikimedia Commons.
+              Banco de trabajo de platería. Foto: Thomas Farley, CC0, Wikimedia Commons.
             </figcaption>
           </figure>
-          <div className="stack" style={{ ["--gap" as string]: "1.25rem" }}>
+          <Reveal className="stack">
             <p className="kicker">Para asociaciones y ferias</p>
             <h2 className="h2">Su fiscalización, visible en cada pieza que se vende.</h2>
             <p className="lead">
@@ -334,7 +409,7 @@ export default async function Home() {
                 Entrar al panel
               </Link>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
     </>
