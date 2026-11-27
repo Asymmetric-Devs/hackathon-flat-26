@@ -7,7 +7,7 @@
   /* Pared de calle, criterio de estudio: crema, asfalto, papel y un solo acento naranja. */
   --crema: #f6f1e5; --crema-2: #ece5d3; --papel: #fdfbf4; --asfalto: #0d1024; --asfalto-2: color-mix(in srgb, var(--asfalto) 86%, #fff);
   --tinta: #0d1024; --tinta-2: #4b4a44; --gris: #6b6a62;
-  --ac: #2236ff; --ac-2: #1828d6; --on: #ffffff; --warm: #ffc61a; --ac-lit: #8f9bff;
+  --ac: #8f9bff; --ac-2: #7a87f2; --on: #0d1024; --ac-lit: #8f9bff;
   --display: "Big Shoulders Display Variable", "Arial Narrow", system-ui, sans-serif;
   --sans: "Geist Variable", system-ui, -apple-system, sans-serif;
   --mono: "Geist Mono Variable", ui-monospace, monospace;
@@ -545,8 +545,6 @@ footer.foot { padding-bottom: 0; }
 /* el lugar de la barra de scroll siempre está reservado: bloquear el scroll (intro, visor) no cambia el ancho */
 html { scrollbar-gutter: stable; overflow-x: clip; }
 
-/* serigrafía: un bloque de color desfasado detrás de los afiches pegados */
-.paste::before { content: ""; position: absolute; inset: 5px -8px -8px 8px; background: var(--warm); z-index: -1; border-radius: 1px; }
 
 /* acento sobre fondo oscuro: versión más clara, para que se lea */
 .how-steps .step, .hw-total b, .acct-sec .step { color: var(--ac-lit); }

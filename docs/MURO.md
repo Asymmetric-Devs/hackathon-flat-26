@@ -80,7 +80,7 @@ scripts/reset-demo.sh           # reinicia toda la demo (despliega, siembra y re
 
 **Antes de presentar:** con 1 día = 1 minuto, la obra colgada llega al 100 % del precio en ~100 minutos y se vende sola. Correr `scripts/reset-demo.sh` (~5 min) justo antes para tener la demo fresca. No conviene recargar con `top_up` una obra cuyo prepago ya venció: el contrato cobra de golpe todo el tiempo vencido y la obra se vende.
 
-La paleta base es azul ultramar sobre un lienzo cálido, con un amarillo cadmio detrás de los afiches (efecto serigrafía). Se puede probar otra con `?acento=bermellon|tinta-roja|amarillo|viridian|naranja` en la URL; se recuerda en el navegador.
+La paleta base es un violeta suave sobre un lienzo cálido. Se puede probar otra con `?acento=ultramar|bermellon|tinta-roja|amarillo|viridian|naranja` en la URL; se recuerda en el navegador.
 
 ## Validación con alguien de afuera
 
