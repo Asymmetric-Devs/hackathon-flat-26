@@ -20,11 +20,11 @@ Un proyecto puede trabajar un solo eje (arte, memoria, territorio) o unir dos o 
 |---|---|---|---|---|---|
 | A | **Mural con historia** | Arte, Memoria, Territorio | Artista y cliente | Lee la historia del mural por QR | Retener el pago por etapas; registro de autoría |
 | B | **Cachet asegurado** | Arte, Territorio | Organizador y artistas | No participa | Retener el pago hasta el show y repartirlo a cada artista |
-| C | **Sello de origen con historia del oficio** | Territorio, Memoria, Arte | La asociación de artesanos | Lee el certificado por QR | Certificado que no se puede falsificar |
+| C | **Sello de origen con historia del oficio** | Territorio, Memoria, Arte | La entidad que avala a los artesanos | Lee el certificado por QR | Certificado que no se puede falsificar |
 | D | **Archivo del barrio con guardianes** | Memoria, Territorio | Tres a cinco guardianes | Lee y escucha el archivo | Control compartido y consentimiento verificable |
 | E | **Fondo con rendición por etapas** | Territorio, Arte | Quien financia y el espacio | Ve en qué se gastó | Retener el fondo y liberarlo contra rendición |
 
-**Recomendación:** el A. Como alternativa, el B.
+**Elegido para el MVP:** el C (rama `propuesta-tobias`). Antes la recomendación era el A, con el B como alternativa.
 
 ---
 
@@ -96,35 +96,42 @@ Un proyecto puede trabajar un solo eje (arte, memoria, territorio) o unir dos o 
 
 ### C. Sello de origen con historia del oficio
 
-**Qué es:** un certificado digital para artesanías de una feria. El comprador escanea un QR en la pieza y ve quién la hizo, con qué técnica y de quién aprendió el oficio.
+**Qué es:** un certificado digital que le da valor a la artesanía hecha a mano de verdad. Cada pieza lleva un QR: quien la compra ve quién la hizo, con qué técnica, de quién aprendió el oficio, y la prueba de que una entidad que fiscaliza a los artesanos la avaló.
 
-**Para quién:** los artesanos de la Plaza de las Artes de Mendoza (150 puestos), su asociación y los turistas que compran.
+**La idea central:** hoy "artesanal" es una palabra que cualquiera puede poner en una etiqueta. El sello la convierte en algo comprobable. Al artesano que trabaja a mano le da una forma de distinguirse de la copia industrial, y al comprador, una razón para pagar lo que vale. Suma además lo que ningún certificado de autenticidad cuenta: la línea del oficio, de maestro a aprendiz.
 
-**El problema:** en las ferias se venden productos industriales como hechos a mano. El turista no puede distinguirlos y el artesano real compite contra algo más barato. El dato más fuerte que encontré (95% de productos en serie en ferias regionales) sale de una nota sin fecha clara; hay que confirmarlo con artesanos.
+**Para quién:** artesanos que venden en ferias y mercados, la entidad que los agrupa o fiscaliza (asociación, cooperativa, municipio), y quienes compran, sobre todo turistas que no conocen el oficio y no pueden distinguir una pieza real de una copia.
+
+**El problema:** en ferias y mercados de artesanías se venden productos industriales como si fueran hechos a mano. El comprador no tiene cómo distinguirlos, y el artesano real compite contra algo más barato. Lo que hoy existe para avalar el origen es informal: la palabra del vendedor, o que el puesto esté en una feria fiscalizada, cosa que el comprador no ve en la pieza que se lleva.
+
+**Primer caso: Plaza de las Artes, Mendoza.** La feria de Plaza Independencia tiene 150 puestos, funciona desde 1989 y se rige por una ordenanza municipal de 1999 escrita con participación de los artesanos, con fiscalización semanal. Los artesanos están agrupados en la Asociación Plaza de las Artes. Vende mucho a turistas extranjeros, justo el comprador que menos puede distinguir una pieza real de una copia. Sobre la competencia industrial, una nota de La Nación sostiene que el 95% de lo que se vende en ferias regionales se fabrica en serie en el Gran Buenos Aires; la nota no tiene fecha clara y hay que confirmarlo con los artesanos. Falta confirmar también si fiscaliza la asociación, la municipalidad o ambas.
+
+**Prueba local: Corrientes.** El equipo está en Corrientes, donde hay muchos artesanos y la artesanía y la producción propia son parte de la cultura correntina. Eso permite validar con artesanos reales antes de la entrega, sin depender de llegar a Mendoza: que un artesano cargue una pieza, que alguien de afuera escanee el QR, y anotar qué entendieron y qué no. Como antecedente de que el oficio está organizado en la provincia, la Expo Feria Artesanal de Empedrado nació en 1993 impulsada por artesanos junto con la municipalidad, según un proyecto de la Cámara de Diputados correntina. La validación en Corrientes no reemplaza a Mendoza como caso: muestra que el mismo sistema sirve en otra región con otra tradición.
 
 **Cómo funciona:**
 
 1. El artesano pide el sello: sube una foto de la pieza y completa técnica y materiales.
-2. Un fiscalizador de la asociación revisa y emite el certificado. Solo la asociación puede emitir.
+2. Un fiscalizador de la entidad revisa y emite el certificado. Solo esa entidad puede emitir.
 3. La pieza lleva un QR en una etiqueta.
 4. El comprador escanea y, sin registrarse, ve la foto de la pieza, el artesano, el puesto, la técnica y la historia del oficio: de quién aprendió y hace cuánto trabaja.
 
-**Qué pasa en Stellar:** cada certificado es un token no fungible emitido desde la cuenta de la asociación, con el estándar SEP-50. En cadena van el identificador de la pieza, el artesano, la fecha y el hash de la foto. Las fotos y los textos van fuera.
+**Qué pasa en Stellar:** cada certificado es un token no fungible emitido desde la cuenta de la entidad, con el estándar SEP-50. En cadena van el identificador de la pieza, el artesano, la fecha, el vínculo maestro-aprendiz y la huella de la foto y la ficha. Las fotos y los textos van fuera.
 
-**Quién necesita cuenta:** solo la asociación. El artesano tiene un perfil sin cuenta y el comprador solo lee. Es el proyecto con menos barrera de entrada.
+**Quién necesita cuenta:** solo la entidad que emite. El artesano tiene un perfil sin cuenta y el comprador solo lee. Es el proyecto con menos barrera de entrada.
 
-**Por qué no una base de datos:** acá el problema no es de pagos, así que la comparación no es con Mercado Pago. Una base de datos con QR funcionaría, y hay que decirlo así. La diferencia es que el certificado queda firmado por la asociación, nadie puede editarlo después y sigue existiendo aunque la asociación deje de pagar el sitio. Es una ventaja real, pero más chica que en los proyectos de pago retenido.
+**Por qué no una base de datos:** acá el problema no es de pagos, así que la comparación no es con Mercado Pago. Una base de datos con QR funcionaría, y hay que decirlo así. La diferencia es que el certificado queda firmado por la entidad, nadie puede editarlo después y sigue existiendo aunque la entidad deje de pagar el sitio. Es una ventaja real, pero más chica que en los proyectos de pago retenido.
 
-**Qué se construye para el hackathon:** un panel para que la asociación emita, una página pública por pieza y el contrato.
+**Cómo escala:** el mismo sistema sirve para cualquier feria o mercado con una entidad que avale a sus artesanos: otras ferias de Mendoza, mercados artesanales de otras provincias, cooperativas de tejedoras o ceramistas.
 
-**Cómo validarlo:** un artesano real carga una pieza y alguien de afuera escanea el QR en el puesto.
+**Qué se construye para el hackathon:** un panel para que la entidad emita, una página pública por pieza y el contrato.
+
+**Cómo validarlo:** con artesanos de Corrientes: uno carga una pieza real y alguien de afuera escanea el QR en el puesto, sin que nadie le explique nada de blockchain.
 
 **Puntos débiles:**
 
 - El QR se puede copiar y pegar en una pieza falsa. Lo frena que la página muestra la foto de esa pieza exacta y el puesto donde se vende; no es infalible.
 - Certificar pieza por pieza es mucho trabajo para algo barato. Conviene un sello por puesto para lo barato y por pieza para lo caro.
-- Supuse que la asociación fiscaliza los puestos porque la feria tiene reglamento. No lo confirmé.
-- Solo conviene si el equipo puede llegar mañana a artesanos de la feria.
+- El sello vale tanto como la fiscalización que lo respalda: si la entidad avala cualquier cosa, el sello no significa nada.
 
 ---
 
@@ -198,7 +205,7 @@ Un proyecto puede trabajar un solo eje (arte, memoria, territorio) o unir dos o 
 
 - **A** es el más completo: une los tres ejes sin forzar nada, porque el encargo ya produce las fotos y la historia que después se publican.
 - **B** tiene el problema mejor documentado y usa dos cosas que Mercado Pago no hace. Su punto débil es la conexión con el eje.
-- **C** es el mejor si el equipo tiene llegada a artesanos de la Plaza de las Artes. Casi no tiene barrera de cuenta.
+- **C** le da valor a lo hecho a mano de verdad y casi no tiene barrera de cuenta. Su primer caso es la Plaza de las Artes de Mendoza; conviene si el equipo puede llegar a esos artesanos.
 - **D** es el mejor proyecto de memoria pura, y el que menos hace en Stellar.
 - **E** es el más simple de explicar a un jurado, y el más difícil de validar en un día.
 
@@ -470,6 +477,8 @@ En testnet no hay conversión real a pesos. Lo honesto es fondear las cuentas de
 - [Colectivo de muralistas MuraMe (Unidiversidad)](https://www.unidiversidad.com.ar/pintar-el-espacio-publico-una-conquista-para-muralistas-mendocinas)
 - [Eliminación de los murales del nudo vial (El Sol)](https://www.elsol.com.ar/el-sol/polemica-por-la-eliminacion-de-los-murales-del-nudo-vial/)
 - [Plaza de las Artes, 150 puestos (Gobierno de Mendoza)](https://www.mendoza.gov.ar/catalogoeconomiasocial/plaza-de-las-artes/)
+- [Proyecto sobre la Expo Feria Artesanal de Empedrado (Cámara de Diputados de Corrientes)](https://hcdcorrientes.gov.ar/wp-content/uploads/2026/07/Expte-20170.pdf)
+- [Asociación Plaza de las Artes y reapertura de la feria (Unidiversidad, 2020)](https://www.unidiversidad.com.ar/volvieron-los-artesanos-a-la-plaza-independencia-fue-dificil-golpeamos-muchas-puertas89)
 - [Productos en serie en ferias regionales (La Nación, sin fecha clara)](https://www.lanacion.com.ar/lifestyle/made-in-argentina-nid212736)
 - [Centros culturales barriales en crisis (Tiempo Argentino)](https://www.tiempoar.com.ar/ta_article/cultura-barrios-resistencia-crisis/)
 - [Archivo Inundación, Santa Fe (Wikimedia)](https://meta.wikimedia.org/wiki/Grants:Programs/Wikimedia_Community_Fund/Rapid_Fund/Digitalizar,_documentar_y_compartir._La_experiencia_de_Archivo_Inundaci%C3%B3n_-_20_a%C3%B1os_como_un_camino_posible_para_construir_archivos_comunitarios_en_Wikimedia_(ID:_22965753))
