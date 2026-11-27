@@ -12,14 +12,14 @@ export default async function ArtisansPage() {
   const names = new Map(artisans.map((a) => [a.record.id, a.meta.name]));
 
   return (
-    <div className="wrap piece">
-      <header className="piece-head">
-        <p className="label">Registro</p>
-        <h1 className="title">Artesanos</h1>
-        <p className="lede">Registrados por la asociación, con el maestro de quien aprendieron el oficio.</p>
+    <div className="wrap page">
+      <header className="page-head">
+        <span className="kicker">Registro</span>
+        <h1 className="h1">Artesanos</h1>
+        <p className="lead">Registrados por la asociación, con el maestro de quien aprendieron el oficio.</p>
       </header>
       {artisans.length === 0 ? (
-        <p className="muted">Todavía no hay artesanos registrados.</p>
+        <div className="empty">Todavía no hay artesanos registrados.</div>
       ) : (
         <div className="table-wrap">
           <table className="table">
@@ -27,8 +27,9 @@ export default async function ArtisansPage() {
               <tr>
                 <th>Artesano</th>
                 <th>Oficio</th>
+                <th>Ciudad</th>
                 <th>Aprendió de</th>
-                <th>Piezas</th>
+                <th style={{ textAlign: "right" }}>Piezas</th>
               </tr>
             </thead>
             <tbody>
@@ -41,14 +42,17 @@ export default async function ArtisansPage() {
                       <Link href={`/a/${a.record.id}`}>{a.meta.name}</Link>
                     </td>
                     <td>{a.meta.craft}</td>
+                    <td className="muted">{a.meta.city || "—"}</td>
                     <td>
                       {from?.artisanId ? (
                         <Link href={`/a/${from.artisanId}`}>{masterName}</Link>
                       ) : (
-                        (masterName ?? "—")
+                        <span className="muted">{masterName || "—"}</span>
                       )}
                     </td>
-                    <td className="catalog">{counts.get(a.record.id) ?? 0}</td>
+                    <td className="num" style={{ textAlign: "right" }}>
+                      {counts.get(a.record.id) ?? 0}
+                    </td>
                   </tr>
                 );
               })}

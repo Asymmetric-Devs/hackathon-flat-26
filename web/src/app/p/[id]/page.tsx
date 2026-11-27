@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Icon, type IconName } from "@/components/Icon";
 import { Lineage } from "@/components/Lineage";
-import { Seal } from "@/components/Seal";
 import { config, explorer } from "@/lib/config";
 import { catalogNumber, formatDate, shortHash } from "@/lib/format";
 import { store } from "@/lib/store";
-import { lineageOf, statusCopy, verifyPiece } from "@/lib/verify";
+import { lineageOf, statusCopy, verifyPiece, type PieceStatus } from "@/lib/verify";
 
 export const dynamic = "force-dynamic";
+
+const statusIcon: Record<PieceStatus, IconName> = {
+  vigente: "check",
+  revocado: "x",
+  alterado: "alert",
+  desconocido: "alert",
+};
 
 function parseId(raw: string) {
   const id = Number(raw);
@@ -33,84 +40,94 @@ export default async function PiecePage({ params }: PageProps<"/p/[id]">) {
   const copy = statusCopy[verification.status];
 
   return (
-    <article className="wrap piece">
-      <header className="piece-head">
-        <p className="label catalog">
-          {catalogNumber(id)} · Certificado de origen
-        </p>
-        <h1 className="title">{meta.title}</h1>
+    <article className="wrap page">
+      <header className="page-head">
+        <span className="kicker">Certificado de origen · {catalogNumber(id)}</span>
+        <h1 className="h1">{meta.title}</h1>
         {artisan ? (
-          <p className="lede" style={{ margin: 0 }}>
-            Por <Link href={`/a/${artisan.record.id}`}>{artisan.meta.name}</Link>
-            {artisan.meta.stall ? `, ${artisan.meta.stall}` : ""}
+          <p className="lead">
+            Hecha por{" "}
+            <Link className="link" href={`/a/${artisan.record.id}`}>
+              {artisan.meta.name}
+            </Link>
+            {artisan.meta.stall ? ` · ${artisan.meta.stall}` : ""}
+            {artisan.meta.city ? `, ${artisan.meta.city}` : ""}
           </p>
         ) : null}
       </header>
 
-      <div className="piece-grid">
-        <figure className="piece-figure">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/api/files/pieces/${id}`} alt={meta.title} />
-          <figcaption className="label">Foto registrada al certificar</figcaption>
-        </figure>
+      <div className="report">
+        <div className="report-aside">
+          <figure className="photo" style={{ margin: 0 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/api/files/pieces/${id}`} alt={meta.title} />
+            <figcaption className="photo-caption">
+              <span>Foto registrada al certificar</span>
+              <span className={verification.photoMatches ? "check-ok" : "check-bad"}>
+                {verification.photoMatches ? "Huella coincide" : "Huella no coincide"}
+              </span>
+            </figcaption>
+          </figure>
+        </div>
 
-        <div className="piece-body">
+        <div className="stack" style={{ ["--gap" as string]: "1.25rem" }}>
           <section className={`verdict verdict-${verification.status}`} aria-live="polite">
-            <Seal number={id} size={104} muted={verification.status !== "vigente"} />
-            <div className="stack" style={{ ["--stack" as string]: "0.4rem" }}>
-              <span className={`status status-${verification.status}`}>{copy.label}</span>
-              <p style={{ margin: 0 }}>{copy.text}</p>
+            <span className="verdict-icon">
+              <Icon name={statusIcon[verification.status]} size={22} stroke={2.6} />
+            </span>
+            <div>
+              <p className="verdict-title">{copy.label}</p>
+              <p>{copy.text}</p>
             </div>
           </section>
 
-          <dl className="ficha">
-            <div className="ficha-row">
-              <dt className="label">Técnica</dt>
-              <dd>{meta.technique}</dd>
-            </div>
-            <div className="ficha-row">
-              <dt className="label">Materiales</dt>
-              <dd>{meta.materials}</dd>
-            </div>
-            {meta.year ? (
-              <div className="ficha-row">
-                <dt className="label">Año</dt>
-                <dd>{meta.year}</dd>
+          <section className="card card-flush">
+            <dl className="kv">
+              <div>
+                <dt>Técnica</dt>
+                <dd>{meta.technique}</dd>
               </div>
-            ) : null}
-            {artisan ? (
-              <div className="ficha-row">
-                <dt className="label">Puesto</dt>
+              {meta.materials ? (
+                <div>
+                  <dt>Materiales</dt>
+                  <dd>{meta.materials}</dd>
+                </div>
+              ) : null}
+              {meta.year ? (
+                <div>
+                  <dt>Año</dt>
+                  <dd className="num">{meta.year}</dd>
+                </div>
+              ) : null}
+              {artisan?.meta.stall ? (
+                <div>
+                  <dt>Dónde se vende</dt>
+                  <dd>
+                    {artisan.meta.stall}
+                    {artisan.meta.city ? `, ${artisan.meta.city}` : ""}
+                  </dd>
+                </div>
+              ) : null}
+              <div>
+                <dt>Certificado</dt>
                 <dd>
-                  {artisan.meta.stall}
-                  {artisan.meta.city ? ` · ${artisan.meta.city}` : ""}
+                  {verification.chain ? formatDate(verification.chain.issuedAt) : formatDate(record.createdAt)} por la
+                  asociación
                 </dd>
               </div>
-            ) : null}
-            <div className="ficha-row">
-              <dt className="label">Certificado</dt>
-              <dd>
-                {verification.chain ? formatDate(verification.chain.issuedAt) : formatDate(record.createdAt)} por la
-                asociación de artesanos
-              </dd>
-            </div>
-          </dl>
+            </dl>
+          </section>
 
           {meta.story ? (
-            <div className="prose">
-              <p className="label">La pieza</p>
-              <p>{meta.story}</p>
-            </div>
+            <section className="card stack" style={{ ["--gap" as string]: "0.5rem" }}>
+              <h2 className="card-title">Sobre la pieza</h2>
+              <p className="muted">{meta.story}</p>
+            </section>
           ) : null}
-        </div>
-      </div>
 
-      {artisan ? (
-        <section className="section-tight">
-          <div className="section-head">
-            <p className="label">Línea del oficio</p>
-            <div className="stack">
-              <h2 className="subtitle">De quién viene esta técnica</h2>
+          {artisan ? (
+            <section className="card stack" style={{ ["--gap" as string]: "1.1rem" }}>
+              <h2 className="card-title">Línea del oficio</h2>
               <Lineage
                 links={[
                   ...lineage,
@@ -124,74 +141,83 @@ export default async function PiecePage({ params }: PageProps<"/p/[id]">) {
                 ]}
                 current={artisan.record.id}
               />
-            </div>
-          </div>
-        </section>
-      ) : null}
+            </section>
+          ) : null}
 
-      <section className="section-tight">
-        <div className="section-head">
-          <p className="label">Verificación</p>
-          <div className="stack">
-            <h2 className="subtitle">Lo que dice Stellar</h2>
-            <div className="ledger">
-              <div className="ledger-row">
-                <span className="label">Estado en el contrato</span>
-                <span className="mono">
-                  {verification.chain ? (verification.chain.revoked ? "revocado" : "vigente") : "sin leer"}
-                </span>
+          <section className="card stack" style={{ ["--gap" as string]: "0.75rem" }}>
+            <div className="cluster" style={{ justifyContent: "space-between" }}>
+              <h2 className="card-title" style={{ margin: 0 }}>
+                Verificación en Stellar
+              </h2>
+              <span className="badge">
+                <span className="dot dot-live" style={{ color: "var(--ok)" }} /> En vivo
+              </span>
+            </div>
+            <dl className="kv">
+              <div>
+                <dt>Estado en el contrato</dt>
+                <dd>{verification.chain ? (verification.chain.revoked ? "Revocado" : "Vigente") : "Sin leer"}</dd>
               </div>
-              <div className="ledger-row">
-                <span className="label">Huella de la foto</span>
-                <span className="mono">
-                  {verification.photoHash ? shortHash(verification.photoHash, 10) : "—"}{" "}
+              <div>
+                <dt>Huella de la foto</dt>
+                <dd className="mono">
+                  {verification.photoHash ? shortHash(verification.photoHash, 10) : "—"}
                   <Check ok={verification.photoMatches} />
-                </span>
+                </dd>
               </div>
-              <div className="ledger-row">
-                <span className="label">Huella de la ficha</span>
-                <span className="mono">
-                  {verification.metaHash ? shortHash(verification.metaHash, 10) : "—"}{" "}
+              <div>
+                <dt>Huella de la ficha</dt>
+                <dd className="mono">
+                  {verification.metaHash ? shortHash(verification.metaHash, 10) : "—"}
                   <Check ok={verification.metaMatches} />
-                </span>
+                </dd>
               </div>
-              <div className="ledger-row">
-                <span className="label">Transacción</span>
-                <a className="mono" href={explorer.tx(record.txHash)}>
-                  {shortHash(record.txHash, 10)} ↗
-                </a>
+              <div>
+                <dt>Transacción</dt>
+                <dd>
+                  <a className="mono link" href={explorer.tx(record.txHash)}>
+                    {shortHash(record.txHash, 10)} ↗
+                  </a>
+                </dd>
               </div>
               {record.revokeTxHash ? (
-                <div className="ledger-row">
-                  <span className="label">Revocación</span>
-                  <a className="mono" href={explorer.tx(record.revokeTxHash)}>
-                    {shortHash(record.revokeTxHash, 10)} ↗
-                  </a>
+                <div>
+                  <dt>Revocación</dt>
+                  <dd>
+                    <a className="mono link" href={explorer.tx(record.revokeTxHash)}>
+                      {shortHash(record.revokeTxHash, 10)} ↗
+                    </a>
+                  </dd>
                 </div>
               ) : null}
-              <div className="ledger-row">
-                <span className="label">Contrato</span>
-                <a className="mono" href={explorer.contract(config.contractId)}>
-                  {shortHash(config.contractId, 8)} ↗
-                </a>
+              <div>
+                <dt>Contrato</dt>
+                <dd>
+                  <a className="mono link" href={explorer.contract(config.contractId)}>
+                    {shortHash(config.contractId, 8)} ↗
+                  </a>
+                </dd>
               </div>
-            </div>
+            </dl>
             {verification.networkError ? (
               <p className="notice">No se pudo consultar la red: {verification.networkError}</p>
             ) : null}
-            <p className="muted" style={{ fontSize: "0.98rem", margin: 0 }}>
-              La huella es un resumen matemático (sha256) de la foto y la ficha. La asociación la guardó en Stellar al
-              certificar; esta página la vuelve a calcular cada vez que se abre y la compara.
+            <p className="faint small">
+              La huella es un resumen matemático (sha256) de la foto y la ficha. La asociación la firmó en Stellar al
+              certificar; esta página la recalcula cada vez que se abre y la compara.
             </p>
-          </div>
+          </section>
         </div>
-      </section>
+      </div>
     </article>
   );
 }
 
 function Check({ ok }: { ok: boolean }) {
   return (
-    <span className={ok ? "check check-ok" : "check check-bad"}>{ok ? "coincide" : "no coincide"}</span>
+    <span className={ok ? "check check-ok" : "check check-bad"}>
+      <Icon name={ok ? "check" : "x"} size={13} stroke={3} />
+      {ok ? "Coincide" : "No coincide"}
+    </span>
   );
 }

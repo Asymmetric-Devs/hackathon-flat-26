@@ -13,16 +13,16 @@ export function LoginForm() {
   }
 
   return (
-    <form className="form" onSubmit={onSubmit} style={{ maxWidth: "24rem" }}>
+    <form className="form" onSubmit={onSubmit}>
       <div className="field">
         <label className="label" htmlFor="password">
-          Contraseña de la asociación
+          Contraseña
         </label>
         <input className="input" id="password" name="password" type="password" autoComplete="current-password" required />
       </div>
       {error ? <p className="notice">{error}</p> : null}
       <div>
-        <button className="btn" type="submit" disabled={pending}>
+        <button className="btn btn-brand" style={{ width: "100%" }} type="submit" disabled={pending}>
           {pending ? "Entrando…" : "Entrar"}
         </button>
       </div>

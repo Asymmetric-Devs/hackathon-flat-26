@@ -11,7 +11,7 @@ export function RevokeButton({ id }: { id: number }) {
 
   if (!confirming) {
     return (
-      <button className="link-button" type="button" onClick={() => setConfirming(true)}>
+      <button className="link-button danger" type="button" onClick={() => setConfirming(true)}>
         Revocar
       </button>
     );
@@ -43,7 +43,7 @@ export function LogoutButton() {
   const router = useRouter();
   return (
     <button
-      className="btn btn-ghost"
+      className="btn btn-secondary"
       type="button"
       onClick={async () => {
         await fetch("/api/session", { method: "DELETE" });

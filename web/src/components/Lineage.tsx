@@ -1,29 +1,35 @@
 import Link from "next/link";
 import type { LineageLink } from "@/lib/verify";
 
-/** Línea del oficio: del maestro más antiguo al artesano, como un hilo vertical. */
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
+}
+
+/** Línea del oficio: del maestro más antiguo al artesano. */
 export function Lineage({ links, current }: { links: LineageLink[]; current?: number }) {
-  if (links.length <= 1 && !links[0]?.id) {
-    return <p className="muted">Sin maestro registrado.</p>;
+  if (links.length <= 1) {
+    return <p className="muted">No tiene un maestro registrado.</p>;
   }
 
   return (
     <ol className="lineage">
       {links.map((link, index) => {
         const isCurrent = link.id !== null && link.id === current;
-        const name = link.id && !isCurrent ? <Link href={`/a/${link.id}`}>{link.name}</Link> : link.name;
+        const role = isCurrent ? "Artesano" : index === 0 ? "Maestro" : "Aprendiz y maestro";
         return (
           <li key={`${link.id ?? "ext"}-${index}`} className={isCurrent ? "lineage-item is-current" : "lineage-item"}>
-            <span className="lineage-knot" aria-hidden="true" />
+            <span className="avatar">{initials(link.name)}</span>
             <div>
-              <p className="lineage-name">{name}</p>
-              <p className="label">
-                {[
-                  index === 0 && links.length > 1 ? "Maestro" : isCurrent ? "Artesano" : "Aprendiz y maestro",
-                  link.craft,
-                  link.since ? `desde ${link.since}` : null,
-                  link.onChain ? null : "no registrado",
-                ]
+              <p className="lineage-name">
+                {link.id && !isCurrent ? <Link href={`/a/${link.id}`}>{link.name}</Link> : link.name}
+              </p>
+              <p className="lineage-meta">
+                {[role, link.craft, link.since ? `desde ${link.since}` : null, link.onChain ? null : "no registrado"]
                   .filter(Boolean)
                   .join(" · ")}
               </p>

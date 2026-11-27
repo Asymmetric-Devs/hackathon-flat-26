@@ -12,11 +12,11 @@ export default async function NewArtisanPage() {
   const artisans = await store.listArtisans();
 
   return (
-    <div className="wrap piece">
-      <header className="piece-head">
-        <p className="label">Panel · Artesanos</p>
-        <h1 className="title">Registrar artesano</h1>
-        <p className="lede">
+    <div className="wrap page">
+      <header className="page-head">
+        <span className="kicker">Panel · Artesanos</span>
+        <h1 className="h1">Registrar artesano</h1>
+        <p className="lead">
           Su ficha queda guardada y su huella firmada en Stellar. Si aprendió de alguien registrado, el vínculo
           también.
         </p>

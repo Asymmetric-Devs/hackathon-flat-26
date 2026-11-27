@@ -72,11 +72,11 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
           <Link className="btn" href={`/p/${done.id}/etiqueta`}>
             Imprimir etiqueta con QR
           </Link>
-          <Link className="btn btn-ghost" href={`/p/${done.id}`}>
+          <Link className="btn btn-secondary" href={`/p/${done.id}`}>
             Ver página pública
           </Link>
           <button
-            className="btn btn-ghost"
+            className="btn btn-secondary"
             type="button"
             onClick={() => {
               setDone(null);
@@ -92,7 +92,7 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
   }
 
   return (
-    <form className="form" onSubmit={onSubmit}>
+    <form className="form card form-card" onSubmit={onSubmit}>
       <div className="field">
         <label className="label" htmlFor="artisanId">
           Artesano
@@ -166,7 +166,7 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
         <button className="btn" type="submit" disabled={pending}>
           {pending ? "Firmando en Stellar…" : "Emitir certificado"}
         </button>
-        <Link className="btn btn-ghost" href="/panel">
+        <Link className="btn btn-secondary" href="/panel">
           Volver
         </Link>
       </div>

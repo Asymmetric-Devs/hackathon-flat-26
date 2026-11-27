@@ -40,7 +40,7 @@ export function ArtisanForm({ artisans }: { artisans: Option[] }) {
         </div>
       ) : null}
 
-      <form className="form" onSubmit={onSubmit}>
+      <form className="form card form-card" onSubmit={onSubmit}>
         <div className="field-row">
           <div className="field">
             <label className="label" htmlFor="name">
@@ -78,8 +78,8 @@ export function ArtisanForm({ artisans }: { artisans: Option[] }) {
           <textarea className="textarea" id="bio" name="bio" maxLength={1200} />
         </div>
 
-        <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
-          <legend className="label" style={{ marginBottom: "0.45rem" }}>
+        <fieldset className="fieldset">
+          <legend className="label" style={{ marginBottom: "0.5rem" }}>
             De quién aprendió el oficio
           </legend>
           <div className="field-row">
@@ -105,7 +105,7 @@ export function ArtisanForm({ artisans }: { artisans: Option[] }) {
             </div>
           </div>
           {master === "otro" ? (
-            <div className="field" style={{ marginTop: "1rem" }}>
+            <div className="field">
               <label className="label" htmlFor="masterName">
                 Nombre del maestro
               </label>
@@ -113,14 +113,14 @@ export function ArtisanForm({ artisans }: { artisans: Option[] }) {
             </div>
           ) : null}
           {master ? (
-            <div className="field" style={{ marginTop: "1rem" }}>
+            <div className="field">
               <label className="label" htmlFor="masterNote">
                 Cómo aprendió
               </label>
               <input className="input" id="masterNote" name="masterNote" maxLength={600} placeholder="Era su abuela; le enseñó en el taller familiar" />
             </div>
           ) : null}
-          <p className="field-hint" style={{ marginTop: "0.6rem" }}>
+          <p className="field-hint">
             Si el maestro está registrado, el vínculo queda firmado en Stellar.
           </p>
         </fieldset>
@@ -130,7 +130,7 @@ export function ArtisanForm({ artisans }: { artisans: Option[] }) {
           <button className="btn" type="submit" disabled={pending}>
             {pending ? "Firmando en Stellar…" : "Registrar artesano"}
           </button>
-          <Link className="btn btn-ghost" href="/panel">
+          <Link className="btn btn-secondary" href="/panel">
             Volver
           </Link>
         </div>

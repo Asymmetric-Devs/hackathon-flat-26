@@ -15,11 +15,11 @@ export default async function NewPiecePage({ searchParams }: PageProps<"/panel/p
   const preselected = Number(Array.isArray(raw) ? raw[0] : raw) || undefined;
 
   return (
-    <div className="wrap piece">
-      <header className="piece-head">
-        <p className="label">Panel · Certificados</p>
-        <h1 className="title">Certificar una pieza</h1>
-        <p className="lede">
+    <div className="wrap page">
+      <header className="page-head">
+        <span className="kicker">Panel · Certificados</span>
+        <h1 className="h1">Certificar una pieza</h1>
+        <p className="lead">
           La asociación firma en Stellar la huella de la foto y de la ficha. Después se imprime la etiqueta con el QR.
         </p>
       </header>

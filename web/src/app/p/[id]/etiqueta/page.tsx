@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
+import { LogoMark } from "@/components/Logo";
 import { PrintButton } from "@/components/panel/Actions";
-import { Seal } from "@/components/Seal";
 import { config } from "@/lib/config";
 import { catalogNumber } from "@/lib/format";
 import { store } from "@/lib/store";
@@ -22,41 +22,40 @@ export default async function LabelPage({ params }: PageProps<"/p/[id]/etiqueta"
     type: "svg",
     margin: 0,
     errorCorrectionLevel: "M",
-    color: { dark: "#1c1a16", light: "#00000000" },
+    color: { dark: "#18150f", light: "#00000000" },
   });
 
   return (
-    <div className="wrap piece">
-      <div className="no-print piece-head">
-        <p className="label">Etiqueta para la pieza</p>
-        <h1 className="subtitle">Imprimila y colgala o pegala en la pieza.</h1>
+    <div className="wrap page">
+      <header className="page-head no-print">
+        <span className="kicker">Etiqueta · {catalogNumber(id)}</span>
+        <h1 className="h1">Imprimila y colgala en la pieza</h1>
+        <p className="lead">Quien la escanee llega a la página de verificación de esta pieza.</p>
         <div className="btn-row">
           <PrintButton />
-          <Link className="btn btn-ghost" href={`/p/${id}`}>
+          <Link className="btn btn-secondary" href={`/p/${id}`}>
             Ver página pública
           </Link>
         </div>
-      </div>
+      </header>
 
-      <div className="label-sheet">
-        <article className="tag">
-          <div className="tag-qr" dangerouslySetInnerHTML={{ __html: qr }} />
-          <div className="tag-body">
-            <p className="tag-brand">Hilo</p>
-            <p className="tag-kicker">Sello de origen</p>
-            <p className="tag-title">{piece.meta.title}</p>
-            {artisan ? <p className="tag-artisan">{artisan.meta.name}</p> : null}
-            <p className="tag-number">{catalogNumber(id)}</p>
-            <p className="tag-cta">Escaneá para comprobar quién la hizo</p>
+      <article className="tag">
+        <div className="tag-qr" dangerouslySetInnerHTML={{ __html: qr }} />
+        <div>
+          <p className="tag-brand">
+            <LogoMark size={16} /> oficio
+          </p>
+          <p className="tag-title">{piece.meta.title}</p>
+          {artisan ? <p className="tag-artisan">{artisan.meta.name}</p> : null}
+          <div className="tag-foot">
+            <span>Escaneá y comprobá su origen</span>
+            <strong>{catalogNumber(id)}</strong>
           </div>
-          <div className="tag-seal">
-            <Seal number={id} size={64} />
-          </div>
-        </article>
-        <p className="mono muted no-print" style={{ marginTop: "1rem" }}>
-          {url}
-        </p>
-      </div>
+        </div>
+      </article>
+      <p className="mono faint no-print" style={{ marginTop: "1rem" }}>
+        {url}
+      </p>
     </div>
   );
 }
