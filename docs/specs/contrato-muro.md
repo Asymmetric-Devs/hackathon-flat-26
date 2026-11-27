@@ -6,7 +6,7 @@ Un contrato por despliegue. Alquiler diario de obras con depósito en garantía,
 `__constructor(token: Address, day_secs: u64, grace_days: u32)`
 - `token`: SAC (SEP-41). En testnet: XLM nativo. En producción: USDC.
 - `day_secs`: duración de un "día". Producción 86400. El despliegue de demo usa 60 para que el contador se vea correr en vivo (la UI lo indica).
-- `grace_days`: días de gracia antes de poder ejecutar el depósito.
+- `grace_days`: días de gracia antes de poder ejecutar el depósito. Debe ser >= 1.
 
 ## Tipos
 - `Status`: `Available | Hung | Returning | Sold | Lost`
@@ -18,7 +18,7 @@ Un contrato por despliegue. Alquiler diario de obras con depósito en garantía,
 ## Funciones
 | Función | Auth | Efecto |
 |---|---|---|
-| `publish(artist, price, rate, deposit, meta) -> u32` | artist | Crea la obra (`Available`). Valida `price>0`, `rate>0`, `deposit>=0`. |
+| `publish(artist, price, rate, deposit, meta) -> u32` | artist | Crea la obra (`Available`). Valida `price>0`, `rate>0`, `deposit>0` (obligatorio), cada monto <= 1e18 stroops y `meta` de 1 a 512 bytes. |
 | `hang(venue, work_id, days: u32)` | venue | Solo `Available`. Transfiere `deposit + rate*days` del venue al contrato. Crea el lease, `Hung`. `days>=1`. |
 | `top_up(venue, work_id, days: u32)` | venue del lease | Suma `rate*days` a `prepaid`. Solo `Hung`. |
 | `accrued(work_id) -> i128` | vista | `min(floor((now-from)*rate/day_secs), prepaid, price-paid)`; 0 si no está `Hung`. |
@@ -46,3 +46,9 @@ Se dispara desde `claim` o `buy_now`. `owner = venue`, estado `Sold`, devuelve a
 
 ## Por qué no Trustless Work
 Trustless Work libera por hitos y cobra 0,3 % por transacción. Acá el pago es continuo (devengado por tiempo) y se acredita hacia una compra, con depósito atado a ese mismo estado. Un cobro del 0,3 % sobre micro-liquidaciones diarias rompe el modelo. Se usan igualmente componentes existentes: SEP-41/SAC para el activo, Freighter / Stellar Wallets Kit para firmar, Stellar Expert como explorador.
+
+## Cambios tras la auditoría (ver `docs/AUDITORIA.md`)
+- `from` avanza con **techo** (acotado por el tiempo transcurrido): evita que `claim` repetido cobre de más.
+- Depósito obligatorio (> 0); montos acotados a 1e18; `meta` hasta 512 bytes; `grace_days >= 1`.
+- Historial acotado a las últimas 100 exposiciones por obra.
+- Todas las operaciones que cambian estado extienden el TTL de la instancia y de las entradas de la obra.

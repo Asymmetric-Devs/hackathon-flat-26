@@ -187,7 +187,11 @@ pub struct Tipped {
 const DAY_LEDGERS: u32 = 17_280; // ~5 s por ledger
 const TTL_THRESHOLD: u32 = 30 * DAY_LEDGERS;
 const TTL_EXTEND: u32 = 60 * DAY_LEDGERS;
-const MAX_META_LEN: u32 = 64;
+const MAX_META_LEN: u32 = 512;
+/// Tope de montos: evita overflow en `due * day_secs` (1e18 * ~1.8e19 < i128::MAX).
+const MAX_AMOUNT: i128 = 1_000_000_000_000_000_000;
+/// Máximo de exposiciones que se guardan por obra (las más recientes).
+const MAX_HISTORY: u32 = 100;
 
 // ---------------------------------------------------------------------------------------------
 // Almacenamiento
@@ -227,10 +231,25 @@ fn history_of(e: &Env, id: u32) -> Vec<Record> {
 
 fn push_record(e: &Env, id: u32, r: Record) {
     let mut h = history_of(e, id);
+    if h.len() >= MAX_HISTORY {
+        h.pop_front();
+    }
     h.push_back(r);
     let k = DataKey::History(id);
     e.storage().persistent().set(&k, &h);
     e.storage().persistent().extend_ttl(&k, TTL_THRESHOLD, TTL_EXTEND);
+}
+
+/// Extiende el TTL de la instancia y de las entradas de la obra. Se llama en cada operación que
+/// cambia estado, para que una obra activa nunca quede archivada con fondos adentro.
+fn touch(e: &Env, id: u32) {
+    bump_instance(e);
+    let p = e.storage().persistent();
+    for k in [DataKey::Work(id), DataKey::Lease(id), DataKey::History(id), DataKey::Tips(id)] {
+        if p.has(&k) {
+            p.extend_ttl(&k, TTL_THRESHOLD, TTL_EXTEND);
+        }
+    }
 }
 
 fn tips_of(e: &Env, id: u32) -> i128 {
@@ -273,15 +292,18 @@ fn calc_accrued(e: &Env, w: &Work, l: &Lease) -> i128 {
 }
 
 /// Liquida lo devengado sobre `l` (solo estado, sin transferir) y devuelve el monto a pagar
-/// al artista. `from` avanza lo que "compra" el monto pagado, redondeando hacia abajo: nunca
-/// se cobra de más.
+/// al artista. `from` avanza lo que "compra" el monto pagado, redondeando hacia arriba (ver abajo).
 fn settle(e: &Env, w: &Work, l: &mut Lease) -> i128 {
     let due = calc_accrued(e, w, l);
     if due > 0 {
         l.prepaid -= due;
         l.paid += due;
-        // due*day_secs/rate <= elapsed, entra en u64. Overflow imposible: due <= elapsed*rate/day.
-        let advance = due.checked_mul(day_secs(e)).unwrap() / w.rate;
+        // `from` avanza redondeando HACIA ARRIBA. Con el piso, cuando rate > day_secs (siempre, con
+        // montos en stroops) el avance daba 0 y cada `claim` repetido cobraba lo mismo otra vez.
+        // due*day_secs/rate <= elapsed, y elapsed es entero: el techo nunca pasa de `elapsed`.
+        let elapsed = e.ledger().timestamp().saturating_sub(l.from) as i128;
+        let num = due.saturating_mul(day_secs(e));
+        let advance = ((num + w.rate - 1) / w.rate).min(elapsed);
         l.from += advance as u64;
     }
     due
@@ -326,7 +348,7 @@ pub struct Muro;
 #[contractimpl]
 impl Muro {
     pub fn __constructor(e: Env, token: Address, day_secs: u64, grace_days: u32) {
-        if day_secs == 0 {
+        if day_secs == 0 || grace_days == 0 {
             panic_with_error!(&e, Error::BadAmount);
         }
         let s = e.storage().instance();
@@ -345,7 +367,8 @@ impl Muro {
         meta: String,
     ) -> Result<u32, Error> {
         artist.require_auth();
-        if price <= 0 || rate <= 0 || deposit < 0 {
+        // El depósito es obligatorio: sin él, el artista no tiene ninguna garantía.
+        if price <= 0 || rate <= 0 || deposit <= 0 || price > MAX_AMOUNT || rate > MAX_AMOUNT || deposit > MAX_AMOUNT {
             return Err(Error::BadAmount);
         }
         if meta.len() == 0 || meta.len() > MAX_META_LEN {
@@ -372,6 +395,7 @@ impl Muro {
     }
 
     pub fn hang(e: Env, venue: Address, work_id: u32, days: u32) -> Result<(), Error> {
+        touch(&e, work_id);
         venue.require_auth();
         if days == 0 {
             return Err(Error::BadAmount);
@@ -408,6 +432,7 @@ impl Muro {
     }
 
     pub fn top_up(e: Env, venue: Address, work_id: u32, days: u32) -> Result<(), Error> {
+        touch(&e, work_id);
         venue.require_auth();
         if days == 0 {
             return Err(Error::BadAmount);
@@ -436,6 +461,7 @@ impl Muro {
 
     /// Cualquiera puede llamarla: solo mueve fondos hacia el artista (o al venue en la venta).
     pub fn claim(e: Env, work_id: u32) -> Result<i128, Error> {
+        touch(&e, work_id);
         let mut w = get_work(&e, work_id)?;
         if w.status != Status::Hung {
             return Ok(0);
@@ -458,6 +484,7 @@ impl Muro {
     }
 
     pub fn buy_now(e: Env, venue: Address, work_id: u32) -> Result<(), Error> {
+        touch(&e, work_id);
         venue.require_auth();
         let mut w = get_work(&e, work_id)?;
         if w.status != Status::Hung {
@@ -481,6 +508,7 @@ impl Muro {
     }
 
     pub fn stop(e: Env, venue: Address, work_id: u32) -> Result<(), Error> {
+        touch(&e, work_id);
         venue.require_auth();
         let mut w = get_work(&e, work_id)?;
         if w.status != Status::Hung {
@@ -512,6 +540,7 @@ impl Muro {
     }
 
     pub fn confirm_return(e: Env, artist: Address, work_id: u32) -> Result<(), Error> {
+        touch(&e, work_id);
         artist.require_auth();
         let mut w = get_work(&e, work_id)?;
         if w.artist != artist {
@@ -541,6 +570,7 @@ impl Muro {
     }
 
     pub fn seize(e: Env, artist: Address, work_id: u32) -> Result<(), Error> {
+        touch(&e, work_id);
         artist.require_auth();
         let mut w = get_work(&e, work_id)?;
         if w.artist != artist {
@@ -599,6 +629,7 @@ impl Muro {
     }
 
     pub fn tip(e: Env, from: Address, work_id: u32, amount: i128) -> Result<(), Error> {
+        touch(&e, work_id);
         from.require_auth();
         if amount <= 0 {
             return Err(Error::BadAmount);

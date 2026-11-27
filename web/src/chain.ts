@@ -31,7 +31,7 @@ async function read<T>(method: string, ...args: xdr.ScVal[]): Promise<T> {
 /** Códigos de error del contrato, traducidos para quien usa la app. */
 const ERRORS: { [k: string]: string } = {
   NotFound: "Esa obra no existe.", BadState: "La obra no está en un estado que permita esto.", BadAmount: "El monto no es válido.",
-  Early: "Todavía es pronto: no pasó el plazo de gracia.", Unauthorized: "Esta cuenta no puede hacer eso en esta obra.",
+  Early: "Todavía es pronto: no pasó el plazo de gracia.", Unauthorized: "Esta cuenta no puede hacer eso en esta obra.", BadMeta: "Los datos de la obra son demasiado largos.",
 };
 function explain(raw: string): string {
   const hit = /Error\(Contract, #(\d+)\)/.exec(raw);

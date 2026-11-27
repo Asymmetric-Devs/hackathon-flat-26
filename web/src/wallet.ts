@@ -1,5 +1,5 @@
 import { getNetworkDetails, isConnected, requestAccess, signTransaction as freighterSign } from "@stellar/freighter-api";
-import { Keypair, TransactionBuilder } from "@stellar/stellar-sdk";
+import { Keypair, Networks, TransactionBuilder } from "@stellar/stellar-sdk";
 import { FRIENDBOT, PASSPHRASE } from "./config";
 
 export type Signer = { address: string; kind: "freighter" | "guest"; sign: (xdr: string) => Promise<string> };
@@ -47,6 +47,8 @@ const GUEST_KEY = "muro.guest";
  * Existe para que cualquier persona pueda probar Muro en un minuto, sin instalar una billetera.
  */
 export async function guestSigner(): Promise<Signer> {
+  // La clave vive en el navegador y firma sola: solo es aceptable en la red de pruebas.
+  if (PASSPHRASE !== Networks.TESTNET) throw new WalletError("network", "El modo invitado solo existe en Testnet.");
   let secret: string | null = null;
   try { secret = localStorage.getItem(GUEST_KEY); } catch { /* sin storage */ }
   const fresh = !secret;

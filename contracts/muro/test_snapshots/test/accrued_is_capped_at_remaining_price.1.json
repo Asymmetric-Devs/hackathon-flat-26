@@ -89,7 +89,7 @@
                   "i128": "10"
                 },
                 {
-                  "i128": "0"
+                  "i128": "1"
                 },
                 {
                   "string": "cheap"
@@ -136,7 +136,7 @@
                       "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
                     },
                     {
-                      "i128": "500"
+                      "i128": "501"
                     }
                   ]
                 }
@@ -352,7 +352,7 @@
                       "symbol": "deposit"
                     },
                     "val": {
-                      "i128": "0"
+                      "i128": "1"
                     }
                   },
                   {

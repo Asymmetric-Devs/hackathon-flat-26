@@ -15,13 +15,14 @@ export default function Publicar() {
     const p = CATALOG.find((c) => c.slug === slug);
     setF((x) => p ? { ...x, cat: slug, title: p.title, artist: p.artist, year: p.year, medium: p.medium, img: "" } : { ...x, cat: "" });
   };
-  const valid = f.title.trim() && f.artist.trim() && f.price > 0 && f.rate > 0 && f.deposit >= 0 && (f.cat || !f.img || /^https:\/\//.test(f.img));
+  const valid = f.title.trim() && f.artist.trim() && f.price > 0 && f.rate > 0 && f.deposit > 0 && (f.cat || !f.img || /^https:\/\//.test(f.img));
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     setBusy(true);
     try {
       const signer = await ensure();
       const meta = f.cat || JSON.stringify({ title: f.title.trim(), artist: f.artist.trim(), year: f.year.trim(), medium: f.medium.trim(), img: f.img.trim() });
+      if (new TextEncoder().encode(meta).length > 512) throw new Error("Los datos de la obra son demasiado largos: acortá el título, la técnica o la dirección de la imagen.");
       const h = await publish(signer, toStroops(f.price), toStroops(f.rate), toStroops(f.deposit), meta);
       toast("ok", "Tu obra quedó publicada y disponible para colgar.", h);
       await refresh();
@@ -53,7 +54,7 @@ export default function Publicar() {
           <label className="field">Precio de venta ({ASSET})<input type="number" min={1} step="any" value={f.price} onChange={(e) => set("price", +e.target.value)} /></label>
           <label className="field">Alquiler por día ({ASSET})<input type="number" min={0.1} step="any" value={f.rate} onChange={(e) => set("rate", +e.target.value)} /></label>
         </div>
-        <label className="field">Depósito en garantía ({ASSET})<input type="number" min={0} step="any" value={f.deposit} onChange={(e) => set("deposit", +e.target.value)} /></label>
+        <label className="field">Depósito en garantía ({ASSET})<input type="number" min={0.1} step="any" value={f.deposit} onChange={(e) => set("deposit", +e.target.value)} /></label>
         <p className="hint">Con estos números, la obra es del espacio a los {f.rate > 0 ? Math.ceil(f.price / f.rate) : "…"} días de alquiler. El depósito lo retiene el contrato y vuelve cuando confirmás que la recibiste.</p>
         <div className="actions"><button className="btn" type="submit" disabled={busy || !valid}>{busy ? "Publicando…" : "Publicar la obra"}</button></div>
       </form>

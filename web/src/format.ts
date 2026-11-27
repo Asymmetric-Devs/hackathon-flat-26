@@ -7,7 +7,12 @@ export const xlm = (v: bigint, max = 2): string => {
   return (neg ? "−" : "") + n.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: max });
 };
 export const money = (v: bigint, max = 2) => `${xlm(v, max)} ${ASSET}`;
-export const toStroops = (n: number): bigint => BigInt(Math.round(n * 1e7));
+/** Convierte un monto en XLM a stroops. Rechaza NaN, infinitos, negativos y montos que pierdan precisión. */
+export const MAX_XLM = 900_000_000;
+export const toStroops = (n: number): bigint => {
+  if (!Number.isFinite(n) || n < 0 || n > MAX_XLM) throw new Error("El monto no es válido.");
+  return BigInt(Math.round(n * 1e7));
+};
 export const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
 export const txUrl = (h: string) => `${EXPERT}/tx/${h}`;
 export const contractUrl = (c: string) => `${EXPERT}/contract/${c}`;

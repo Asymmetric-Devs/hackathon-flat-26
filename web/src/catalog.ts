@@ -35,15 +35,20 @@ export const bySlug = (s: string) => CATALOG.find((p) => p.slug === s);
 export type Meta = Omit<Piece, "slug" | "epigraph" | "source"> & { img: string; epigraph?: string };
 export type Resolved = { title: string; artist: string; year: string; medium: string; collection: string; img: string; ratio: number; epigraph: string; demo: boolean };
 
+/** Solo se aceptan imágenes https (el JSON de `meta` lo escribe cualquiera en la cadena). */
+const safeImg = (u: unknown): string => (typeof u === "string" && /^https:\/\/[^\s"'<>]+$/i.test(u) && u.length <= 300 ? u : "");
+const safeRatio = (r: unknown): number => (typeof r === "number" && Number.isFinite(r) ? Math.min(5, Math.max(0.2, r)) : 1.2);
+const text = (v: unknown, max: number): string => (typeof v === "string" ? v.slice(0, max) : "");
+
 /** Resuelve el `meta` guardado en la cadena: slug del catálogo o JSON con los datos de una obra propia. */
 export function resolve(meta: string): Resolved {
   const p = bySlug(meta);
   if (p) return { ...p, img: `/obras/${p.slug}.jpg`, demo: true };
   try {
     const j = JSON.parse(meta) as Partial<Meta>;
-    return { title: j.title ?? "Sin título", artist: j.artist ?? "Artista", year: j.year ?? "", medium: j.medium ?? "", collection: j.collection ?? "",
-      img: j.img ?? "", ratio: j.ratio ?? 1.2, epigraph: j.epigraph ?? "", demo: false };
+    return { title: text(j.title, 120) || "Sin título", artist: text(j.artist, 80) || "Artista", year: text(j.year, 12), medium: text(j.medium, 80), collection: text(j.collection, 80),
+      img: safeImg(j.img), ratio: safeRatio(j.ratio), epigraph: text(j.epigraph, 280), demo: false };
   } catch {
-    return { title: meta || "Sin título", artist: "Artista", year: "", medium: "", collection: "", img: "", ratio: 1.2, epigraph: "", demo: false };
+    return { title: text(meta, 120) || "Sin título", artist: "Artista", year: "", medium: "", collection: "", img: "", ratio: 1.2, epigraph: "", demo: false };
   }
 }

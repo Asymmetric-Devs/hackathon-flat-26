@@ -33,7 +33,7 @@ Además: **cartela con QR** junto a la obra (muestra lo cobrado en vivo y permit
 
 ## Stellar: qué usamos
 
-- **Soroban** (contrato en Rust, `soroban-sdk 29`): `contracts/muro`. 34 pruebas.
+- **Soroban** (contrato en Rust, `soroban-sdk 29`): `contracts/muro`. 38 pruebas y una auditoría independiente ([`AUDITORIA.md`](AUDITORIA.md)).
 - **SAC / SEP-41:** el activo de pago. En testnet es XLM nativo; en producción sería USDC.
 - **Freighter** (wallet existente) y un **modo invitado** solo para Testnet (cuenta creada en el navegador y fondeada con Friendbot) para que cualquier persona pruebe sin instalar nada.
 - **Stellar Expert** como explorador.
@@ -64,7 +64,7 @@ Dos instancias desplegadas en Testnet (ver `web/src/deployed.json` y la página 
 
 ```bash
 # contrato
-cargo test                      # 34 pruebas
+cargo test                      # 38 pruebas
 stellar contract build
 
 # web
@@ -74,10 +74,11 @@ npm run build                              # sitio estático en web/dist
 # testnet
 scripts/deploy-testnet.sh       # despliega las dos instancias y escribe web/src/deployed.json
 scripts/seed-testnet.sh         # publica obras de ejemplo y corre un flujo real
-scripts/refresh-demo.sh 0 600   # recarga el prepago de la obra #0 para la presentación
+scripts/refresh-demo.sh 0 600   # recarga el prepago de la obra #0
+scripts/reset-demo.sh           # reinicia toda la demo (despliega, siembra y regenera la evidencia)
 ```
 
-**Antes de presentar:** el prepago de la obra colgada en la demo dura unos minutos (1 día = 1 minuto). Correr `scripts/refresh-demo.sh` para que el contador siga andando.
+**Antes de presentar:** con 1 día = 1 minuto, la obra colgada llega al 100 % del precio en ~100 minutos. Correr `scripts/reset-demo.sh` (~5 min) justo antes para tener la demo fresca.
 
 El acento de marca es naranja. Se puede probar otro con `?acento=violeta|lima|azul` en la URL.
 

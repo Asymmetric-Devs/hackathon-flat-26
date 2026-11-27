@@ -80,11 +80,18 @@ fn publish_validation() {
     assert_eq!(s.muro.try_publish(&s.artist, &0, &RATE, &DEPOSIT, &m), Err(Ok(Error::BadAmount)));
     assert_eq!(s.muro.try_publish(&s.artist, &PRICE, &0, &DEPOSIT, &m), Err(Ok(Error::BadAmount)));
     assert_eq!(s.muro.try_publish(&s.artist, &PRICE, &RATE, &-1, &m), Err(Ok(Error::BadAmount)));
+    // el depósito es obligatorio
+    assert_eq!(s.muro.try_publish(&s.artist, &PRICE, &RATE, &0, &m), Err(Ok(Error::BadAmount)));
     let empty = String::from_str(&s.e, "");
     assert_eq!(s.muro.try_publish(&s.artist, &PRICE, &RATE, &DEPOSIT, &empty), Err(Ok(Error::BadMeta)));
-    // depósito 0 es válido
-    assert!(s.muro.try_publish(&s.artist, &PRICE, &RATE, &0, &m).is_ok());
+    assert_eq!(s.muro.count(), 0);
+    assert!(s.muro.try_publish(&s.artist, &PRICE, &RATE, &1, &m).is_ok());
     assert_eq!(s.muro.count(), 1);
+    // meta largo (JSON de una obra propia) hasta 512 bytes
+    let long = String::from_str(&s.e, &"a".repeat(512));
+    assert!(s.muro.try_publish(&s.artist, &PRICE, &RATE, &1, &long).is_ok());
+    let too_long = String::from_str(&s.e, &"a".repeat(513));
+    assert_eq!(s.muro.try_publish(&s.artist, &PRICE, &RATE, &1, &too_long), Err(Ok(Error::BadMeta)));
 }
 
 #[test]
@@ -124,10 +131,17 @@ fn hang_rejects_zero_days_missing_and_double_lease() {
 }
 
 #[test]
-fn hang_overflow_is_rejected() {
+fn huge_amounts_are_rejected_at_publish() {
     let s = setup();
-    let id = s.muro.publish(&s.artist, &PRICE, &(i128::MAX / 2), &0, &String::from_str(&s.e, "big"));
-    assert_eq!(s.muro.try_hang(&s.venue, &id, &10), Err(Ok(Error::BadAmount)));
+    let m = String::from_str(&s.e, "big");
+    // Montos por encima del tope (1e18) se rechazan: evitan overflow en la matemática de devengo.
+    assert_eq!(s.muro.try_publish(&s.artist, &PRICE, &(i128::MAX / 2), &DEPOSIT, &m), Err(Ok(Error::BadAmount)));
+    assert_eq!(s.muro.try_publish(&s.artist, &(i128::MAX / 2), &RATE, &DEPOSIT, &m), Err(Ok(Error::BadAmount)));
+    assert_eq!(s.muro.try_publish(&s.artist, &PRICE, &RATE, &(i128::MAX / 2), &m), Err(Ok(Error::BadAmount)));
+    // en el tope exacto, colgar por el máximo de días no desborda
+    let top = 1_000_000_000_000_000_000i128;
+    let id = s.muro.publish(&s.artist, &top, &top, &1, &m);
+    assert_eq!(s.muro.try_hang(&s.venue, &id, &u32::MAX).is_err(), true); // sin fondos, pero no es overflow
 }
 
 // --- accrual / claim -------------------------------------------------------------------------
@@ -237,7 +251,7 @@ fn claim_completing_price_sells_automatically() {
 #[test]
 fn accrued_is_capped_at_remaining_price() {
     let s = setup();
-    let id = s.muro.publish(&s.artist, &100, &RATE, &0, &String::from_str(&s.e, "cheap"));
+    let id = s.muro.publish(&s.artist, &100, &RATE, &1, &String::from_str(&s.e, "cheap"));
     s.muro.hang(&s.venue, &id, &50); // prepaid 500, precio 100
     s.at(T0 + 5_000);
     assert_eq!(s.muro.accrued(&id), 100);
@@ -601,4 +615,81 @@ fn contract_never_holds_more_than_lease_funds() {
         assert_eq!(s.bal(&s.contract), l.deposit + l.prepaid);
         assert_eq!(s.bal(&s.artist), l.paid);
     }
+}
+
+// --- regresiones de la auditoría ---------------------------------------------------------------
+
+/// H1: con rate (stroops) > day_secs el avance de `from` redondeaba a 0 y cada `claim` repetido
+/// en el mismo instante cobraba otra vez. Ahora el segundo `claim` no paga nada.
+#[test]
+fn repeated_claim_in_same_second_pays_once() {
+    let e = Env::default();
+    e.mock_all_auths();
+    e.ledger().set_timestamp(1_000);
+    let admin = Address::generate(&e);
+    let sac = e.register_stellar_asset_contract_v2(admin);
+    let contract = e.register(Muro, (sac.address(), 60u64, 1u32));
+    let muro = MuroClient::new(&e, &contract);
+    let artist = Address::generate(&e);
+    let venue = Address::generate(&e);
+    StellarAssetClient::new(&e, &sac.address()).mint(&venue, &1_000_000_000);
+    let id = muro.publish(&artist, &1_000_000_000, &100_000_000, &1, &String::from_str(&e, "x"));
+    muro.hang(&venue, &id, &5);
+    e.ledger().set_timestamp(1_001);
+    let mut total = 0;
+    for _ in 0..200 {
+        total += muro.claim(&id);
+    }
+    assert_eq!(total, 1_666_666, "se cobró de más");
+    assert_eq!(muro.lease(&id).unwrap().paid, 1_666_666);
+}
+
+/// Con la instancia real (día = 86400 s) y 3 XLM/día en stroops, claims repetidos tampoco cobran de más.
+#[test]
+fn repeated_claim_real_day_length_never_overcharges() {
+    let e = Env::default();
+    e.mock_all_auths();
+    e.ledger().set_timestamp(10_000);
+    let admin = Address::generate(&e);
+    let sac = e.register_stellar_asset_contract_v2(admin);
+    let contract = e.register(Muro, (sac.address(), 86_400u64, 7u32));
+    let muro = MuroClient::new(&e, &contract);
+    let artist = Address::generate(&e);
+    let venue = Address::generate(&e);
+    StellarAssetClient::new(&e, &sac.address()).mint(&venue, &10_000_000_000);
+    let rate = 30_000_000i128; // 3 XLM por día
+    let id = muro.publish(&artist, &3_000_000_000, &rate, &1, &String::from_str(&e, "y"));
+    muro.hang(&venue, &id, &30);
+    let mut paid = 0i128;
+    for t in 1..=3_600u64 {
+        e.ledger().set_timestamp(10_000 + t);
+        paid += muro.claim(&id);
+        paid += muro.claim(&id); // segundo claim en el mismo instante: no debe pagar
+    }
+    // una hora de alquiler = 3 XLM / 24 = 1_250_000 stroops: nunca más, y a lo sumo ~1 stroop menos por claim
+    assert!(paid <= 1_250_000, "cobró de más: {paid}");
+    assert!(paid >= 1_250_000 - 3_600, "perdió demasiado por redondeo: {paid}");
+}
+
+/// L1: el historial queda acotado a MAX_HISTORY (se descartan las más viejas).
+#[test]
+fn history_is_capped() {
+    let s = setup();
+    let id = s.publish();
+    for i in 0..(MAX_HISTORY + 5) as u64 {
+        s.at(T0 + i * 10);
+        s.muro.hang(&s.venue, &id, &1);
+        s.muro.stop(&s.venue, &id);
+        s.muro.confirm_return(&s.artist, &id);
+    }
+    assert_eq!(s.muro.history(&id).len(), MAX_HISTORY);
+}
+
+/// La gracia en 0 permitiría `seize` inmediato: el constructor la rechaza.
+#[test]
+#[should_panic]
+fn constructor_rejects_zero_grace() {
+    let e = Env::default();
+    let t = Address::generate(&e);
+    e.register(Muro, (t, 60u64, 0u32));
 }

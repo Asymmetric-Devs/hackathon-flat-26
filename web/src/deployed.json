@@ -4,7 +4,7 @@
   "networkPassphrase": "Test SDF Network ; September 2015",
   "token": "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
   "instances": {
-    "demo": { "contractId": "CCMC4ZLYQQ5F6VLOELFJABAW3O4GEGT4M62J3XIJJ2BLO4BA7GM2S6XS", "daySecs": 60, "graceDays": 1, "deployTx": "e6f2781f304e7a8a3f1ca9e253f15f4ce1101cb95f12b3534426e0e4ce3dddaf" },
-    "real": { "contractId": "CBUHTQNHJRC5366PQ37WQGSHUWT2JQ23T3ZOEMZIUM5CWEXEIZSHLNMN", "daySecs": 86400, "graceDays": 7, "deployTx": "9b31078c0900f162c2b2836721557b9ef024a13c4ac296c7e841aaebda1c678c" }
+    "demo": { "contractId": "CDVMEHWUVQBHUXRPXUD2FWYKCUDLMTJP46RQJCKTHMJY44FB5TQ3NHXP", "daySecs": 60, "graceDays": 1, "deployTx": "ae9e3ba073a22e98a9838f3cc7938555c67d133b4734cc96c0d2c7b4ba83642d" },
+    "real": { "contractId": "CDUXMEJEHQHF7Q73WDFRP732KUAC3RCDMF6I7BVOXUH4ODIZ5LQUK4D7", "daySecs": 86400, "graceDays": 7, "deployTx": "575b6a59cac40b78198a7bc39940a753e70342ec4d7d9cf210e9bf769237bb1c" }
   }
 }
