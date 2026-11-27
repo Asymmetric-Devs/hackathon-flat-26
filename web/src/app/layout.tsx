@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Newsreader } from "next/font/google";
+import { IBM_Plex_Mono, Schibsted_Grotesk } from "next/font/google";
 import Link from "next/link";
-import { Nav } from "@/components/Nav";
+import { Logo } from "@/components/Logo";
+import { Topbar } from "@/components/Topbar";
 import "./globals.css";
 
-const serif = Newsreader({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz"],
+const sans = Schibsted_Grotesk({
+  variable: "--font-sans",
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
@@ -21,55 +20,73 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Hilo · Sello de origen",
-    template: "%s · Hilo",
+    default: "Oficio · Origen verificado para artesanías",
+    template: "%s · Oficio",
   },
   description:
-    "Certificados de origen para artesanías de la Plaza de las Artes de Mendoza: quién hizo cada pieza, cómo, y de quién aprendió el oficio. Firmados en Stellar.",
+    "Certificados de origen para artesanías hechas a mano, firmados en Stellar por la asociación que avala a los artesanos. Quien compra escanea el QR y comprueba quién hizo la pieza y de quién aprendió el oficio.",
 };
 
 const contractId = process.env.SELLO_CONTRACT_ID;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${serif.variable} ${mono.variable}`}>
+    <html lang="es" className={`${sans.variable} ${mono.variable}`}>
       <body>
-        <header className="masthead">
-          <div className="wrap masthead-inner">
-            <Link href="/" className="wordmark">
-              <span className="wordmark-name">Hilo</span>
-              <span className="wordmark-tag label">Sello de origen · Mendoza</span>
-            </Link>
-            <Nav />
-          </div>
-        </header>
-
+        <Topbar />
         <main>{children}</main>
-
         <footer className="footer">
-          <div className="wrap footer-grid">
-            <div>
-              <p className="wordmark-name">Hilo</p>
-              <p className="muted">
-                Un certificado por pieza, firmado por la asociación de artesanos. Nadie puede falsificarlo ni
-                editarlo después.
-              </p>
-            </div>
-            <div>
-              <p className="label">Red</p>
-              <p>Stellar testnet</p>
-              {contractId ? (
-                <p className="mono">
-                  <a href={`https://stellar.expert/explorer/testnet/contract/${contractId}`}>
-                    Contrato {contractId.slice(0, 6)}…{contractId.slice(-6)}
-                  </a>
+          <div className="wrap">
+            <div className="footer-grid">
+              <div>
+                <Logo />
+                <p className="footer-tag">
+                  Origen verificado para artesanías hechas a mano. Un certificado por pieza, firmado por quien avala a
+                  los artesanos.
                 </p>
-              ) : null}
+              </div>
+              <div>
+                <h4>Producto</h4>
+                <ul>
+                  <li>
+                    <Link href="/piezas">Piezas certificadas</Link>
+                  </li>
+                  <li>
+                    <Link href="/artesanos">Artesanos</Link>
+                  </li>
+                  <li>
+                    <Link href="/#como-funciona">Cómo funciona</Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4>Asociaciones</h4>
+                <ul>
+                  <li>
+                    <Link href="/panel">Panel de certificación</Link>
+                  </li>
+                  <li>
+                    <Link href="/#por-que">Por qué Stellar</Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4>Red</h4>
+                <ul>
+                  <li>Stellar testnet</li>
+                  {contractId ? (
+                    <li>
+                      <a href={`https://stellar.expert/explorer/testnet/contract/${contractId}`} className="mono">
+                        {contractId.slice(0, 6)}…{contractId.slice(-4)} ↗
+                      </a>
+                    </li>
+                  ) : null}
+                </ul>
+              </div>
             </div>
-            <div>
-              <p className="label">Proyecto</p>
-              <p>Hackathon FLAT 2026</p>
-              <p className="muted">Eje territorio, memoria y arte</p>
+            <div className="footer-base">
+              <span>Hackathon FLAT 2026 · BAF × Stellar</span>
+              <span>Primer caso: Plaza de las Artes, Mendoza · Piloto en Corrientes</span>
             </div>
           </div>
         </footer>

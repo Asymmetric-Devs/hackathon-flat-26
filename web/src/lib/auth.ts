@@ -3,10 +3,10 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { config } from "./config";
 
-const COOKIE = "hilo_panel";
+const COOKIE = "oficio_panel";
 
 function token() {
-  return createHmac("sha256", config.panelPassword).update("hilo-panel-v1").digest("hex");
+  return createHmac("sha256", config.panelPassword).update("oficio-panel-v1").digest("hex");
 }
 
 function safeEqual(a: string, b: string) {
