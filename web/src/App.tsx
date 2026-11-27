@@ -18,7 +18,7 @@ function Pages() {
     <>
       <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
         <filter id="rough-wm" x="-4%" y="-8%" width="108%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".012 .018" numOctaves="3" seed="7" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="58" /></filter>
-        <filter id="rough-wm-sm" x="-4%" y="-12%" width="108%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".02 .03" numOctaves="2" seed="7" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="80" /></filter>
+        <filter id="rough-wm-sm" x="-6%" y="-16%" width="112%" height="132%"><feTurbulence type="fractalNoise" baseFrequency=".022 .04" numOctaves="3" seed="3" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="230" xChannelSelector="R" yChannelSelector="G" result="d" /><feMorphology in="d" operator="dilate" radius="7" /></filter>
       </svg>
       <Nav route={r} />
       {r.page === "inicio" && <Landing />}
