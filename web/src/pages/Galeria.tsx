@@ -8,7 +8,7 @@ import { useStore } from "../store";
 function Card({ e }: { e: Entry }) {
   const { r, l } = useView(e);
   return (
-    <a href={href.obra(e.work.id)} aria-label={`${r.title}, ${r.artist}`}>
+    <a href={href.obra(e.work.id)} data-cursor="Ver obra" aria-label={`${r.title}, ${r.artist}`}>
       <Painting r={r}><Dot e={e} l={l} /></Painting>
       <div className="cartela">
         <span className={`state-chip ${STATUS_CLASS[e.work.status]}`}>{STATUS_LABEL[e.work.status]}</span>

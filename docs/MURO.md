@@ -22,7 +22,7 @@ Pinturas, fotos y grabados decoran bares, cafés, bodegas y hoteles de todo el p
    - Si el espacio frena el alquiler, devuelve la obra y el artista confirma que la recibió: el depósito vuelve.
    - Si no la devuelve o el prepago se agota y pasa el plazo de gracia, el depósito pasa al artista.
 
-Además: **cartela con QR** junto a la obra (muestra lo cobrado en vivo y permite dejar una propina al artista sin instalar nada) y **currículum público** de exposiciones por obra.
+Además: una landing con intro animada (un muro de ladrillos que se arma y estalla), recorrido horizontal de las obras con el scroll, scroll suave, cursor propio y respeto por "reducir movimiento" (se desactiva la intro y las animaciones). La intro se ve una vez por sesión; `?intro=1` la fuerza y `?intro=0` la salta. **Cartela con QR** junto a la obra (muestra lo cobrado en vivo y permite dejar una propina al artista sin instalar nada) y **currículum público** de exposiciones por obra.
 
 ## Por qué blockchain
 
@@ -120,4 +120,5 @@ Hacer esto **hoy** (ver criterio 3):
 - El problema que resuelve está sin validar con usuarios reales (ver arriba).
 - Obras de ejemplo: son de dominio público (fuente: Wikimedia Commons). Los epígrafes son nuestros y la fecha, técnica y colección deben contrastarse antes de usarse fuera de la demo.
 - Modo invitado: existe solo para Testnet. En producción cada persona usaría su propia wallet.
-- Hay obras de prueba de la instancia *real* creadas por pruebas automáticas; no afectan a la instancia demo.
+- Las pruebas automáticas dejaron obras de prueba en la instancia *real*; no afectan a la instancia demo.
+- Seguridad: ver [`AUDITORIA.md`](AUDITORIA.md) (un hallazgo grave encontrado y corregido; riesgos conocidos que quedan abiertos explicados ahí).

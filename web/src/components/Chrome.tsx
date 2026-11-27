@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { INSTANCE_KEY, IS_DEMO_CLOCK } from "../config";
 import { short } from "../format";
+import { scrollToId } from "../fx";
 import { href, Route } from "../router";
 import { Mark } from "./Logo";
 import { useStore } from "../store";
@@ -25,12 +26,12 @@ export function Nav({ route }: { route: Route }) {
       <nav className="nav" aria-label="Principal">
         <a href={href.galeria} aria-current={cur("galeria")}>Galería</a>
         <a href={href.publicar} aria-current={cur("publicar")}>Publicar una obra</a>
-        <a href={`${href.inicio}#como`} onClick={(e) => { if (route.page === "inicio") { e.preventDefault(); document.getElementById("como")?.scrollIntoView({ behavior: "smooth" }); } }}>Cómo funciona</a>
+        <a href={`${href.inicio}#como`} onClick={(e) => { if (route.page === "inicio") { e.preventDefault(); scrollToId("como"); } }}>Cómo funciona</a>
         <a href={href.evidencia} aria-current={cur("evidencia")}>Evidencia</a>
       </nav>
       <span className="net" title={IS_DEMO_CLOCK ? "En esta demo, 1 día dura 1 minuto" : "Red de pruebas"}><span>{IS_DEMO_CLOCK ? "Testnet · 1 día = 1 min" : "Testnet"}</span></span>
       <div className="wallet" ref={box}>
-        <button className="btn sm" onClick={() => (signer ? setOpen(!open) : setOpen(true))} aria-expanded={open} aria-haspopup="menu" disabled={connecting}>
+        <button className="btn sm mag" onClick={() => (signer ? setOpen(!open) : setOpen(true))} aria-expanded={open} aria-haspopup="menu" disabled={connecting}>
           {connecting ? "Conectando…" : signer ? short(signer.address) : "Conectar"}
         </button>
         {open && (

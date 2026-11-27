@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toTop } from "./fx";
 
 export type Route =
   | { page: "inicio" } | { page: "galeria" } | { page: "obra"; id: number }
@@ -23,7 +24,7 @@ export const href = {
 export function useRoute(): Route {
   const [r, setR] = useState<Route>(() => parseHash(location.hash));
   useEffect(() => {
-    const on = () => { setR(parseHash(location.hash)); window.scrollTo(0, 0); };
+    const on = () => { setR(parseHash(location.hash)); toTop(); };
     addEventListener("hashchange", on);
     return () => removeEventListener("hashchange", on);
   }, []);

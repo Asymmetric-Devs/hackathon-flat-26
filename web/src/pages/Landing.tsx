@@ -1,32 +1,35 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Entry } from "../chain";
 import { resolve } from "../catalog";
 import { Cartela, Dot, Painting, STATUS_LABEL, useView } from "../components/Art";
+import { Intro } from "../components/Intro";
+import { Chars } from "../components/Split";
+import { Wall } from "../components/Wall";
+import { gsap, reduced, ScrollTrigger, scrollToId } from "../fx";
 import { demoEntries, live } from "../live";
-import { money, short, when, accountUrl } from "../format";
+import { money, short, when, accountUrl, contractUrl } from "../format";
 import { href } from "../router";
 import { useStore } from "../store";
-import { CONTRACT_ID, DAY_SECS, UNIT, ASSET } from "../config";
-import { contractUrl } from "../format";
+import { CONTRACT_ID, DAY_SECS, ASSET } from "../config";
 import evidence from "../evidence.json";
 
 /* ------------------------------------------------------------------ HERO */
-type Slot = { slug: string; x: number; y: number; w: number; r0: number; rt: number; d: number; cx?: string; mw: string; ms: string; v: "paste" | "frame" };
+type Slot = { slug: string; x: number; y: number; w: number; r0: number; rt: number; cx?: string; mw: string; ms: string; v: "paste" | "frame" };
 const SLOTS: Slot[] = [
-  { slug: "candido-curupayti", x: 44, y: 8, w: 30, r0: -1.6, rt: -1.2, d: 0.35, cx: "4%", mw: "88%", ms: "end", v: "paste" },
-  { slug: "afklint-retablo", x: 79, y: 5, w: 11, r0: 2.4, rt: 2, d: 0.1, mw: "46%", ms: "start", v: "frame" },
-  { slug: "manet-bar", x: 50, y: 30, w: 24, r0: -2.2, rt: 1.4, d: 0.6, cx: "4%", mw: "78%", ms: "center", v: "paste" },
-  { slug: "vangogh-terraza", x: 80, y: 34, w: 10, r0: 3, rt: -2.5, d: 0.85, mw: "42%", ms: "end", v: "frame" },
-  { slug: "pueyrredon-alto", x: 6, y: 50, w: 22, r0: 1.8, rt: -1.6, d: 1.05, mw: "92%", ms: "start", v: "paste" },
-  { slug: "fader-mantones", x: 30, y: 44, w: 14, r0: -2.8, rt: 2.2, d: 1.25, mw: "58%", ms: "center", v: "frame" },
+  { slug: "candido-curupayti", x: 44, y: 8, w: 30, r0: -1.6, rt: -1.2, cx: "4%", mw: "88%", ms: "end", v: "paste" },
+  { slug: "afklint-retablo", x: 79, y: 5, w: 11, r0: 2.4, rt: 2, mw: "46%", ms: "start", v: "frame" },
+  { slug: "manet-bar", x: 50, y: 30, w: 24, r0: -2.2, rt: 1.4, cx: "4%", mw: "78%", ms: "center", v: "paste" },
+  { slug: "vangogh-terraza", x: 80, y: 34, w: 10, r0: 3, rt: -2.5, mw: "42%", ms: "end", v: "frame" },
+  { slug: "pueyrredon-alto", x: 6, y: 50, w: 22, r0: 1.8, rt: -1.6, mw: "92%", ms: "start", v: "paste" },
+  { slug: "fader-mantones", x: 30, y: 44, w: 14, r0: -2.8, rt: 2.2, mw: "58%", ms: "center", v: "frame" },
 ];
 
-function HungPiece({ slot, e, go }: { slot: Slot; e: Entry; go: boolean }) {
+function HungPiece({ slot, e }: { slot: Slot; e: Entry }) {
   const { r, l } = useView(e);
-  const vars = { ["--x" as string]: `${slot.x}vw`, ["--y" as string]: `${slot.y}vw`, ["--w" as string]: `${slot.w}vw`, ["--r0" as string]: `${slot.r0}deg`, ["--rt" as string]: `${slot.rt}deg`, ["--d" as string]: `${slot.d}s`, ["--cx" as string]: slot.cx ?? "0", ["--mw" as string]: slot.mw, ["--ms" as string]: slot.ms, ["--cr" as string]: `${-slot.rt * 0.8}deg` };
+  const vars = { ["--x" as string]: `${slot.x}vw`, ["--y" as string]: `${slot.y}vw`, ["--w" as string]: `${slot.w}vw`, ["--rt" as string]: `${slot.rt}deg`, ["--cx" as string]: slot.cx ?? "0", ["--mw" as string]: slot.mw, ["--ms" as string]: slot.ms, ["--cr" as string]: `${-slot.rt * 0.8}deg` };
   return (
-    <div className={`hung${go ? " in" : ""}`} style={vars}>
-      <a href={href.obra(e.work.id)} aria-label={`${r.title}, ${r.artist}. Ver la obra.`}>
+    <div className="hung" style={vars} data-r0={slot.r0} data-depth={(slot.w / 14).toFixed(2)}>
+      <a href={href.obra(e.work.id)} data-cursor="Ver obra" aria-label={`${r.title}, ${r.artist}. Ver la obra.`}>
         <Painting r={r} variant={slot.v} eager><Dot e={e} l={l} /></Painting>
       </a>
       <Cartela e={e} r={r} l={l} compact />
@@ -36,34 +39,135 @@ function HungPiece({ slot, e, go }: { slot: Slot; e: Entry; go: boolean }) {
 
 const TICKER = ["La obra cobra por día", "El depósito vuelve", "Cada día es una cuota", "Si te enamorás, es tuya", "Sin intermediarios", "El historial no se puede editar"];
 
-function Hero({ entries, source }: { entries: Entry[]; source: string }) {
-  const [go, setGo] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setGo(true), 200); return () => clearTimeout(t); }, []);
+/** Cinta que corre sola y se acelera, se inclina y cambia de sentido según cómo se scrollea. */
+function Marquee() {
+  const belt = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (reduced()) return;
+    const el = belt.current!;
+    let x = 0, v = 0, dir = 1, last = scrollY;
+    const tick = () => {
+      const sv = scrollY - last; last = scrollY;
+      v += (Math.abs(sv) - v) * 0.1;
+      if (Math.abs(sv) > 0.5) dir = sv > 0 ? 1 : -1;
+      x -= (1.1 + v * 0.55) * dir;
+      const half = el.scrollWidth / 2;
+      if (x < -half) x += half; if (x > 0) x -= half;
+      el.style.transform = `translate3d(${x}px,0,0) skewX(${(-dir * Math.min(14, v * 0.5)).toFixed(2)}deg)`;
+    };
+    gsap.ticker.add(tick);
+    return () => gsap.ticker.remove(tick);
+  }, []);
+  return <div className="marquee" aria-hidden="true"><div className="belt" ref={belt}>{[...TICKER, ...TICKER, ...TICKER, ...TICKER].map((t, i) => <span key={i}>{t}</span>)}</div></div>;
+}
+
+function Hero({ entries, source, ready }: { entries: Entry[]; source: string; ready: boolean }) {
+  const root = useRef<HTMLElement>(null);
   const bySlug = useMemo(() => {
     const m = new Map<string, Entry>();
     for (const e of entries) m.set(e.work.meta, e);
     for (const d of demoEntries()) if (!m.has(d.work.meta)) m.set(d.work.meta, { ...d, work: { ...d.work, id: -1 } });
     return m;
   }, [entries]);
+
+  // Estado inicial: todo escondido antes del primer pintado, a la espera de la intro.
+  useLayoutEffect(() => {
+    if (reduced()) return;
+    const q = gsap.utils.selector(root.current!);
+    gsap.set(q(".ln-in"), { yPercent: 118 });
+    gsap.set(q(".hero-copy mark"), { clipPath: "inset(0 100% 0 0)" });
+    gsap.set(q(".hero-copy p, .hero-cta"), { opacity: 0, y: 28 });
+    gsap.set(q(".hung"), { opacity: 0 });
+    gsap.set(q(".hung .dot"), { scale: 0 });
+    gsap.set(q(".hung .cartela"), { opacity: 0, y: 18 });
+    gsap.set(q(".hung .tape"), { scaleX: 0, transformOrigin: "0 50%" });
+    gsap.set(q(".word .w"), { yPercent: 108 });
+    gsap.set(q(".note, .hero-foot span"), { opacity: 0 });
+  }, []);
+
+  // Parallax con el scroll (contenedores, para no pisar las entradas).
+  useLayoutEffect(() => {
+    if (reduced()) return;
+    const el = root.current!;
+    const ctx = gsap.context(() => {
+      const st = { trigger: el, start: "top top", end: "bottom top", scrub: true };
+      gsap.to(".word", { yPercent: -16, ease: "none", scrollTrigger: st });
+      gsap.to(".hang-stage", { yPercent: -5, ease: "none", scrollTrigger: st });
+      gsap.to(".hero-copy", { yPercent: 14, opacity: 0.2, ease: "none", scrollTrigger: st });
+    }, el);
+    return () => ctx.revert();
+  }, []);
+
+  // Coreografía de entrada + parallax con el mouse.
+  useLayoutEffect(() => {
+    const el = root.current!;
+    if (!ready) return;
+    if (reduced()) {
+      // sin movimiento: todo visible y quieto, sin tocar el layout
+      gsap.set(el.querySelectorAll(".hung"), { opacity: 1 });
+      return;
+    }
+    const stage = el.querySelector<HTMLElement>(".hang-stage")!;
+    const ctx = gsap.context(() => {
+      const q = gsap.utils.selector(el);
+      const impact = (h: HTMLElement) => {
+        gsap.fromTo(h, { scaleY: 0.94, scaleX: 1.025, transformOrigin: "50% 100%" }, { scaleY: 1, scaleX: 1, duration: 0.85, ease: "elastic.out(1,.35)" });
+        gsap.fromTo(stage, { x: 0, y: 0 }, { x: gsap.utils.random(-5, 5), y: gsap.utils.random(2, 5), duration: 0.04, repeat: 3, yoyo: true, ease: "none", onComplete: () => { gsap.set(stage, { x: 0, y: 0 }); } });
+        gsap.to(h.querySelector(".dot"), { scale: 1, duration: 0.6, ease: "back.out(3)", delay: 0.05 });
+        gsap.to(h.querySelectorAll(".tape"), { scaleX: 1, duration: 0.35, ease: "power3.out" });
+        gsap.to(h.querySelector(".cartela"), { opacity: 1, y: 0, duration: 0.6, delay: 0.12, ease: "expo.out" });
+      };
+      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+      tl.to(q(".word .w"), { yPercent: 0, duration: 1.2, stagger: 0.09 }, 0)
+        .to(q(".ln-in"), { yPercent: 0, duration: 1, stagger: 0.14 }, 0.1)
+        .to(q(".hero-copy mark"), { clipPath: "inset(0 0% 0 0)", duration: 0.75, ease: "expo.inOut", stagger: 0.16 }, 0.3)
+        .to(q(".hero-copy p, .hero-cta"), { opacity: 1, y: 0, duration: 0.85, stagger: 0.12 }, 0.75)
+        .to(q(".note, .hero-foot span"), { opacity: 1, duration: 0.6, stagger: 0.1 }, 1.6);
+      q<HTMLElement>(".hung").forEach((h, i) => {
+        const r0 = Number(h.dataset.r0 ?? 0);
+        tl.fromTo(h, { opacity: 0, y: -170, scale: 1.45, rotation: r0 * 3, transformOrigin: "50% 0%" },
+          { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.42, ease: "power3.in", onComplete: () => impact(h) }, 0.2 + i * 0.17);
+      });
+    }, el);
+    // parallax con el mouse: cada afiche se mueve según su "profundidad"
+    let off = () => {};
+    if (matchMedia("(pointer: fine)").matches) {
+      const hungs = [...el.querySelectorAll<HTMLElement>(".hung")];
+      const move = (ev: PointerEvent) => {
+        const b = el.getBoundingClientRect();
+        const nx = ((ev.clientX - b.left) / b.width) * 2 - 1, ny = ((ev.clientY - b.top) / b.height) * 2 - 1;
+        hungs.forEach((h) => { const d = Number(h.dataset.depth ?? 1); const a = h.querySelector("a"); if (a) gsap.to(a, { x: nx * d * 24, y: ny * d * 15, duration: 0.9, ease: "power3.out", overwrite: "auto" }); });
+        gsap.to(el.querySelector(".word"), { x: -nx * 18, duration: 1.2, ease: "power3.out", overwrite: "auto" });
+      };
+      el.addEventListener("pointermove", move);
+      off = () => el.removeEventListener("pointermove", move);
+    }
+    return () => { off(); ctx.revert(); };
+  }, [ready]);
+
   return (
     <>
-      <section className="hero concrete" aria-label="Muro">
+      <section className="hero concrete" aria-label="Muro" ref={root}>
         <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
           <filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035 .05" numOctaves="3" seed="4" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="9" /></filter>
         </svg>
-        <div className="word" aria-hidden="true">MURO</div>
+        <div className="word" aria-hidden="true"><span className="w">M</span><span className="w">U</span><span className="w">R</span><span className="w">O</span></div>
         <div className="hang-stage">
-          {SLOTS.map((s) => { const e = bySlug.get(s.slug); return e ? <HungPiece key={s.slug} slot={s} e={e.work.id < 0 ? { ...e, work: { ...e.work, id: 0 } } : e} go={go} /> : null; })}
+          {SLOTS.map((s) => { const e = bySlug.get(s.slug); return e ? <HungPiece key={s.slug} slot={s} e={e.work.id < 0 ? { ...e, work: { ...e.work, id: 0 } } : e} /> : null; })}
           <span className="note hide-m" style={{ left: "64.5vw", top: "22vw", ["--nr" as string]: "-5deg" }}>¡esto cuenta<br />en vivo!
             <svg width="80" height="50" viewBox="0 0 80 50" style={{ left: "92px", top: "6px" }}><path d="M2 8 C 30 -4, 62 4, 74 36" /><path d="M60 28 L75 40 L78 22" /></svg>
           </span>
         </div>
         <div className="hero-copy">
-          <h1>La obra<br /><mark>cobra</mark><br /><mark>por día.</mark></h1>
+          <h1 aria-label="La obra cobra por día.">
+            <span className="ln" aria-hidden="true"><span className="ln-in"><Chars text="La obra" /></span></span>
+            <span className="ln" aria-hidden="true"><mark><span className="ln-in"><Chars text="cobra" /></span></mark></span>
+            <span className="ln" aria-hidden="true"><mark><span className="ln-in"><Chars text="por día." /></span></mark></span>
+          </h1>
           <p>Colgá una obra en tu bar. Pagá el alquiler por día. Cuando llegás al precio, es tuya.</p>
           <div className="hero-cta">
-            <a className="btn" href={href.galeria}>Ver la galería</a>
-            <a className="btn line" href="#como" onClick={(e) => { e.preventDefault(); document.getElementById("como")?.scrollIntoView({ behavior: "smooth" }); }}>Cómo funciona</a>
+            <a className="btn mag" href={href.galeria}>Ver la galería</a>
+            <a className="btn line mag" href="#como" onClick={(e) => { e.preventDefault(); scrollToId("como"); }}>Cómo funciona</a>
           </div>
         </div>
         <div className="hero-foot">
@@ -71,7 +175,7 @@ function Hero({ entries, source }: { entries: Entry[]; source: string }) {
           <span>Obras de dominio público · FLAT 2026</span>
         </div>
       </section>
-      <div className="marquee" aria-hidden="true"><div className="belt">{[...TICKER, ...TICKER, ...TICKER, ...TICKER].map((t, i) => <span key={i}>{t}</span>)}</div></div>
+      <Marquee />
     </>
   );
 }
@@ -81,7 +185,7 @@ function Hero({ entries, source }: { entries: Entry[]; source: string }) {
 function Plate({ slug }: { slug: string }) {
   const r = resolve(slug);
   return (
-    <figure className="plate">
+    <figure className="plate" data-reveal>
       <Painting r={r} />
       <figcaption><b>{r.title}</b>, {r.artist}, {r.year}.<br /><span className="ital">{r.epigraph}</span></figcaption>
     </figure>
@@ -94,13 +198,13 @@ function Question() {
         <div className="q-head">
           <div>
             <p className="kicker">Para artistas visuales y los lugares que cuelgan su obra</p>
-            <h2 className="big">¿Cuánto cobra una obra por colgar un mes en la pared de un bar?</h2>
+            <h2 className="big" data-scrub aria-label="¿Cuánto cobra una obra por colgar un mes en la pared de un bar?"><Chars text="¿Cuánto cobra una obra por colgar un mes en la pared de un bar?" /></h2>
           </div>
           <Plate slug="vangogh-terraza" />
         </div>
         <div className="q-side">
-          <p className="lead" style={{ marginTop: 0 }}>Pinturas, fotos y grabados decoran bodegas, cafés y hoteles de todo el país. La obra trabaja todos los días, pero rara vez hay un precio, un contrato claro o un registro de dónde estuvo.</p>
-          <div className="twocol">
+          <p className="lead" data-up style={{ marginTop: 0 }}>Pinturas, fotos y grabados decoran bodegas, cafés y hoteles de todo el país. La obra trabaja todos los días, pero rara vez hay un precio, un contrato claro o un registro de dónde estuvo.</p>
+          <div className="twocol" data-up>
             <p>Muro le pone número a esa pared. El artista fija el precio de la obra y cuánto cobra por día. El espacio deja un depósito y paga los días por adelantado.</p>
             <p>Lo que se cobra se acredita al precio. Y cada pago, que costó dinero real, es una exposición que nadie puede inventar.</p>
           </div>
@@ -136,6 +240,7 @@ function How() {
         <p className="kicker">Cómo se cuelga</p>
         <div className="how">
           <div className="how-stage">
+            <div className="how-ghost" key={s} aria-hidden="true">0{s + 1}</div>
             <div className="how-obj" aria-hidden="true">
               <div className="how-frame" data-s={s}>
                 <Painting r={r} variant="paste" />
@@ -144,7 +249,7 @@ function How() {
                 <b>{r.title}</b><i>{r.artist}, {r.year}</i>
                 {s === 0 && <div className="row"><span>Precio {price} {ASSET}</span><span>{rate} {ASSET} por día</span></div>}
                 {s === 1 && <div className="row"><span>Depósito 30 {ASSET} en garantía</span><span>10 días prepagos</span></div>}
-                {s === 2 && (<><div className="row"><span>Día {day} · cobró {credited} {ASSET}</span><span>{Math.round((credited / price) * 100)} %</span></div><div className="bar"><span style={{ width: `${(credited / price) * 100}%`, transition: "width .1s linear" }} /></div></>)}
+                {s === 2 && (<><div className="row"><span>Día {day} · cobró {credited} {ASSET}</span><span>{Math.round((credited / price) * 100)} %</span></div><div className="bar-p"><span style={{ width: `${(credited / price) * 100}%`, transition: "width .1s linear" }} /></div></>)}
                 {s === 3 && <div className="row"><span>Día 110 · pagó {price} {ASSET}</span><span>es suya</span></div>}
               </div>
             </div>
@@ -178,15 +283,15 @@ function Sim() {
     <section className="sec light" id="cuotas">
       <div className="wrap">
         <p className="kicker">Obra en cuotas</p>
-        <h2 className="big" style={{ maxWidth: "20ch" }}>El arte es lo único que en Argentina no se compra en cuotas. <em>Hasta ahora.</em></h2>
+        <h2 className="big" data-rise style={{ maxWidth: "20ch" }} aria-label="El arte es lo único que en Argentina no se compra en cuotas. Hasta ahora."><Chars text="El arte es lo único que en Argentina no se compra en cuotas." /> <em aria-hidden="true"><Chars text="Hasta ahora." /></em></h2>
         <div className="sim">
-          <div className="ctrl">
+          <div className="ctrl" data-up>
             <label><span>Precio de la obra<output>{price} {ASSET}</output></span><input type="range" min={50} max={1000} step={10} value={price} onChange={(e) => setPrice(+e.target.value)} aria-label="Precio de la obra" /></label>
             <label><span>Alquiler por día<output>{rate} {ASSET}</output></span><input type="range" min={1} max={20} step={1} value={rate} onChange={(e) => setRate(+e.target.value)} aria-label="Alquiler por día" /></label>
             <label><span>Días colgada<output>{d}</output></span><input type="range" min={0} max={Math.max(toOwn, 1)} step={1} value={d} onChange={(e) => setDays(+e.target.value)} aria-label="Días colgada" /></label>
             <p style={{ color: "var(--tinta-2)", fontSize: ".92rem", maxWidth: "36ch" }}>Mové los controles. Con estos números, la obra es del espacio al día {toOwn}.</p>
           </div>
-          <div className="sim-card">
+          <div className="sim-card" data-up>
             <h4>{d >= toOwn ? "La obra ya es del espacio." : `Al día ${d}, la obra ya cobró ${earned} ${ASSET} de ${price}.`}</h4>
             <div className="track" aria-hidden="true">
               <div className="fill" style={{ width: `${p}%` }}>{p > 14 ? `${Math.round(p)} %` : ""}</div>
@@ -223,23 +328,23 @@ function Curriculum({ entries, source }: { entries: Entry[]; source: string }) {
     <section className="sec wall" id="curriculum">
       <div className="wrap">
         <p className="kicker">El currículum de la obra</p>
-        <h2 className="big" style={{ maxWidth: "20ch" }}>Cada pago es una exposición que <em>costó plata de verdad.</em></h2>
-        <p className="lead">Un artista emergente casi nunca puede probar dónde estuvo su obra. En Muro el historial se arma solo, es público y no lo puede editar ni el artista ni el espacio.</p>
+        <h2 className="big" data-rise style={{ maxWidth: "20ch" }} aria-label="Cada pago es una exposición que costó plata de verdad."><Chars text="Cada pago es una exposición que" /> <em aria-hidden="true"><Chars text="costó plata de verdad." /></em></h2>
+        <p className="lead" data-up>Un artista emergente casi nunca puede probar dónde estuvo su obra. En Muro el historial se arma solo, es público y no lo puede editar ni el artista ni el espacio.</p>
         <div className="cv">
-          <div>
+          <div data-up>
             <div className="cv-pick" role="group" aria-label="Elegir obra">
               {list.map((e) => { const rr = resolve(e.work.meta); return <button key={e.work.id} className="chip" aria-pressed={cur.work.id === e.work.id} onClick={() => setSlug(e.work.meta)}>{rr.title.length > 22 ? rr.title.slice(0, 21) + "…" : rr.title}</button>; })}
             </div>
-            <a href={href.obra(cur.work.id)} className="frame" style={{ maxWidth: 380 }} aria-label={`Ver ${r.title}`}><span className="mat" style={{ display: "block" }}><img src={r.img} alt={`${r.title}, ${r.artist}`} width={1000} height={Math.round(1000 * r.ratio)} loading="lazy" /></span></a>
+            <a href={href.obra(cur.work.id)} className="frame" style={{ maxWidth: 380 }} data-cursor="Ver obra" aria-label={`Ver ${r.title}`}><span className="mat" style={{ display: "block" }}><img src={r.img} alt={`${r.title}, ${r.artist}`} width={1000} height={Math.round(1000 * r.ratio)} loading="lazy" /></span></a>
             <div className="cartela" style={{ marginTop: 18 }}><b>{r.title}</b><i>{r.artist}, {r.year}</i><i>Estado: {STATUS_LABEL[cur.work.status]}</i></div>
           </div>
           <ol className="line-t" aria-label={`Exposiciones de ${r.title}`}>
             {l.hung && cur.lease && (
-              <li className="live"><h4>Colgada ahora</h4>
+              <li className="live" data-up><h4>Colgada ahora</h4>
                 <p><span className="tag">{money(l.credited, 1)} cobrados</span>desde el {when(cur.lease.start, true)} · espacio <a className="link mono" href={accountUrl(cur.lease.venue)} target="_blank" rel="noreferrer">{short(cur.lease.venue)}</a></p></li>
             )}
             {cur.history.slice().reverse().map((h, i) => (
-              <li key={i}><h4>{h.outcome === "Bought" ? "Vendida al espacio" : h.outcome === "Seized" ? "No fue devuelta" : "Expuesta y devuelta"}</h4>
+              <li key={i} data-up><h4>{h.outcome === "Bought" ? "Vendida al espacio" : h.outcome === "Seized" ? "No fue devuelta" : "Expuesta y devuelta"}</h4>
                 <p><span className={`tag ${h.outcome === "Seized" ? "bad" : "ok"}`}>{money(h.paid, 1)}</span>{when(h.start)} → {when(h.end)} · <a className="link mono" href={accountUrl(h.venue)} target="_blank" rel="noreferrer">{short(h.venue)}</a></p></li>
             ))}
             {!real && source !== "chain" && DEMO_HISTORY.map((h, i) => (
@@ -260,19 +365,19 @@ function Evidence() {
     <section className="sec light" id="evidencia">
       <div className="wrap">
         <p className="kicker">Lo que ya pasó en Stellar</p>
-        <h2 className="big" style={{ maxWidth: "18ch" }}>La transacción es la evidencia.</h2>
-        <p className="lead">Contrato desplegado en Testnet, con obras publicadas, una colgada cobrando en vivo, una devuelta y una propina. Cada paso tiene su hash verificable.</p>
-        <div className="tbl-wrap" style={{ color: "var(--tinta)" }}>
+        <h2 className="big" data-rise style={{ maxWidth: "18ch" }} aria-label="La transacción es la evidencia."><Chars text="La transacción es la evidencia." /></h2>
+        <p className="lead" data-up>Contrato desplegado en Testnet, con obras publicadas, una colgada cobrando en vivo, una devuelta y una propina. Cada paso tiene su hash verificable.</p>
+        <div className="tbl-wrap" data-up style={{ color: "var(--tinta)" }}>
           <table className="tbl" style={{ color: "var(--tinta)" }}>
             <thead><tr><th>Qué pasó</th><th>Hash</th></tr></thead>
             <tbody>
-              <tr><td>Contrato Muro (instancia de demo)</td><td>{CONTRACT_ID && CONTRACT_ID !== "PENDIENTE" ? <a className="mono" style={{ color: "var(--tinta)" }} href={contractUrl(CONTRACT_ID)} target="_blank" rel="noreferrer">{short(CONTRACT_ID)}</a> : "pendiente"}</td></tr>
-              {rows.map((r) => (<tr key={r.hash}><td>{r.label}</td><td><a className="mono" style={{ color: "var(--tinta)" }} href={`https://stellar.expert/explorer/testnet/tx/${r.hash}`} target="_blank" rel="noreferrer">{r.hash.slice(0, 10)}…</a></td></tr>))}
+              <tr><td>Contrato Muro (instancia de demo)</td><td>{CONTRACT_ID && CONTRACT_ID !== "PENDIENTE" ? <a className="mono" href={contractUrl(CONTRACT_ID)} target="_blank" rel="noreferrer">{short(CONTRACT_ID)}</a> : "pendiente"}</td></tr>
+              {rows.map((r) => (<tr key={r.hash}><td>{r.label}</td><td><a className="mono" href={`https://stellar.expert/explorer/testnet/tx/${r.hash}`} target="_blank" rel="noreferrer">{r.hash.slice(0, 10)}…</a></td></tr>))}
             </tbody>
           </table>
         </div>
         <p style={{ marginTop: 26, color: "var(--tinta-2)", maxWidth: "58ch", fontSize: ".95rem" }}>En esta demo 1 día dura {DAY_SECS >= 86400 ? "24 horas" : `${DAY_SECS} segundos`} para que el contador se vea correr. El mismo contrato se despliega con días de 24 horas.</p>
-        <p style={{ marginTop: 18 }}><a className="btn" href={href.evidencia}>Ver toda la evidencia</a></p>
+        <p style={{ marginTop: 18 }}><a className="btn mag" href={href.evidencia}>Ver toda la evidencia</a></p>
       </div>
     </section>
   );
@@ -282,20 +387,87 @@ function Evidence() {
 function Foot() {
   return (
     <footer className="foot">
-      <p className="quote">Antes de existir en el mundo, existió en la imaginación de alguien.</p>
+      <p className="quote" data-scrub aria-label="Antes de existir en el mundo, existió en la imaginación de alguien."><Chars text="Antes de existir en el mundo, existió en la imaginación de alguien." /></p>
       <p className="cite">Texto del sitio de FLAT 2026, junto al Retablo n.º 1 de Hilma af Klint (1915).</p>
       <div className="foot-grid">
         <div><b>Muro</b><br />Hackathon FLAT 2026 · BAF × Stellar<br />Mendoza, 26 al 28 de noviembre</div>
         <div>Obras de dominio público, con fuente en <a className="link" href="https://commons.wikimedia.org" target="_blank" rel="noreferrer">Wikimedia Commons</a>.<br />Los datos de cada obra se contrastan antes de usarse fuera de la demo.</div>
         <div><a className="link" href={href.galeria}>Galería</a><br /><a className="link" href={href.publicar}>Publicar una obra</a><br /><a className="link" href={href.evidencia}>Evidencia</a></div>
       </div>
-      <div className="foot-word" aria-hidden="true">MURO</div>
+      <div className="foot-word" aria-hidden="true"><span>MURO</span><span className="fill">MURO</span></div>
     </footer>
   );
 }
 
+/* ------------------------------------------------------- efectos con el scroll */
+function useScrollFx(root: React.RefObject<HTMLElement | null>) {
+  useLayoutEffect(() => {
+    if (reduced()) return;
+    const el = root.current!;
+    const ctx = gsap.context(() => {
+      const q = gsap.utils.selector(el);
+      // texto que se "enciende" letra por letra mientras se scrollea
+      q<HTMLElement>("[data-scrub]").forEach((h) => {
+        const chars = h.querySelectorAll(".ch");
+        gsap.set(chars, { opacity: 0.14 });
+        gsap.to(chars, { opacity: 1, stagger: 0.06, ease: "none", scrollTrigger: { trigger: h, start: "top 82%", end: "bottom 50%", scrub: true } });
+      });
+      // titulares que suben desde una máscara
+      q<HTMLElement>("[data-rise]").forEach((h) => {
+        const chars = h.querySelectorAll(".ch");
+        gsap.from(chars, { yPercent: 115, rotate: 5, duration: 0.95, ease: "expo.out", stagger: 0.016, scrollTrigger: { trigger: h, start: "top 88%", once: true } });
+      });
+      // bloques que entran en cascada
+      const ups = q<HTMLElement>("[data-up]");
+      gsap.set(ups, { opacity: 0, y: 56 });
+      ScrollTrigger.batch(ups, { start: "top 90%", once: true, onEnter: (b) => { gsap.to(b, { opacity: 1, y: 0, duration: 1, stagger: 0.12, ease: "expo.out" }); } });
+      // lámina que se revela como una cortina
+      q<HTMLElement>("[data-reveal]").forEach((f) => {
+        const p = f.querySelector(".paste");
+        if (!p) return;
+        gsap.fromTo(p, { clipPath: "inset(100% 0 0 0)" }, { clipPath: "inset(0% 0 0 0)", duration: 1.3, ease: "expo.inOut", clearProps: "clipPath", scrollTrigger: { trigger: f, start: "top 82%", once: true } });
+        gsap.fromTo(p.querySelector("img"), { scale: 1.35 }, { scale: 1, duration: 1.6, ease: "expo.out", scrollTrigger: { trigger: f, start: "top 82%", once: true } });
+      });
+      // el cuadro de "cómo se cuelga" gira mientras se avanza
+      gsap.fromTo(".how-obj", { rotation: -5 }, { rotation: 4, ease: "none", scrollTrigger: { trigger: ".how-steps", start: "top bottom", end: "bottom top", scrub: true } });
+      // el MURO del pie se llena de naranja
+      gsap.fromTo(".foot-word .fill", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", ease: "none", scrollTrigger: { trigger: ".foot", start: "top 85%", end: "bottom bottom", scrub: true } });
+    }, el);
+    const refresh = () => ScrollTrigger.refresh();
+    document.fonts?.ready.then(refresh);
+    const t = setTimeout(refresh, 700);
+    return () => { clearTimeout(t); ctx.revert(); };
+  }, [root]);
+}
+
+const shouldIntro = () => {
+  try {
+    const q = new URLSearchParams(location.search).get("intro");
+    if (q === "0" || reduced()) return false;
+    if (q === "1") return true;
+    return !sessionStorage.getItem("muro.intro");
+  } catch { return false; }
+};
+
 export default function Landing() {
   const { entries, source } = useStore();
-  return (<main><Hero entries={entries} source={source} /><Question /><How /><Sim /><Curriculum entries={entries} source={source} /><Evidence /><Foot /></main>);
+  const [intro, setIntro] = useState(shouldIntro);
+  const [ready, setReady] = useState(!intro);
+  const root = useRef<HTMLElement>(null);
+  const onReady = useCallback(() => setReady(true), []);
+  const onDone = useCallback(() => { setIntro(false); try { sessionStorage.setItem("muro.intro", "1"); } catch { /* sin storage */ } }, []);
+  useScrollFx(root);
+  return (
+    <main ref={root}>
+      {intro && <Intro onReady={onReady} onDone={onDone} />}
+      <Hero entries={entries} source={source} ready={ready} />
+      <Question />
+      <How />
+      <Wall entries={entries} />
+      <Sim />
+      <Curriculum entries={entries} source={source} />
+      <Evidence />
+      <Foot />
+    </main>
+  );
 }
-export { UNIT };

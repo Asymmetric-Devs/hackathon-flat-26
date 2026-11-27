@@ -127,21 +127,15 @@ img { display: block; max-width: 100%; }
 .hang-stage { position: absolute; inset: 0; z-index: 5; }
 .hang-stage .hung { left: var(--x); top: var(--y); width: var(--w); }
 .hung { position: absolute; z-index: 5; opacity: 0; will-change: transform; }
-.hung.in { animation: pegar .9s var(--ease) forwards; animation-delay: var(--d, 0s); }
 .hung > a > .paste, .hung > a > .frame { transform: rotate(var(--rt, 0deg)); }
 .hung:hover > a > .paste, .hung:hover > a > .frame { transform: rotate(0deg) translateY(-6px); }
 .hung > a { display: block; }
 .hung > a > .frame { transition: transform .5s var(--ease); }
 .hung .cartela { position: absolute; top: calc(100% + 12px); left: var(--cx, 0); z-index: 5; max-width: min(250px, 17vw); min-width: min(190px, 15vw); }
-@keyframes pegar {
-  0% { opacity: 0; transform: scale(1.18) translateY(-24px) rotate(calc(var(--r0, -3deg) * 2)); filter: blur(7px); }
-  55% { opacity: 1; transform: scale(.987) rotate(calc(var(--r0, -3deg) * -.35)); filter: blur(0); }
-  100% { opacity: 1; transform: none; filter: none; }
-}
 .hero-foot { position: absolute; z-index: 6; left: var(--gutter); right: var(--gutter); bottom: 18px; display: flex; justify-content: space-between; align-items: end; gap: 20px; font: 500 .74rem var(--mono); color: var(--papel); }
 .hero-foot span { background: rgba(18, 18, 18, .82); padding: 5px 10px; border-radius: 99px; }
 .marquee { position: relative; z-index: 8; background: var(--ac); overflow: hidden; white-space: nowrap; color: var(--on); }
-.marquee .belt { display: inline-flex; animation: belt 42s linear infinite; padding: 12px 0 9px; font-family: var(--display); font-weight: 900; font-size: clamp(1.5rem, 2.6vw, 2.2rem); letter-spacing: .02em; text-transform: uppercase; line-height: 1; }
+.marquee .belt { display: inline-flex; will-change: transform; padding: 12px 0 9px; font-family: var(--display); font-weight: 900; font-size: clamp(1.5rem, 2.6vw, 2.2rem); letter-spacing: .02em; text-transform: uppercase; line-height: 1; }
 .marquee .belt span { padding: 0 1em; } .marquee .belt span::after { content: ""; display: inline-block; width: .32em; height: .32em; background: currentColor; transform: rotate(45deg); margin-left: 2em; vertical-align: .12em; }
 @keyframes belt { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .hung { opacity: 1; animation: none !important; } html { scroll-behavior: auto; } .marquee .belt { animation: none; } * { transition-duration: .01ms !important; } }
@@ -306,3 +300,104 @@ footer.foot .cite { margin-top: 18px; font: 450 .8rem var(--mono); color: var(--
 .plaque-card .btn { width: 100%; }
 .skeleton { background: linear-gradient(90deg, var(--crema-2), var(--crema), var(--crema-2)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: 12px; }
 @keyframes shimmer { to { background-position: -200% 0; } }
+
+/* ================= coreografía ================= */
+.ln { display: block; overflow: hidden; padding: .05em .15em 0 .15em; margin: 0 0 0 -.15em; }
+.ln-in { display: block; will-change: transform; }
+.ln mark { display: inline-block; }
+.ln-in .wd, .ln-in .ch { display: inline-block; }
+.hero .word .w { display: inline-block; will-change: transform; }
+.hero .word { overflow: visible; }
+[data-rise] .wd { display: inline-block; overflow: hidden; vertical-align: top; padding-top: .1em; margin-top: -.1em; padding-right: .02em; }
+[data-rise] .ch, [data-scrub] .ch { display: inline-block; will-change: transform, opacity; }
+[data-scrub] .wd { display: inline-block; white-space: nowrap; }
+[data-rise] em { white-space: normal; }
+
+/* cursor propio */
+.cursor { position: fixed; left: 0; top: 0; z-index: 130; width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--ac); pointer-events: none; display: grid; place-items: center; mix-blend-mode: normal; transition: width .3s var(--ease), height .3s var(--ease), background .3s, border-color .3s; }
+.cursor span { font: 600 .74rem var(--sans); color: var(--on); opacity: 0; transition: opacity .2s; white-space: nowrap; }
+.cursor.big { width: 92px; height: 92px; background: var(--ac); border-color: var(--ac); }
+.cursor.big span { opacity: 1; }
+.cursor.small { width: 54px; height: 54px; background: rgba(255, 106, 26, .18); }
+@media (pointer: coarse), (prefers-reduced-motion: reduce) { .cursor { display: none; } }
+
+/* barra de progreso */
+.progress { position: fixed; z-index: 140; left: 0; right: 0; top: 0; height: 3px; pointer-events: none; }
+.progress > div { height: 100%; background: var(--ac); transform-origin: 0 50%; transform: scaleX(0); }
+
+/* intro: el muro que se arma y estalla */
+.intro { position: fixed; inset: 0; z-index: 200; background: var(--asfalto); overflow: hidden; color: var(--papel); touch-action: none; }
+.intro .wall, .intro .letters, .intro .flash { position: absolute; inset: 0; }
+.intro .brick { position: absolute; background: #1b1b1a; border-radius: 3px; box-shadow: inset 0 0 0 2px #0b0b0b, inset 0 2px 0 rgba(255, 255, 255, .05); will-change: transform; }
+.intro .brick.l { background: #262625; }
+.intro .brick.o { background: var(--ac); box-shadow: inset 0 0 0 2px #0b0b0b, inset 0 -6px 0 rgba(0, 0, 0, .18); }
+.intro .letters { display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 900; font-size: min(44vw, 80vh); line-height: .8; letter-spacing: -.01em; color: var(--papel); filter: url(#rough2); padding: 0 2vw; overflow: hidden; pointer-events: none; gap: .02em; }
+.intro .letters span { display: inline-block; will-change: transform; text-shadow: 0 0 0 transparent; }
+.intro .flash { background: #fff; opacity: 0; pointer-events: none; }
+.intro .count { position: absolute; left: var(--gutter); bottom: 24px; display: flex; align-items: baseline; gap: 14px; font: 500 .8rem var(--mono); color: rgba(251, 250, 245, .75); }
+.intro .count b { font: 900 clamp(2.6rem, 6vw, 5rem) var(--display); line-height: .8; color: var(--ac); }
+.intro .count i { font-style: normal; }
+.intro .skip { position: absolute; right: var(--gutter); bottom: 24px; font: 500 .8rem var(--mono); color: rgba(251, 250, 245, .75); padding: 8px 12px; border-radius: 99px; box-shadow: inset 0 0 0 1px rgba(251, 250, 245, .3); }
+.intro .skip:hover { background: rgba(251, 250, 245, .12); }
+
+/* la pared (horizontal) */
+.hwall { padding: 0; }
+.hw-pin { position: relative; height: 100vh; overflow: hidden; display: flex; align-items: center; }
+.hw-track { display: flex; align-items: center; gap: clamp(40px, 6vw, 110px); padding: 0 8vw 0 var(--gutter); will-change: transform; }
+.hw-intro { flex: none; width: min(46vw, 640px); }
+.hw-intro .big { font-size: clamp(3.6rem, 7.4vw, 8rem); }
+.hw-total { margin-top: 34px; display: grid; gap: 4px; }
+.hw-total b { font-size: clamp(2.8rem, 5vw, 5rem); color: var(--ac); }
+.hw-total span { font: 500 .8rem var(--mono); color: rgba(251, 250, 245, .65); }
+.hw-hint { display: inline-block; margin-top: 28px; font: 500 .8rem var(--mono); color: rgba(251, 250, 245, .6); }
+.hw-item { flex: none; position: relative; display: grid; gap: 22px; justify-items: start; padding-top: 3vh; }
+.hw-idx { position: absolute; left: -2vw; top: -4vh; font-family: var(--display); font-weight: 900; font-size: clamp(8rem, 18vw, 20rem); line-height: .75; color: transparent; -webkit-text-stroke: 1.5px rgba(251, 250, 245, .16); pointer-events: none; z-index: 0; }
+.hw-art { position: relative; z-index: 1; will-change: transform; }
+.hw-art .paste, .hw-art .frame { display: inline-block; }
+.hw-art img { height: min(46vh, 430px); width: auto; max-width: none; }
+.hw-item .cartela { position: relative; z-index: 2; margin-left: 6%; }
+.hw-item:hover .hw-art { filter: brightness(1.06); }
+.hw-end { flex: none; width: min(40vw, 520px); padding-right: 6vw; }
+.hw-end .big { font-size: clamp(3.4rem, 6vw, 6.4rem); }
+.hw-bar { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 26px; height: 2px; background: rgba(251, 250, 245, .18); }
+.hw-bar i { display: block; height: 100%; background: var(--ac); transform-origin: 0 50%; transform: scaleX(0); }
+@media (max-width: 900px) {
+  .hw-pin { height: auto; display: block; padding: 70px 0 60px; }
+  .hw-track { overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 var(--gutter) 24px; gap: 28px; -webkit-overflow-scrolling: touch; }
+  .hw-intro { width: 84vw; scroll-snap-align: start; }
+  .hw-item { scroll-snap-align: center; }
+  .hw-art img { height: 36vh; }
+  .hw-end { width: 80vw; }
+  .hw-bar { display: none; }
+}
+
+/* cómo se cuelga: número fantasma */
+.how-ghost { position: absolute; left: -2%; top: -6%; font-family: var(--display); font-weight: 900; font-size: clamp(12rem, 28vw, 30rem); line-height: .75; color: transparent; -webkit-text-stroke: 1.5px rgba(251, 250, 245, .14); pointer-events: none; animation: ghostIn .7s var(--ease) both; }
+@keyframes ghostIn { from { opacity: 0; transform: translateY(40px) scale(.94); } }
+
+/* pie: el MURO se llena */
+.foot-word { position: relative; }
+.foot-word .fill { position: absolute; left: 0; top: 0; color: var(--ac); -webkit-text-stroke: 0; clip-path: inset(0 100% 0 0); }
+
+/* logo: la pintura chorrea */
+.brand .drip { transform-box: fill-box; transform-origin: 50% 0; transition: transform .5s var(--ease); }
+.brand:hover .drip.a { transform: scaleY(1.28); }
+.brand:hover .drip.b { transform: scaleY(1.6); }
+@media (prefers-reduced-motion: reduce) { .brand .drip, .how-ghost { animation: none; transition: none; } }
+
+@media (max-width: 900px) {
+  .intro .letters { font-size: min(34vw, 56vh); letter-spacing: -.02em; }
+  /* pared en el celular: tira horizontal compacta */
+  .hwall { overflow: hidden; }
+  .hw-pin { padding: 56px 0 40px; }
+  .hw-track { gap: 22px; padding: 0 var(--gutter) 18px; }
+  .hw-intro { width: 78vw; }
+  .hw-intro .big { font-size: clamp(3rem, 15vw, 5rem); }
+  .hw-art img { height: 30vh; }
+  .hw-idx { font-size: 9rem; top: -2vh; }
+  .hw-end { width: 74vw; padding-right: 0; }
+  .hw-end .big { font-size: clamp(2.8rem, 13vw, 4.4rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero .word .w, .ln-in, .hero-copy mark, .hero-copy p, .hero-cta, .hung .dot, .hung .cartela, .hung .tape, .note, .hero-foot span { transform: none !important; clip-path: none !important; opacity: 1 !important; }
+}
