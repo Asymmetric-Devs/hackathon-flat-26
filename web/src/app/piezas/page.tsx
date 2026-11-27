@@ -1,29 +1,33 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PieceCard } from "@/components/PieceCard";
+import { getDict } from "@/lib/i18n/server";
 import { store } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Piezas certificadas" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getDict();
+  return { title: t.pieces.title };
+}
 
 export default async function PiecesPage() {
-  const [pieces, artisans] = await Promise.all([store.listPieces(), store.listArtisans()]);
+  const [{ t }, pieces, artisans] = await Promise.all([getDict(), store.listPieces(), store.listArtisans()]);
   const names = new Map(artisans.map((a) => [a.record.id, a.meta.name]));
 
   return (
     <div className="wrap page">
       <header className="page-head">
-        <span className="kicker">Catálogo</span>
-        <h1 className="h1">Piezas certificadas</h1>
+        <span className="kicker">{t.pieces.kicker}</span>
+        <h1 className="h1">{t.pieces.title}</h1>
         <p className="lead">
-          Cada una tiene un certificado firmado en Stellar por la asociación. Abrí una para ver su origen y comprobarlo.
+          {t.pieces.lead}
         </p>
       </header>
       {pieces.length === 0 ? (
         <div className="empty">
-          <p>Todavía no hay piezas certificadas.</p>
+          <p>{t.pieces.empty}</p>
           <Link className="btn btn-sm" href="/panel">
-            Certificar la primera
+            {t.pieces.emptyCta}
           </Link>
         </div>
       ) : (

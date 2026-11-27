@@ -2,17 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/client";
 import { useSubmit } from "./useSubmit";
 
 export function RevokeButton({ id }: { id: number }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [confirming, setConfirming] = useState(false);
   const { pending, error, submit } = useSubmit<{ txHash: string }>();
 
   if (!confirming) {
     return (
       <button className="link-button danger" type="button" onClick={() => setConfirming(true)}>
-        Revocar
+        {t.panel.revoke}
       </button>
     );
   }
@@ -27,11 +29,11 @@ export function RevokeButton({ id }: { id: number }) {
           if (await submit(`/api/pieces/${id}/revoke`, new FormData())) router.refresh();
         }}
       >
-        {pending ? "Firmando…" : "Confirmar revocación"}
+        {pending ? t.panel.signing : t.panel.confirmRevoke}
       </button>
       {!pending ? (
         <button className="link-button" type="button" onClick={() => setConfirming(false)}>
-          Cancelar
+          {t.panel.cancel}
         </button>
       ) : null}
       {error ? <span className="danger">{error}</span> : null}
@@ -41,6 +43,7 @@ export function RevokeButton({ id }: { id: number }) {
 
 export function LogoutButton() {
   const router = useRouter();
+  const { t } = useI18n();
   return (
     <button
       className="btn btn-secondary"
@@ -50,15 +53,16 @@ export function LogoutButton() {
         router.refresh();
       }}
     >
-      Salir
+      {t.panel.logout}
     </button>
   );
 }
 
 export function PrintButton() {
+  const { t } = useI18n();
   return (
     <button className="btn" type="button" onClick={() => window.print()}>
-      Imprimir
+      {t.label.print}
     </button>
   );
 }

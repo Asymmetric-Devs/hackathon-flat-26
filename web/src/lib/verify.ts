@@ -42,25 +42,6 @@ export async function verifyPiece(stored: StoredPiece): Promise<PieceVerificatio
   return { status, chain, photoHash, metaHash, photoMatches, metaMatches, networkError };
 }
 
-export const statusCopy: Record<PieceStatus, { label: string; text: string }> = {
-  vigente: {
-    label: "Certificado vigente",
-    text: "La foto y la ficha coinciden con lo que la asociación firmó en Stellar.",
-  },
-  revocado: {
-    label: "Certificado revocado",
-    text: "La asociación de artesanos revocó este certificado. La pieza ya no está avalada.",
-  },
-  alterado: {
-    label: "No coincide",
-    text: "La foto o la ficha que ves no son las que firmó la asociación. Desconfiá de esta pieza.",
-  },
-  desconocido: {
-    label: "Sin verificar",
-    text: "No pudimos leer el certificado en Stellar. Puede ser un problema de conexión con la red.",
-  },
-};
-
 export type LineageLink = {
   id: number | null;
   name: string;

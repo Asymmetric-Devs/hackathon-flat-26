@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getDict } from "@/lib/i18n/server";
 import { store } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Artesanos" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getDict();
+  return { title: t.artisans.title };
+}
 
 export default async function ArtisansPage() {
-  const [artisans, pieces] = await Promise.all([store.listArtisans(), store.listPieces()]);
+  const [{ t }, artisans, pieces] = await Promise.all([getDict(), store.listArtisans(), store.listPieces()]);
+  const c = t.artisans.cols;
   const counts = new Map<number, number>();
   for (const p of pieces) counts.set(p.meta.artisanId, (counts.get(p.meta.artisanId) ?? 0) + 1);
   const names = new Map(artisans.map((a) => [a.record.id, a.meta.name]));
@@ -14,22 +19,22 @@ export default async function ArtisansPage() {
   return (
     <div className="wrap page">
       <header className="page-head">
-        <span className="kicker">Registro</span>
-        <h1 className="h1">Artesanos</h1>
-        <p className="lead">Registrados por la asociación, con el maestro de quien aprendieron el oficio.</p>
+        <span className="kicker">{t.artisans.kicker}</span>
+        <h1 className="h1">{t.artisans.title}</h1>
+        <p className="lead">{t.artisans.lead}</p>
       </header>
       {artisans.length === 0 ? (
-        <div className="empty">Todavía no hay artesanos registrados.</div>
+        <div className="empty">{t.artisans.empty}</div>
       ) : (
         <div className="table-wrap">
           <table className="table">
             <thead>
               <tr>
-                <th>Artesano</th>
-                <th>Oficio</th>
-                <th>Ciudad</th>
-                <th>Aprendió de</th>
-                <th style={{ textAlign: "right" }}>Piezas</th>
+                <th>{c[0]}</th>
+                <th>{c[1]}</th>
+                <th>{c[2]}</th>
+                <th>{c[3]}</th>
+                <th style={{ textAlign: "right" }}>{c[4]}</th>
               </tr>
             </thead>
             <tbody>

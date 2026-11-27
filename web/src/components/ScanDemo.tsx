@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n/client";
 import { Icon } from "./Icon";
 
 export type DemoSlide = {
@@ -14,10 +15,11 @@ export type DemoSlide = {
   palette?: [string, string, string, string];
 };
 
-const STEPS = ["Foto registrada al certificar", "Ficha sin cambios", "Firmado por la asociación"];
 
 /** El celular que escanea: recorre piezas y tilda cada verificación en orden. */
 export function ScanDemo({ slides, illustrative }: { slides: DemoSlide[]; illustrative: boolean }) {
+  const { t } = useI18n();
+  const STEPS = t.demo.steps;
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState(0); // 0 escaneando · 1..3 tildes · 4 verificado
   const slide = slides[index % slides.length];
@@ -81,15 +83,15 @@ export function ScanDemo({ slides, illustrative }: { slides: DemoSlide[]; illust
             <div className={phase >= 4 ? "verified is-on" : "verified"}>
               <Icon name="check" size={18} stroke={2.6} />
               <span>
-                Hecho a mano, verificado
-                <small>Certificado vigente en Stellar</small>
+                {t.demo.verified}
+                <small>{t.demo.verifiedSub}</small>
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="demo-dots" role="tablist" aria-label="Elegir pieza">
+      <div className="demo-dots" role="tablist" aria-label={t.demo.pick}>
         {slides.map((s, i) => (
           <button
             key={`${s.number}-${i}`}
@@ -100,7 +102,7 @@ export function ScanDemo({ slides, illustrative }: { slides: DemoSlide[]; illust
           />
         ))}
       </div>
-      {illustrative ? <p className="demo-note">Ejemplos ilustrativos</p> : null}
+      {illustrative ? <p className="demo-note">{t.demo.illustrative}</p> : null}
     </div>
   );
 }

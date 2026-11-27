@@ -8,12 +8,18 @@ import { isAuthed } from "@/lib/auth";
 import { config, explorer } from "@/lib/config";
 import { catalogNumber, formatDate, shortHash } from "@/lib/format";
 import { associationPublicKey } from "@/lib/stellar";
+import { getDict } from "@/lib/i18n/server";
 import { store } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Panel de la asociación", robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getDict();
+  return { title: t.panel.loginTitle, robots: { index: false } };
+}
 
 export default async function PanelPage() {
+  const { lang, t } = await getDict();
+  const p = t.panel;
   if (!(await isAuthed())) {
     return (
       <div className="wrap page">
@@ -21,9 +27,9 @@ export default async function PanelPage() {
           <LogoMark size={40} />
           <div className="stack" style={{ ["--gap" as string]: "0.5rem" }}>
             <h1 className="h3" style={{ fontSize: "1.5rem", letterSpacing: "-0.03em" }}>
-              Panel de la asociación
+              {p.loginTitle}
             </h1>
-            <p className="muted">Para registrar artesanos y emitir certificados. Solo la asociación puede firmar.</p>
+            <p className="muted">{p.loginLead}</p>
           </div>
           <LoginForm />
         </div>
@@ -33,20 +39,20 @@ export default async function PanelPage() {
 
   const [artisans, pieces] = await Promise.all([store.listArtisans(), store.listPieces()]);
   const names = new Map(artisans.map((a) => [a.record.id, a.meta.name]));
-  const revoked = pieces.filter((p) => p.record.revokeTxHash).length;
+  const revoked = pieces.filter((x) => x.record.revokeTxHash).length;
 
   return (
     <div className="wrap page">
       <header className="page-head" style={{ maxWidth: "none" }}>
-        <span className="kicker">Asociación de artesanos</span>
+        <span className="kicker">{p.kicker}</span>
         <div className="cluster" style={{ justifyContent: "space-between" }}>
-          <h1 className="h1">Panel de certificación</h1>
+          <h1 className="h1">{p.title}</h1>
           <div className="btn-row">
             <Link className="btn btn-brand" href="/panel/piezas/nueva">
-              <Icon name="stamp" size={18} /> Certificar pieza
+              <Icon name="stamp" size={18} /> {p.certify}
             </Link>
             <Link className="btn btn-secondary" href="/panel/artesanos/nuevo">
-              Registrar artesano
+              {p.register}
             </Link>
             <LogoutButton />
           </div>
@@ -55,61 +61,59 @@ export default async function PanelPage() {
 
       <div className="panel-stats">
         <div className="panel-stat">
-          <span className="faint small">Certificados vigentes</span>
+          <span className="faint small">{p.statValid}</span>
           <strong>{pieces.length - revoked}</strong>
         </div>
         <div className="panel-stat">
-          <span className="faint small">Revocados</span>
+          <span className="faint small">{p.statRevoked}</span>
           <strong>{revoked}</strong>
         </div>
         <div className="panel-stat">
-          <span className="faint small">Artesanos</span>
+          <span className="faint small">{p.statArtisans}</span>
           <strong>{artisans.length}</strong>
         </div>
       </div>
 
       <section className="panel-block">
         <div className="panel-block-head">
-          <h2 className="h3">Certificados</h2>
+          <h2 className="h3">{p.certificates}</h2>
         </div>
         {pieces.length === 0 ? (
-          <div className="empty">Todavía no emitiste certificados.</div>
+          <div className="empty">{p.noCertificates}</div>
         ) : (
           <div className="table-wrap">
             <table className="table">
               <thead>
                 <tr>
-                  <th>N.º</th>
-                  <th>Pieza</th>
-                  <th>Artesano</th>
-                  <th>Emitido</th>
-                  <th>Estado</th>
+                  {p.certCols.map((col) => (
+                    <th key={col}>{col}</th>
+                  ))}
                   <th />
                 </tr>
               </thead>
               <tbody>
-                {[...pieces].reverse().map((p) => (
-                  <tr key={p.record.id}>
-                    <td className="num faint">{catalogNumber(p.record.id)}</td>
+                {[...pieces].reverse().map((piece) => (
+                  <tr key={piece.record.id}>
+                    <td className="num faint">{catalogNumber(piece.record.id, lang)}</td>
                     <td>
-                      <Link href={`/p/${p.record.id}`}>{p.meta.title}</Link>
+                      <Link href={`/p/${piece.record.id}`}>{piece.meta.title}</Link>
                     </td>
-                    <td>{names.get(p.meta.artisanId)}</td>
-                    <td className="muted">{formatDate(p.record.createdAt)}</td>
+                    <td>{names.get(piece.meta.artisanId)}</td>
+                    <td className="muted">{formatDate(piece.record.createdAt, lang)}</td>
                     <td>
-                      {p.record.revokeTxHash ? (
-                        <span className="badge">Revocado</span>
+                      {piece.record.revokeTxHash ? (
+                        <span className="badge">{t.piece.revoked}</span>
                       ) : (
                         <span className="badge badge-ok">
-                          <span className="dot" /> Vigente
+                          <span className="dot" /> {t.piece.stateValid}
                         </span>
                       )}
                     </td>
                     <td className="row-actions">
-                      <Link className="link" href={`/p/${p.record.id}/etiqueta`}>
-                        Etiqueta
+                      <Link className="link" href={`/p/${piece.record.id}/etiqueta`}>
+                        {p.label}
                       </Link>
-                      {p.record.revokeTxHash ? null : <RevokeButton id={p.record.id} />}
+                      {piece.record.revokeTxHash ? null : <RevokeButton id={piece.record.id} />}
                     </td>
                   </tr>
                 ))}
@@ -121,18 +125,18 @@ export default async function PanelPage() {
 
       <section className="panel-block">
         <div className="panel-block-head">
-          <h2 className="h3">Artesanos</h2>
+          <h2 className="h3">{p.artisans}</h2>
         </div>
         {artisans.length === 0 ? (
-          <div className="empty">Empezá registrando a un artesano.</div>
+          <div className="empty">{p.noArtisans}</div>
         ) : (
           <div className="table-wrap">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Nombre</th>
-                  <th>Oficio</th>
-                  <th>Aprendió de</th>
+                  {p.artisanCols.map((col) => (
+                    <th key={col}>{col}</th>
+                  ))}
                   <th />
                 </tr>
               </thead>
@@ -146,7 +150,7 @@ export default async function PanelPage() {
                     <td className="muted">{a.meta.learnedFrom?.name || "—"}</td>
                     <td className="row-actions">
                       <Link className="link" href={`/panel/piezas/nueva?artesano=${a.record.id}`}>
-                        Certificar pieza
+                        {p.certifyFor}
                       </Link>
                     </td>
                   </tr>
@@ -158,11 +162,11 @@ export default async function PanelPage() {
       </section>
 
       <section className="panel-block">
-        <h2 className="h3">Cuenta firmante</h2>
+        <h2 className="h3">{p.signer}</h2>
         <div className="card card-flush">
           <dl className="kv">
             <div>
-              <dt>Asociación</dt>
+              <dt>{p.association}</dt>
               <dd>
                 <a className="mono link" href={explorer.account(associationPublicKey())}>
                   {shortHash(associationPublicKey(), 8)} ↗
@@ -170,7 +174,7 @@ export default async function PanelPage() {
               </dd>
             </div>
             <div>
-              <dt>Contrato</dt>
+              <dt>{p.contract}</dt>
               <dd>
                 <a className="mono link" href={explorer.contract(config.contractId)}>
                   {shortHash(config.contractId, 8)} ↗
@@ -178,9 +182,9 @@ export default async function PanelPage() {
               </dd>
             </div>
             <div>
-              <dt>Custodia</dt>
+              <dt>{p.custody}</dt>
               <dd className="muted">
-                La clave de la asociación vive en el servidor de Oficio. Nadie en el panel ve ni maneja una wallet.
+                {p.custodyText}
               </dd>
             </div>
           </dl>

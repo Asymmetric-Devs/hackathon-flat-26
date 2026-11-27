@@ -5,6 +5,7 @@ import { Lineage } from "@/components/Lineage";
 import { PieceCard } from "@/components/PieceCard";
 import { explorer } from "@/lib/config";
 import { formatDate, shortHash } from "@/lib/format";
+import { getDict } from "@/lib/i18n/server";
 import { store } from "@/lib/store";
 import { apprenticesOf, lineageOf } from "@/lib/verify";
 
@@ -18,7 +19,8 @@ function parseId(raw: string) {
 export async function generateMetadata({ params }: PageProps<"/a/[id]">): Promise<Metadata> {
   const id = parseId((await params).id);
   const artisan = id ? await store.getArtisan(id) : null;
-  return { title: artisan?.meta.name ?? "Artesano" };
+  const { t } = await getDict();
+  return { title: artisan?.meta.name ?? t.artisan.fallback };
 }
 
 export default async function ArtisanPage({ params }: PageProps<"/a/[id]">) {
@@ -27,28 +29,34 @@ export default async function ArtisanPage({ params }: PageProps<"/a/[id]">) {
   const artisan = await store.getArtisan(id);
   if (!artisan) notFound();
 
-  const [lineage, apprentices, pieces] = await Promise.all([lineageOf(artisan), apprenticesOf(id), store.listPieces()]);
+  const [{ lang, t }, lineage, apprentices, pieces] = await Promise.all([
+    getDict(),
+    lineageOf(artisan),
+    apprenticesOf(id),
+    store.listPieces(),
+  ]);
+  const a = t.artisan;
   const own = pieces.filter((p) => p.meta.artisanId === id).reverse();
   const { meta, record } = artisan;
 
   return (
     <article className="wrap page">
       <header className="page-head">
-        <span className="kicker">{[meta.craft, meta.city].filter(Boolean).join(" · ") || "Artesano"}</span>
+        <span className="kicker">{[meta.craft, meta.city].filter(Boolean).join(" · ") || a.fallback}</span>
         <h1 className="h1">{meta.name}</h1>
         {meta.bio ? <p className="lead">{meta.bio}</p> : null}
         <div className="cluster">
           {meta.stall ? <span className="badge">{meta.stall}</span> : null}
-          {meta.since ? <span className="badge num">En el oficio desde {meta.since}</span> : null}
+          {meta.since ? <span className="badge num">{a.since} {meta.since}</span> : null}
           <span className="badge badge-ok">
-            <span className="dot" /> Registrado por la asociación
+            <span className="dot" /> {a.registeredBadge}
           </span>
         </div>
       </header>
 
       <div className="report">
         <section className="card stack" style={{ ["--gap" as string]: "1.1rem" }}>
-          <h2 className="card-title">De quién aprendió</h2>
+          <h2 className="card-title">{a.learnedFrom}</h2>
           <Lineage
             links={[...lineage, { id, name: meta.name, craft: meta.craft, since: meta.since, onChain: true }]}
             current={id}
@@ -58,7 +66,7 @@ export default async function ArtisanPage({ params }: PageProps<"/a/[id]">) {
 
         <div className="stack" style={{ ["--gap" as string]: "1.25rem" }}>
           <section className="card stack" style={{ ["--gap" as string]: "0.75rem" }}>
-            <h2 className="card-title">A quién le enseñó</h2>
+            <h2 className="card-title">{a.taught}</h2>
             {apprentices.length > 0 ? (
               <ul className="plain-list">
                 {apprentices.map((a) => (
@@ -71,17 +79,17 @@ export default async function ArtisanPage({ params }: PageProps<"/a/[id]">) {
                 ))}
               </ul>
             ) : (
-              <p className="muted">Todavía no tiene aprendices registrados.</p>
+              <p className="muted">{a.noApprentices}</p>
             )}
           </section>
           <section className="card card-flush">
             <dl className="kv">
               <div>
-                <dt>Registrado</dt>
-                <dd>{formatDate(record.createdAt)}</dd>
+                <dt>{a.registered}</dt>
+                <dd>{formatDate(record.createdAt, lang)}</dd>
               </div>
               <div>
-                <dt>Transacción</dt>
+                <dt>{a.tx}</dt>
                 <dd>
                   <a className="mono link" href={explorer.tx(record.txHash)}>
                     {shortHash(record.txHash, 10)} ↗
@@ -95,7 +103,7 @@ export default async function ArtisanPage({ params }: PageProps<"/a/[id]">) {
 
       <section className="stack" style={{ ["--gap" as string]: "1.25rem", marginTop: "3.5rem" }}>
         <h2 className="h2" style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)" }}>
-          Piezas certificadas <span className="faint num">{own.length}</span>
+          {a.pieces} <span className="faint num">{own.length}</span>
         </h2>
         {own.length > 0 ? (
           <div className="pieces">
@@ -104,7 +112,7 @@ export default async function ArtisanPage({ params }: PageProps<"/a/[id]">) {
             ))}
           </div>
         ) : (
-          <div className="empty">Todavía no tiene piezas certificadas.</div>
+          <div className="empty">{a.noPieces}</div>
         )}
       </section>
     </article>

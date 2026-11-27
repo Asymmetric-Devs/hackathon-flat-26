@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n/client";
 
 type Node = { id: string; x: number; y: number; name: string; meta: string; current?: boolean };
 
@@ -26,6 +27,7 @@ const H = 52;
 
 /** Árbol del oficio: maestros y aprendices unidos por costuras que se dibujan. */
 export function LineageTree() {
+  const { t } = useI18n();
   const ref = useRef<SVGSVGElement>(null);
   const [on, setOn] = useState(false);
 
@@ -50,7 +52,7 @@ export function LineageTree() {
       className={on ? "tree tree-anim" : "tree"}
       viewBox="0 0 560 340"
       role="img"
-      aria-label="Ejemplo de línea del oficio: una maestra tejedora, sus aprendices y los aprendices de ellas"
+      aria-label={t.tree.label}
     >
       {edges.map(([from, to], i) => {
         const a = byId[from];
@@ -84,7 +86,7 @@ export function LineageTree() {
             {n.name}
           </text>
           <text className="tree-meta" x={n.x + 14} y={n.y + 39}>
-            {n.meta}
+            {t.tree.meta[i] ?? n.meta}
           </text>
         </g>
       ))}

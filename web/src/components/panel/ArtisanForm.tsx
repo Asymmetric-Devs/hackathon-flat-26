@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/client";
 import { useSubmit } from "./useSubmit";
 
 type Option = { id: number; name: string; craft: string };
 type Result = { id: number; txHash: string };
 
 export function ArtisanForm({ artisans }: { artisans: Option[] }) {
+  const { t } = useI18n();
+  const f = t.form;
   const { pending, error, submit } = useSubmit<Result>();
   const [master, setMaster] = useState<string>("");
   const [done, setDone] = useState<(Result & { name: string }) | null>(null);
@@ -26,16 +29,16 @@ export function ArtisanForm({ artisans }: { artisans: Option[] }) {
   }
 
   return (
-    <div className="stack" style={{ ["--stack" as string]: "2rem" }}>
+    <div className="stack" style={{ ["--gap" as string]: "1.5rem" }}>
       {done ? (
         <div className="notice notice-ok">
-          <p style={{ margin: 0 }}>
-            <strong>{done.name}</strong> quedó registrado con el número {done.id}.{" "}
-            <a href={`https://stellar.expert/explorer/testnet/tx/${done.txHash}`}>Ver la transacción ↗</a>
+          <p>
+            <strong>{done.name}</strong> {f.registered[0]} {done.id}.{" "}
+            <a href={`https://stellar.expert/explorer/testnet/tx/${done.txHash}`}>{f.registered[1]} ↗</a>
           </p>
-          <p style={{ margin: "0.4rem 0 0" }}>
-            <Link href={`/a/${done.id}`}>Ver su página</Link> ·{" "}
-            <Link href={`/panel/piezas/nueva?artesano=${done.id}`}>Certificar una pieza suya</Link>
+          <p style={{ marginTop: "0.4rem" }}>
+            <Link href={`/a/${done.id}`}>{f.registered[2]}</Link> ·{" "}
+            <Link href={`/panel/piezas/nueva?artesano=${done.id}`}>{f.registered[3]}</Link>
           </p>
         </div>
       ) : null}
@@ -44,70 +47,70 @@ export function ArtisanForm({ artisans }: { artisans: Option[] }) {
         <div className="field-row">
           <div className="field">
             <label className="label" htmlFor="name">
-              Nombre
+              {f.name}
             </label>
             <input className="input" id="name" name="name" required maxLength={120} />
           </div>
           <div className="field">
             <label className="label" htmlFor="craft">
-              Oficio
+              {f.craft}
             </label>
-            <input className="input" id="craft" name="craft" required maxLength={120} placeholder="Telar, cerámica, platería…" />
+            <input className="input" id="craft" name="craft" required maxLength={120} placeholder={f.craftPh} />
           </div>
         </div>
 
         <div className="field-row">
           <div className="field">
             <label className="label" htmlFor="stall">
-              Puesto
+              {f.stall}
             </label>
-            <input className="input" id="stall" name="stall" maxLength={120} placeholder="Puesto 34, Plaza de las Artes" />
+            <input className="input" id="stall" name="stall" maxLength={120} placeholder={f.stallPh} />
           </div>
           <div className="field">
             <label className="label" htmlFor="city">
-              Ciudad
+              {f.city}
             </label>
-            <input className="input" id="city" name="city" maxLength={120} placeholder="Mendoza, Corrientes…" />
+            <input className="input" id="city" name="city" maxLength={120} placeholder={f.cityPh} />
           </div>
         </div>
 
         <div className="field">
           <label className="label" htmlFor="bio">
-            Sobre su trabajo
+            {f.bio}
           </label>
           <textarea className="textarea" id="bio" name="bio" maxLength={1200} />
         </div>
 
         <fieldset className="fieldset">
           <legend className="label" style={{ marginBottom: "0.5rem" }}>
-            De quién aprendió el oficio
+            {f.learnedFrom}
           </legend>
           <div className="field-row">
             <div className="field">
               <label className="visually-hidden" htmlFor="master">
-                Maestro
+                {f.master}
               </label>
               <select className="select" id="master" value={master} onChange={(e) => setMaster(e.target.value)}>
-                <option value="">Sin maestro / no sabe</option>
+                <option value="">{f.noMaster}</option>
                 {artisans.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.name} · {a.craft}
                   </option>
                 ))}
-                <option value="otro">Alguien que no está registrado…</option>
+                <option value="otro">{f.otherMaster}</option>
               </select>
             </div>
             <div className="field">
               <label className="label" htmlFor="since">
-                Trabaja el oficio desde
+                {f.since}
               </label>
-              <input className="input" id="since" name="since" inputMode="numeric" pattern="\d{4}" placeholder="Año" />
+              <input className="input" id="since" name="since" inputMode="numeric" pattern="\d{4}" placeholder={f.year} />
             </div>
           </div>
           {master === "otro" ? (
             <div className="field">
               <label className="label" htmlFor="masterName">
-                Nombre del maestro
+                {f.masterName}
               </label>
               <input className="input" id="masterName" name="masterName" maxLength={120} required />
             </div>
@@ -115,23 +118,21 @@ export function ArtisanForm({ artisans }: { artisans: Option[] }) {
           {master ? (
             <div className="field">
               <label className="label" htmlFor="masterNote">
-                Cómo aprendió
+                {f.howLearned}
               </label>
-              <input className="input" id="masterNote" name="masterNote" maxLength={600} placeholder="Era su abuela; le enseñó en el taller familiar" />
+              <input className="input" id="masterNote" name="masterNote" maxLength={600} placeholder={f.howLearnedPh} />
             </div>
           ) : null}
-          <p className="field-hint">
-            Si el maestro está registrado, el vínculo queda firmado en Stellar.
-          </p>
+          <p className="field-hint">{f.linkHint}</p>
         </fieldset>
 
         {error ? <p className="notice">{error}</p> : null}
         <div className="btn-row">
-          <button className="btn" type="submit" disabled={pending}>
-            {pending ? "Firmando en Stellar…" : "Registrar artesano"}
+          <button className="btn btn-brand" type="submit" disabled={pending}>
+            {pending ? f.signing : f.registerSubmit}
           </button>
           <Link className="btn btn-secondary" href="/panel">
-            Volver
+            {f.back}
           </Link>
         </div>
       </form>

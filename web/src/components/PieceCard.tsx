@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { catalogNumber } from "@/lib/format";
+import { getDict } from "@/lib/i18n/server";
 import type { StoredPiece } from "@/lib/store";
 
-export function PieceCard({ piece, artisanName }: { piece: StoredPiece; artisanName?: string }) {
+export async function PieceCard({ piece, artisanName }: { piece: StoredPiece; artisanName?: string }) {
+  const { lang, t } = await getDict();
   const { record, meta } = piece;
   const revoked = Boolean(record.revokeTxHash);
   return (
@@ -12,11 +14,11 @@ export function PieceCard({ piece, artisanName }: { piece: StoredPiece; artisanN
         <img src={`/api/files/pieces/${record.id}`} alt={meta.title} loading="lazy" />
         <span className={revoked ? "badge" : "badge badge-ok"}>
           <span className="dot" />
-          {revoked ? "Revocado" : "Verificado"}
+          {revoked ? t.piece.revoked : t.piece.verified}
         </span>
       </div>
       <div className="piece-card-body">
-        <span className="faint small num">{catalogNumber(record.id)}</span>
+        <span className="faint small num">{catalogNumber(record.id, lang)}</span>
         <p className="piece-card-title">{meta.title}</p>
         <p className="muted small">
           {artisanName ? `${artisanName} · ` : ""}

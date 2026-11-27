@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n/client";
 import { useSubmit } from "./useSubmit";
 
 type Option = { id: number; name: string; craft: string };
@@ -19,20 +20,25 @@ async function prepare(file: File): Promise<Blob> {
   canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
   return new Promise((resolve, reject) =>
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("No se pudo procesar la foto"))), "image/jpeg", 0.86),
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("photo"))), "image/jpeg", 0.86),
   );
 }
 
 export function PieceForm({ artisans, preselected }: { artisans: Option[]; preselected?: number }) {
+  const { t } = useI18n();
+  const f = t.form;
   const { pending, error, submit } = useSubmit<Result>();
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [done, setDone] = useState<Result | null>(null);
 
-  useEffect(() => () => {
-    if (preview) URL.revokeObjectURL(preview);
-  }, [preview]);
+  useEffect(
+    () => () => {
+      if (preview) URL.revokeObjectURL(preview);
+    },
+    [preview],
+  );
 
   async function onPhoto(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -43,14 +49,14 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
       setPhoto(blob);
       setPreview(URL.createObjectURL(blob));
     } catch {
-      setPhotoError("No se pudo leer esa imagen. Probá con un JPG o PNG.");
+      setPhotoError(f.photoUnreadable);
     }
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!photo) {
-      setPhotoError("Falta la foto de la pieza.");
+      setPhotoError(f.photoMissing);
       return;
     }
     const data = new FormData(event.currentTarget);
@@ -61,19 +67,19 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
 
   if (done) {
     return (
-      <div className="stack" style={{ ["--stack" as string]: "1.5rem" }}>
+      <div className="stack" style={{ ["--gap" as string]: "1.5rem" }}>
         <div className="notice notice-ok">
-          <p style={{ margin: 0 }}>
-            Certificado número <strong>{done.id}</strong> emitido y firmado por la asociación.{" "}
-            <a href={`https://stellar.expert/explorer/testnet/tx/${done.txHash}`}>Ver la transacción ↗</a>
+          <p>
+            {f.issued[0]} <strong>{done.id}</strong> {f.issued[1]}{" "}
+            <a href={`https://stellar.expert/explorer/testnet/tx/${done.txHash}`}>{f.issued[2]} ↗</a>
           </p>
         </div>
         <div className="btn-row">
-          <Link className="btn" href={`/p/${done.id}/etiqueta`}>
-            Imprimir etiqueta con QR
+          <Link className="btn btn-brand" href={`/p/${done.id}/etiqueta`}>
+            {f.printLabel}
           </Link>
           <Link className="btn btn-secondary" href={`/p/${done.id}`}>
-            Ver página pública
+            {f.seePublic}
           </Link>
           <button
             className="btn btn-secondary"
@@ -84,7 +90,7 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
               setPreview(null);
             }}
           >
-            Certificar otra
+            {f.another}
           </button>
         </div>
       </div>
@@ -95,11 +101,11 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
     <form className="form card form-card" onSubmit={onSubmit}>
       <div className="field">
         <label className="label" htmlFor="artisanId">
-          Artesano
+          {f.artisan}
         </label>
         <select className="select" id="artisanId" name="artisanId" required defaultValue={preselected ?? ""}>
           <option value="" disabled>
-            Elegí quién hizo la pieza
+            {f.pickArtisan}
           </option>
           {artisans.map((a) => (
             <option key={a.id} value={a.id}>
@@ -110,13 +116,13 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
       </div>
 
       <div className="field">
-        <span className="label">Foto de la pieza</span>
+        <span className="label">{f.photo}</span>
         <label className="dropzone">
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="Vista previa de la pieza" />
+            <img src={preview} alt={f.photoPreview} />
           ) : (
-            <span className="muted">Elegí o sacá una foto. Se guarda tal cual: es la que verá quien compre.</span>
+            <span>{f.photoHint}</span>
           )}
           <input className="visually-hidden" type="file" accept="image/*" capture="environment" onChange={onPhoto} />
         </label>
@@ -125,49 +131,56 @@ export function PieceForm({ artisans, preselected }: { artisans: Option[]; prese
 
       <div className="field">
         <label className="label" htmlFor="title">
-          Nombre de la pieza
+          {f.title}
         </label>
-        <input className="input" id="title" name="title" required maxLength={160} placeholder="Poncho de telar criollo" />
+        <input className="input" id="title" name="title" required maxLength={160} placeholder={f.titlePh} />
       </div>
 
       <div className="field-row">
         <div className="field">
           <label className="label" htmlFor="technique">
-            Técnica
+            {f.technique}
           </label>
-          <input className="input" id="technique" name="technique" required maxLength={200} placeholder="Telar criollo de cuatro estacas" />
+          <input className="input" id="technique" name="technique" required maxLength={200} placeholder={f.techniquePh} />
         </div>
         <div className="field">
           <label className="label" htmlFor="materials">
-            Materiales
+            {f.materials}
           </label>
-          <input className="input" id="materials" name="materials" maxLength={300} placeholder="Lana de oveja hilada a mano" />
+          <input className="input" id="materials" name="materials" maxLength={300} placeholder={f.materialsPh} />
         </div>
       </div>
 
       <div className="field-row">
         <div className="field">
           <label className="label" htmlFor="year">
-            Año
+            {f.year}
           </label>
-          <input className="input" id="year" name="year" inputMode="numeric" pattern="\d{4}" defaultValue={new Date().getFullYear()} />
+          <input
+            className="input"
+            id="year"
+            name="year"
+            inputMode="numeric"
+            pattern="\d{4}"
+            defaultValue={new Date().getFullYear()}
+          />
         </div>
       </div>
 
       <div className="field">
         <label className="label" htmlFor="story">
-          Historia de la pieza
+          {f.story}
         </label>
-        <textarea className="textarea" id="story" name="story" maxLength={2000} placeholder="Teñida con jarilla y nogal. Llevó tres semanas de trabajo." />
+        <textarea className="textarea" id="story" name="story" maxLength={2000} placeholder={f.storyPh} />
       </div>
 
       {error ? <p className="notice">{error}</p> : null}
       <div className="btn-row">
-        <button className="btn" type="submit" disabled={pending}>
-          {pending ? "Firmando en Stellar…" : "Emitir certificado"}
+        <button className="btn btn-brand" type="submit" disabled={pending}>
+          {pending ? f.signing : f.issue}
         </button>
         <Link className="btn btn-secondary" href="/panel">
-          Volver
+          {f.back}
         </Link>
       </div>
     </form>
