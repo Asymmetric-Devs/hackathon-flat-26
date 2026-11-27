@@ -129,6 +129,17 @@ export async function revokePiece(id: number) {
   return { txHash };
 }
 
+/** Totales leídos del contrato. `null` si la red o la configuración no responden. */
+export async function getCounts(): Promise<{ pieces: number; artisans: number } | null> {
+  try {
+    const c = await client();
+    const [pieces, artisans] = await Promise.all([read(c.piece_count()), read(c.artisan_count())]);
+    return { pieces: Number(pieces ?? 0), artisans: Number(artisans ?? 0) };
+  } catch {
+    return null;
+  }
+}
+
 export async function getChainArtisan(id: number): Promise<ChainArtisan | null> {
   const c = await client();
   const raw = await read(c.artisan({ id }));
