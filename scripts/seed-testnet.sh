@@ -52,9 +52,9 @@ for w in "${WORKS[@]}"; do
   row "publish" "\`$slug\` -> obra #$id (precio $price XLM, $rate XLM/día, depósito $dep XLM)"
 done
 
-echo "==> manet-bar: hang 30 días"
-invoke muro-venue "$CID" hang --venue "$VENUE" --work_id "$M" --days 30 >/dev/null
-row "hang" "muro-venue cuelga \`manet-bar\` por 30 días (depósito 40 XLM + 90 XLM prepago)"
+echo "==> manet-bar: hang 120 días (con 1 día = 1 min, el prepago cubre más que el precio: la venta es el límite, no el vencimiento)"
+invoke muro-venue "$CID" hang --venue "$VENUE" --work_id "$M" --days 120 >/dev/null
+row "hang" "muro-venue cuelga \`manet-bar\` por 120 días (depósito 40 XLM + 360 XLM prepago)"
 HANG_AT=$(date +%s)
 
 echo "==> candido-curupayti: ciclo completo"

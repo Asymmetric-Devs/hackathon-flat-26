@@ -252,7 +252,7 @@ footer.foot .cite { margin-top: 18px; font: 450 .8rem var(--mono); color: var(--
 .gal > a:nth-child(3n+1) .paste { transform: rotate(-1.2deg); } .gal > a:nth-child(3n+2) .paste { transform: rotate(1deg); } .gal > a:nth-child(3n) .paste { transform: rotate(-.4deg); }
 .gal .cartela { margin-top: 20px; max-width: none; font-size: .86rem; }
 .state-chip { display: inline-block; font: 600 .7rem var(--mono); padding: 3px 10px; border-radius: 99px; background: var(--tinta); color: var(--papel); margin-bottom: 8px; }
-.state-chip.hung { background: var(--ac); color: var(--on); } .state-chip.sold { background: #2f8f4e; } .state-chip.lost { background: #c24a22; } .state-chip.ret { background: #e0b000; color: var(--tinta); }
+.state-chip.live { background: var(--ac); color: var(--on); } .state-chip.sold { background: #2f8f4e; } .state-chip.lost { background: #c24a22; } .state-chip.ret { background: #e0b000; color: var(--tinta); }
 
 .obra { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(30px, 6vw, 100px); align-items: start; }
 @media (max-width: 960px) { .obra { grid-template-columns: 1fr; } }

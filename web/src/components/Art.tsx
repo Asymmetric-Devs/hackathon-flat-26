@@ -6,7 +6,7 @@ import { href } from "../router";
 import { useStore } from "../store";
 
 export const STATUS_LABEL: { [k: string]: string } = { Available: "Disponible", Hung: "Colgada", Returning: "Por devolver", Sold: "Vendida", Lost: "No devuelta" };
-export const STATUS_CLASS: { [k: string]: string } = { Available: "", Hung: "hung", Returning: "ret", Sold: "sold", Lost: "lost" };
+export const STATUS_CLASS: { [k: string]: string } = { Available: "", Hung: "live", Returning: "ret", Sold: "sold", Lost: "lost" };
 
 export function useView(e: Entry): { r: Resolved; l: Live } {
   const { now } = useStore();

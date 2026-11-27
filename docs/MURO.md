@@ -78,7 +78,7 @@ scripts/refresh-demo.sh 0 600   # recarga el prepago de la obra #0
 scripts/reset-demo.sh           # reinicia toda la demo (despliega, siembra y regenera la evidencia)
 ```
 
-**Antes de presentar:** con 1 día = 1 minuto, la obra colgada llega al 100 % del precio en ~100 minutos. Correr `scripts/reset-demo.sh` (~5 min) justo antes para tener la demo fresca.
+**Antes de presentar:** con 1 día = 1 minuto, la obra colgada llega al 100 % del precio en ~100 minutos y se vende sola. Correr `scripts/reset-demo.sh` (~5 min) justo antes para tener la demo fresca. No conviene recargar con `top_up` una obra cuyo prepago ya venció: el contrato cobra de golpe todo el tiempo vencido y la obra se vende.
 
 El acento de marca es naranja (#ff7a00). Se puede probar otro con `?acento=bermellon|ambar|oxido|senal|violeta` en la URL.
 

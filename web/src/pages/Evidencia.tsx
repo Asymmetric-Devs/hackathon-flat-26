@@ -16,7 +16,7 @@ export default function Evidencia() {
             {Object.entries(inst).map(([k, v]) => (
               <tr key={k}><td>{k === "demo" ? "Demo" : "Real"}</td>
                 <td><a className="mono" href={contractUrl(v.contractId)} target="_blank" rel="noreferrer">{short(v.contractId)}</a></td>
-                <td>{v.daySecs >= 86400 ? "24 horas" : `${v.daySecs} segundos`}</td><td>{v.graceDays} días</td>
+                <td>{v.daySecs >= 86400 ? "24 horas" : `${v.daySecs} segundos`}</td><td>{v.graceDays} {v.graceDays === 1 ? "día" : "días"}</td>
                 <td>{v.deployTx ? <a className="mono" href={txUrl(v.deployTx)} target="_blank" rel="noreferrer">{v.deployTx.slice(0, 10)}…</a> : "—"}</td></tr>
             ))}
           </tbody>
