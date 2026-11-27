@@ -15,13 +15,14 @@ export function useView(e: Entry): { r: Resolved; l: Live } {
 
 export type Variant = "paste" | "frame";
 /** Afiche pegado con cinta (calle) o enmarcado (galería). */
-export function Painting({ r, variant = "paste", eager = false, children }: { r: Resolved; variant?: Variant; eager?: boolean; children?: React.ReactNode }) {
+export function Painting({ r, variant = "paste", eager = false, work, hero = false, children }: { r: Resolved; variant?: Variant; eager?: boolean; work?: number; hero?: boolean; children?: React.ReactNode }) {
+  const mark = { "data-work": work, "data-hero": hero ? "" : undefined };
   const img = r.img ? (
     <img src={r.img} alt={`${r.title}, ${r.artist}${r.year ? ", " + r.year : ""}`} loading={eager ? "eager" : "lazy"} decoding="async" width={1000} height={Math.round(1000 * r.ratio)} />
-  ) : <span style={{ display: "block", aspectRatio: `1 / ${r.ratio}`, background: "var(--asfalto-2)" }} />;
-  if (variant === "frame") return <span className="frame"><span className="mat">{img}</span>{children}</span>;
+  ) : <span className="ph" style={{ aspectRatio: `1 / ${r.ratio}` }}><i>Tu obra va acá</i></span>;
+  if (variant === "frame") return <span className="frame" {...mark}><span className="mat">{img}</span>{children}</span>;
   return (
-    <span className="paste">
+    <span className="paste" {...mark}>
       <i className="tape a" aria-hidden="true" /><i className="tape b" aria-hidden="true" />
       <span className="sheet">{img}</span>
       {children}

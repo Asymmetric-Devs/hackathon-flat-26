@@ -23,38 +23,10 @@ export function Cursor() {
       else { label.current!.textContent = ""; r.classList.remove("big", "small"); }
     };
     const leave = () => gsap.to(r, { opacity: 0, duration: 0.2 });
-    // botones magnéticos: se acercan un poco al puntero
-    const magnet = (e: PointerEvent) => {
-      document.querySelectorAll<HTMLElement>(".mag").forEach((m) => {
-        const b = m.getBoundingClientRect();
-        const dx = e.clientX - (b.left + b.width / 2), dy = e.clientY - (b.top + b.height / 2);
-        if (Math.hypot(dx, dy) < 110) { m.dataset.mag = "1"; gsap.to(m, { x: dx * 0.3, y: dy * 0.3, duration: 0.4, ease: "power3.out", overwrite: "auto" }); }
-        else if (m.dataset.mag) { delete m.dataset.mag; gsap.to(m, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1,.4)", overwrite: "auto" }); }
-      });
-    };
-    addEventListener("pointermove", magnet);
     addEventListener("pointermove", move);
     addEventListener("pointerover", over);
     document.documentElement.addEventListener("pointerleave", leave);
-    return () => { removeEventListener("pointermove", magnet); removeEventListener("pointermove", move); removeEventListener("pointerover", over); document.documentElement.removeEventListener("pointerleave", leave); };
+    return () => { removeEventListener("pointermove", move); removeEventListener("pointerover", over); document.documentElement.removeEventListener("pointerleave", leave); };
   }, []);
   return <div className="cursor" ref={ring} aria-hidden="true"><span ref={label} /></div>;
-}
-
-/** Barra fina arriba que marca cuánto se scrolleó. */
-export function Progress() {
-  const bar = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    let raf = 0;
-    const upd = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const max = document.documentElement.scrollHeight - innerHeight;
-        bar.current?.style.setProperty("transform", `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`);
-      });
-    };
-    addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd();
-    return () => { removeEventListener("scroll", upd); removeEventListener("resize", upd); cancelAnimationFrame(raf); };
-  }, []);
-  return <div className="progress" aria-hidden="true"><div ref={bar} /></div>;
 }

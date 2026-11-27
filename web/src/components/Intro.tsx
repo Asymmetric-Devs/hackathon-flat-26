@@ -1,13 +1,15 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap, lockScroll } from "../fx";
+import { BrickWord } from "./BrickWord";
 
-/** Pseudoaleatorio con semilla: la intro se arma siempre igual. */
+/** Pseudoaleatorio con semilla: el muro de fondo se arma siempre igual. */
 const rng = (seed: number) => () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 
 /**
- * Intro: cae un muro de ladrillos (unos pocos naranja), las letras MURO se estampan encima con un
- * temblor y todo estalla hacia afuera para dejar ver la página. Se puede saltar con clic o teclado.
- * `onReady` se llama cuando empieza la explosión (arranca la animación del hero); `onDone` al terminar.
+ * Intro (corre en cada visita): cae un muro de ladrillos, la palabra MURO se arma ladrillo por
+ * ladrillo, la O se pinta de naranja y chorrea, y todo se derrumba para dejar ver la página.
+ * Se puede saltar con clic, Esc o Enter. `onReady` se llama cuando empieza el derrumbe (arranca
+ * la entrada del hero); `onDone` cuando termina.
  */
 export function Intro({ onReady, onDone }: { onReady: () => void; onDone: () => void }) {
   const root = useRef<HTMLDivElement>(null);
@@ -17,7 +19,7 @@ export function Intro({ onReady, onDone }: { onReady: () => void; onDone: () => 
     const el = root.current!;
     const wall = el.querySelector<HTMLElement>(".wall")!;
     const W = innerWidth, H = innerHeight;
-    const bw = Math.max(110, W / 9), bh = Math.round(bw * 0.46);
+    const bw = Math.max(104, W / 10), bh = Math.round(bw * 0.44);
     const cols = Math.ceil(W / bw) + 2, rows = Math.ceil(H / bh) + 1;
     const rand = rng(11);
     const bricks: HTMLElement[] = [];
@@ -25,7 +27,7 @@ export function Intro({ onReady, onDone }: { onReady: () => void; onDone: () => 
       for (let c = 0; c < cols; c++) {
         const b = document.createElement("i");
         const k = rand();
-        b.className = "brick" + (k < 0.065 ? " o" : k < 0.3 ? " l" : "");
+        b.className = "brick" + (k < 0.05 ? " o" : k < 0.28 ? " l" : "");
         b.style.cssText = `left:${c * bw - (r % 2 ? bw / 2 : 0) - bw / 2}px;top:${r * bh}px;width:${bw - 3}px;height:${bh - 3}px`;
         wall.appendChild(b);
         bricks.push(b);
@@ -33,33 +35,32 @@ export function Intro({ onReady, onDone }: { onReady: () => void; onDone: () => 
     }
     lockScroll(true);
     const ctx = gsap.context(() => {
-      const letters = el.querySelectorAll<HTMLElement>(".letters span");
+      const cells = el.querySelectorAll<SVGElement>(".iword .b");
+      const drips = el.querySelectorAll<SVGElement>(".iword .drip");
       const num = el.querySelector<HTMLElement>(".count b")!;
-      const flash = el.querySelector<HTMLElement>(".flash")!;
       const counter = { v: 0 };
-      gsap.set(bricks, { y: () => -(H * 0.9 + Math.random() * H * 0.9), rotation: () => gsap.utils.random(-28, 28), opacity: 1 });
-      gsap.set(letters, { yPercent: 125, opacity: 0, scale: 1.3 });
+      gsap.set(bricks, { y: () => -(H * 0.9 + Math.random() * H * 0.8), rotation: () => gsap.utils.random(-24, 24) });
+      gsap.set(cells, { opacity: 0, scale: 0.2, y: () => gsap.utils.random(-30, 30), transformOrigin: "50% 50%" });
+      gsap.set(drips, { scaleY: 0, transformOrigin: "50% 0%" });
       const tl = gsap.timeline({ onComplete: () => { lockScroll(false); onDone(); } });
       tlRef.current = tl;
-      // 1) el muro cae, de abajo hacia arriba, con rebote
-      tl.to(bricks, { y: 0, rotation: 0, duration: 0.9, ease: "bounce.out", delay: (i: number) => (rows - 1 - Math.floor(i / cols)) * 0.045 + Math.random() * 0.12 }, 0);
-      tl.to(counter, { v: 100, duration: 1.8, ease: "power2.inOut", onUpdate: () => { num.textContent = String(Math.round(counter.v)).padStart(3, "0"); } }, 0);
-      // 2) las letras se estampan, con temblor
-      tl.to(letters, { yPercent: 0, opacity: 1, scale: 1, duration: 0.55, ease: "expo.out", stagger: 0.1 }, 1.15);
-      tl.to(el, { x: () => gsap.utils.random(-9, 9), y: () => gsap.utils.random(-7, 7), duration: 0.045, repeat: 7, yoyo: true, ease: "none" }, 1.5);
-      tl.set(el, { x: 0, y: 0 }, 1.86);
-      // 3) estalla todo hacia afuera
-      tl.call(onReady, [], 2.25);
-      tl.to(el.querySelectorAll(".count, .skip"), { opacity: 0, duration: 0.2 }, 2.1);
-      tl.fromTo(flash, { opacity: 0.9 }, { opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, 2.2);
-      tl.to(letters, { scale: 1.7, yPercent: -30, opacity: 0, duration: 0.42, ease: "power3.in", stagger: 0.03 }, 2.15);
-      tl.to(bricks, {
-        x: (_i: number, t: Element) => { const r = (t as HTMLElement).getBoundingClientRect(); return (r.left + r.width / 2 - W / 2) * gsap.utils.random(1.2, 2.4); },
-        y: (_i: number, t: Element) => { const r = (t as HTMLElement).getBoundingClientRect(); return (r.top + r.height / 2 - H / 2) * gsap.utils.random(1.2, 2.4) + gsap.utils.random(-80, 160); },
-        rotation: () => gsap.utils.random(-260, 260), scale: () => gsap.utils.random(0.3, 0.9), opacity: 0, duration: 1.05, ease: "power4.out",
-        stagger: { amount: 0.4, from: "center", grid: [rows, cols] },
-      }, 2.25);
-      tl.to(el, { backgroundColor: "rgba(18,18,18,0)", duration: 0.5 }, 2.3);
+      // 1) el muro cae de abajo hacia arriba, con rebote
+      tl.to(bricks, { y: 0, rotation: 0, duration: 0.8, ease: "bounce.out", delay: (i: number) => (rows - 1 - Math.floor(i / cols)) * 0.04 + Math.random() * 0.1 }, 0);
+      tl.to(counter, { v: 100, duration: 1.9, ease: "power2.inOut", onUpdate: () => { num.textContent = String(Math.round(counter.v)).padStart(3, "0"); } }, 0);
+      // 2) la palabra se arma ladrillo por ladrillo
+      tl.to(cells, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "back.out(2.2)", stagger: { amount: 0.75, from: "random" } }, 0.95);
+      // 3) la O chorrea
+      tl.to(drips, { scaleY: 1, duration: 0.7, ease: "power2.out", stagger: 0.1 }, 1.9);
+      tl.to(el.querySelector(".iword"), { x: () => gsap.utils.random(-4, 4), y: () => gsap.utils.random(-3, 3), duration: 0.04, repeat: 5, yoyo: true, ease: "none" }, 1.75);
+      tl.set(el.querySelector(".iword"), { x: 0, y: 0 }, 1.98);
+      // 4) derrumbe: todo cae y deja ver la página
+      tl.to(el.querySelectorAll(".count, .skip"), { opacity: 0, duration: 0.2 }, 2.4);
+      tl.call(onReady, [], 2.62);
+      tl.set(el, { backgroundColor: "rgba(18,18,18,0)" }, 2.62);
+      const fall = { y: () => H * 1.25 + gsap.utils.random(0, H * 0.5), rotation: () => gsap.utils.random(-50, 50), duration: 0.95, ease: "power3.in" };
+      tl.to(cells, { ...fall, y: () => H * 1.1 + gsap.utils.random(0, H * 0.4), stagger: { amount: 0.3, from: "start" } }, 2.62);
+      tl.to(drips, { opacity: 0, duration: 0.2 }, 2.62);
+      tl.to(bricks, { ...fall, stagger: { amount: 0.55, from: "start", grid: [rows, cols] } }, 2.7);
     }, el);
     const skip = () => tlRef.current?.timeScale(6);
     const onKey = (ev: KeyboardEvent) => { if (["Escape", "Enter", " "].includes(ev.key)) skip(); };
@@ -70,12 +71,8 @@ export function Intro({ onReady, onDone }: { onReady: () => void; onDone: () => 
 
   return (
     <div className="intro" ref={root} role="presentation">
-      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-        <filter id="rough2" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".03 .045" numOctaves="3" seed="9" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="12" /></filter>
-      </svg>
       <div className="wall" />
-      <div className="letters" aria-hidden="true"><span>M</span><span>U</span><span>R</span><span>O</span></div>
-      <div className="flash" />
+      <div className="iwrap"><BrickWord className="iword" title="" /></div>
       <div className="count mono" aria-live="off"><b>000</b><i>colgando el muro</i></div>
       <button className="skip" type="button">Saltar ↵</button>
     </div>

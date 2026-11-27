@@ -1,12 +1,14 @@
 /** Acento de la marca. Naranja por defecto; se puede probar otro con ?acento=nombre. */
 export type Accent = { name: string; label: string; c: string; c2: string; on: string };
 export const ACCENTS: Accent[] = [
-  { name: "naranja", label: "Naranja", c: "#ff6a1a", c2: "#ff8a4d", on: "#121212" },
+  { name: "naranja", label: "Naranja", c: "#ff7a00", c2: "#ff9a3d", on: "#121212" },
+  { name: "bermellon", label: "Bermellón", c: "#ff5a1f", c2: "#ff8556", on: "#121212" },
+  { name: "ambar", label: "Ámbar", c: "#ff8a00", c2: "#ffaa40", on: "#121212" },
+  { name: "oxido", label: "Óxido", c: "#e8590c", c2: "#f08040", on: "#ffffff" },
+  { name: "senal", label: "Señal", c: "#ff4f00", c2: "#ff7a3d", on: "#121212" },
   { name: "violeta", label: "Violeta", c: "#8b5cff", c2: "#b194ff", on: "#ffffff" },
-  { name: "lima", label: "Lima", c: "#c6f432", c2: "#dcff6e", on: "#121212" },
-  { name: "azul", label: "Azul", c: "#2f56ff", c2: "#6f8aff", on: "#ffffff" },
 ];
-const KEY = "muro.acento.v2";
+const KEY = "muro.acento.v3";
 
 export function currentAccent(): string {
   try {

@@ -3,7 +3,7 @@ import qrcode from "qrcode-generator";
 import { buyNow, claim, confirmReturn, hang, seize, stop, tip, topUp } from "../chain";
 import { Entry } from "../chain";
 import { Meter, Painting, STATUS_CLASS, STATUS_LABEL, useView } from "../components/Art";
-import { ASSET, DAY_SECS, INSTANCE, UNIT } from "../config";
+import { ASSET, DAY_SECS, INSTANCE, IS_DEMO_CLOCK, UNIT } from "../config";
 import { accountUrl, dur, money, short, toStroops, when } from "../format";
 import { href } from "../router";
 import { useStore } from "../store";
@@ -22,6 +22,7 @@ function Detail({ e }: { e: Entry }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [days, setDays] = useState(10);
   const [tipAmt, setTipAmt] = useState(2);
+  const [confirmStop, setConfirmStop] = useState(false);
   const w = e.work;
   const me = signer?.address;
   const isArtist = me === w.artist;
@@ -47,7 +48,7 @@ function Detail({ e }: { e: Entry }) {
     <main className="page">
       <p style={{ marginBottom: 26 }}><a className="link" href={href.galeria}>← La galería</a></p>
       <div className="obra">
-        <div className="obra-wall"><Painting r={r} eager /></div>
+        <div className="obra-art"><Painting r={r} eager hero /></div>
         <div className="obra-side">
           <span className={`state-chip ${STATUS_CLASS[w.status]}`}>{STATUS_LABEL[w.status]}</span>
           <h1>{r.title}</h1>
@@ -56,7 +57,7 @@ function Detail({ e }: { e: Entry }) {
           {r.collection && <p style={{ fontSize: ".85rem", color: "var(--tinta-2)" }}>Original en {r.collection}. {r.demo ? "Obra de dominio público usada como ejemplo." : ""}</p>}
 
           {(l.hung || w.status === "Sold") && <Meter e={e} l={l} />}
-          {l.hung && e.lease && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Colgada hace {dur(l.secsHung, DAY_SECS)} en <a className="link mono" href={accountUrl(e.lease.venue)} target="_blank" rel="noreferrer">{short(e.lease.venue)}</a>.{runout ? ` El prepago alcanza hasta el ${when(runout, true).replace(/\.$/, "")}.` : ""}</p>}
+          {l.hung && e.lease && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Colgada hace {dur(l.secsHung, DAY_SECS)} en <a className="link mono" href={accountUrl(e.lease.venue)} target="_blank" rel="noreferrer">{short(e.lease.venue)}</a>.{runout ? ` El prepago alcanza hasta el ${when(runout, true).replace(/\.$/, "")}.` : ""}{IS_DEMO_CLOCK ? " (En esta demo 1 día dura 1 minuto.)" : ""}</p>}
           {w.status === "Sold" && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Hoy es de <a className="link mono" href={accountUrl(w.owner)} target="_blank" rel="noreferrer">{short(w.owner)}</a>. La compra quedó pagada en cuotas de alquiler.</p>}
 
           <div className="facts">
@@ -77,21 +78,41 @@ function Detail({ e }: { e: Entry }) {
           )}
           {w.status === "Available" && isArtist && <p className="notice" style={{ marginTop: 22 }}>Tu obra está disponible. Cuando un espacio la cuelgue, vas a empezar a cobrar por día.</p>}
 
-          {l.hung && (
+          {l.hung && isVenue && (
+            <section className="panel strong" aria-labelledby="h-obra">
+              <h3 id="h-obra">Tu pared</h3>
+              <p className="hint">Esta obra está colgada en tu espacio y el alquiler corre. Lo devengado hasta ahora: <b>{money(l.accruedNow, 2)}</b>.</p>
+              {!confirmStop ? (
+                <div className="actions">
+                  <button className="btn" disabled={!!busy} onClick={() => setConfirmStop(true)}>Descolgar la obra</button>
+                  <button className="btn line" disabled={!!busy} onClick={() => run("buy", "La obra es tuya. El depósito volvió a tu cuenta.", (s) => buyNow(s, w.id))}>Quedármela por {money(buyCost > 0n ? buyCost : 0n, 0)}</button>
+                </div>
+              ) : (
+                <div className="confirm" role="alertdialog" aria-label="Confirmar descolgar la obra">
+                  <p><b>¿Descolgar y devolver la obra?</b> Se frena el alquiler y se le paga al artista lo devengado. Lo que sobre del prepago vuelve a tu cuenta. El depósito ({money(w.deposit, 0)}) vuelve cuando el artista confirme que la recibió.</p>
+                  <div className="actions">
+                    <button className="btn" disabled={!!busy} onClick={async () => { await run("stop", "Descolgaste la obra. El alquiler se frenó: ahora hay que devolverla.", (s) => stop(s, w.id)); setConfirmStop(false); }}>{busy === "stop" ? "Descolgando…" : "Sí, descolgar"}</button>
+                    <button className="btn line" disabled={!!busy} onClick={() => setConfirmStop(false)}>Cancelar</button>
+                  </div>
+                </div>
+              )}
+              <div className="actions sub-actions">
+                <label className="field inline">Sumar días de prepago<input type="number" min={1} max={365} value={days} onChange={(ev) => setDays(Math.max(1, Math.min(365, Number(ev.target.value) || 1)))} /></label>
+                <button className="btn sm line" disabled={!!busy} onClick={() => run("topup", `Sumaste ${days} días de prepago.`, (s) => topUp(s, w.id, days))}>Sumar {days} días</button>
+                <button className="btn sm line" disabled={!!busy || l.accruedNow === 0n} onClick={() => run("claim", "Se cobró lo devengado y se acreditó al precio.", (s) => claim(s, w.id))}>Liquidar lo devengado</button>
+              </div>
+            </section>
+          )}
+
+          {l.hung && !isVenue && (
             <section className="panel" aria-labelledby="h-obra">
-              <h3 id="h-obra">{isVenue ? "Tu pared" : isArtist ? "Tu obra" : "Qué se puede hacer"}</h3>
-              <p className="hint">Lo devengado hasta ahora: <b>{money(l.accruedNow, 2)}</b>. Cualquiera puede ejecutar el cobro: el dinero siempre va al artista.</p>
+              <h3 id="h-obra">{isArtist ? "Tu obra" : "Colgada en otro espacio"}</h3>
+              <p className="hint">Lo devengado hasta ahora: <b>{money(l.accruedNow, 2)}</b>. Cualquiera puede ejecutar el cobro: el dinero siempre va al artista. {isArtist ? "" : "Solo el espacio que la colgó puede descolgarla"}{e.lease && !isArtist ? <> (<span className="mono">{short(e.lease.venue)}</span>)</> : null}{isArtist ? "" : "."}</p>
               <div className="actions">
                 <button className="btn sm" disabled={!!busy || l.accruedNow === 0n} onClick={() => run("claim", "Se cobró lo devengado y se acreditó al precio.", (s) => claim(s, w.id))}>{busy === "claim" ? "Cobrando…" : "Cobrar lo devengado"}</button>
-                {isVenue && <>
-                  <button className="btn sm line" disabled={!!busy} onClick={() => run("topup", `Sumaste ${days} días de prepago.`, (s) => topUp(s, w.id, days))}>Sumar {days} días</button>
-                  <button className="btn sm line" disabled={!!busy} onClick={() => run("buy", "La obra es tuya. El depósito volvió a tu cuenta.", (s) => buyNow(s, w.id))}>Quedármela por {money(buyCost > 0n ? buyCost : 0n, 0)}</button>
-                  <button className="btn sm line" disabled={!!busy} onClick={() => run("stop", "Frenaste el alquiler. Ahora hay que devolver la obra.", (s) => stop(s, w.id))}>Devolver la obra</button>
-                </>}
                 {canSeizeHung && isArtist && <button className="btn sm" disabled={!!busy} onClick={() => run("seize", "Se ejecutó el depósito a tu favor.", (s) => seize(s, w.id))}>Ejecutar el depósito</button>}
               </div>
-              {isVenue && <label className="field" style={{ maxWidth: 220 }}>Días a sumar<input type="number" min={1} max={365} value={days} onChange={(ev) => setDays(Math.max(1, Math.min(365, Number(ev.target.value) || 1)))} /></label>}
-              {!signer && <p className="hint">Sin cuenta, se crea una de invitado al primer toque. Para operar como el espacio o el artista de esta obra, conectate con la cuenta que usaste al publicar o colgar.</p>}
+              {!signer && <p className="hint">Si colgaste esta obra, conectate (arriba a la derecha) con la misma cuenta para poder descolgarla.</p>}
             </section>
           )}
 

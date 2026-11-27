@@ -22,7 +22,7 @@ Pinturas, fotos y grabados decoran bares, cafés, bodegas y hoteles de todo el p
    - Si el espacio frena el alquiler, devuelve la obra y el artista confirma que la recibió: el depósito vuelve.
    - Si no la devuelve o el prepago se agota y pasa el plazo de gracia, el depósito pasa al artista.
 
-Además: una landing con intro animada (un muro de ladrillos que se arma y estalla), recorrido horizontal de las obras con el scroll, scroll suave, cursor propio y respeto por "reducir movimiento" (se desactiva la intro y las animaciones). La intro se ve una vez por sesión; `?intro=1` la fuerza y `?intro=0` la salta. **Cartela con QR** junto a la obra (muestra lo cobrado en vivo y permite dejar una propina al artista sin instalar nada) y **currículum público** de exposiciones por obra.
+Además: una landing con intro animada (cae un muro de ladrillos, la palabra MURO se arma ladrillo por ladrillo con la O naranja chorreando, y todo se derrumba), recorrido horizontal de las obras con el scroll, scroll suave, cursor propio, barra que se esconde al bajar, transiciones entre páginas (la obra que se toca viaja y crece hasta su ficha) y respeto por "reducir movimiento" (se desactiva la intro y las animaciones). La intro corre en cada carga de la página y se puede saltar con clic, Esc o Enter. **Cartela con QR** junto a la obra (muestra lo cobrado en vivo y permite dejar una propina al artista sin instalar nada) y **currículum público** de exposiciones por obra.
 
 ## Por qué blockchain
 
@@ -80,7 +80,7 @@ scripts/reset-demo.sh           # reinicia toda la demo (despliega, siembra y re
 
 **Antes de presentar:** con 1 día = 1 minuto, la obra colgada llega al 100 % del precio en ~100 minutos. Correr `scripts/reset-demo.sh` (~5 min) justo antes para tener la demo fresca.
 
-El acento de marca es naranja. Se puede probar otro con `?acento=violeta|lima|azul` en la URL.
+El acento de marca es naranja (#ff7a00). Se puede probar otro con `?acento=bermellon|ambar|oxido|senal|violeta` en la URL.
 
 ## Validación con alguien de afuera
 

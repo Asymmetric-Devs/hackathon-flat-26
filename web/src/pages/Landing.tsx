@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Entry } from "../chain";
 import { resolve } from "../catalog";
-import { Cartela, Dot, Painting, STATUS_LABEL, useView } from "../components/Art";
+import { Cartela, Dot, Painting, useView } from "../components/Art";
 import { Intro } from "../components/Intro";
+import { BrickWord } from "../components/BrickWord";
 import { Chars } from "../components/Split";
 import { Wall } from "../components/Wall";
 import { gsap, reduced, ScrollTrigger, scrollToId } from "../fx";
-import { demoEntries, live } from "../live";
-import { money, short, when, accountUrl, contractUrl } from "../format";
+import { demoEntries } from "../live";
 import { href } from "../router";
 import { useStore } from "../store";
-import { CONTRACT_ID, DAY_SECS, ASSET } from "../config";
-import evidence from "../evidence.json";
+import { ASSET } from "../config";
 
 /* ------------------------------------------------------------------ HERO */
 type Slot = { slug: string; x: number; y: number; w: number; r0: number; rt: number; cx?: string; mw: string; ms: string; v: "paste" | "frame" };
@@ -30,35 +29,11 @@ function HungPiece({ slot, e }: { slot: Slot; e: Entry }) {
   return (
     <div className="hung" style={vars} data-r0={slot.r0} data-depth={(slot.w / 14).toFixed(2)}>
       <a href={href.obra(e.work.id)} data-cursor="Ver obra" aria-label={`${r.title}, ${r.artist}. Ver la obra.`}>
-        <Painting r={r} variant={slot.v} eager><Dot e={e} l={l} /></Painting>
+        <Painting r={r} variant={slot.v} eager work={e.work.id}><Dot e={e} l={l} /></Painting>
       </a>
       <Cartela e={e} r={r} l={l} compact />
     </div>
   );
-}
-
-const TICKER = ["La obra cobra por día", "El depósito vuelve", "Cada día es una cuota", "Si te enamorás, es tuya", "Sin intermediarios", "El historial no se puede editar"];
-
-/** Cinta que corre sola y se acelera, se inclina y cambia de sentido según cómo se scrollea. */
-function Marquee() {
-  const belt = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (reduced()) return;
-    const el = belt.current!;
-    let x = 0, v = 0, dir = 1, last = scrollY;
-    const tick = () => {
-      const sv = scrollY - last; last = scrollY;
-      v += (Math.abs(sv) - v) * 0.1;
-      if (Math.abs(sv) > 0.5) dir = sv > 0 ? 1 : -1;
-      x -= (1.1 + v * 0.55) * dir;
-      const half = el.scrollWidth / 2;
-      if (x < -half) x += half; if (x > 0) x -= half;
-      el.style.transform = `translate3d(${x}px,0,0) skewX(${(-dir * Math.min(14, v * 0.5)).toFixed(2)}deg)`;
-    };
-    gsap.ticker.add(tick);
-    return () => gsap.ticker.remove(tick);
-  }, []);
-  return <div className="marquee" aria-hidden="true"><div className="belt" ref={belt}>{[...TICKER, ...TICKER, ...TICKER, ...TICKER].map((t, i) => <span key={i}>{t}</span>)}</div></div>;
 }
 
 function Hero({ entries, source, ready }: { entries: Entry[]; source: string; ready: boolean }) {
@@ -81,8 +56,9 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
     gsap.set(q(".hung .dot"), { scale: 0 });
     gsap.set(q(".hung .cartela"), { opacity: 0, y: 18 });
     gsap.set(q(".hung .tape"), { scaleX: 0, transformOrigin: "0 50%" });
-    gsap.set(q(".word .w"), { yPercent: 108 });
-    gsap.set(q(".note, .hero-foot span"), { opacity: 0 });
+    gsap.set(q(".hword .b"), { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" });
+    gsap.set(q(".hword .drip"), { scaleY: 0, transformOrigin: "50% 0%" });
+    gsap.set(q(".note"), { opacity: 0 });
   }, []);
 
   // Parallax con el scroll (contenedores, para no pisar las entradas).
@@ -118,11 +94,12 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
         gsap.to(h.querySelector(".cartela"), { opacity: 1, y: 0, duration: 0.6, delay: 0.12, ease: "expo.out" });
       };
       const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.to(q(".word .w"), { yPercent: 0, duration: 1.2, stagger: 0.09 }, 0)
+      tl.to(q(".hword .b"), { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(2)", stagger: { amount: 1.1, from: "random" } }, 0)
+        .to(q(".hword .drip"), { scaleY: 1, duration: 0.9, ease: "power2.out", stagger: 0.12 }, 1.1)
         .to(q(".ln-in"), { yPercent: 0, duration: 1, stagger: 0.14 }, 0.1)
         .to(q(".hero-copy mark"), { clipPath: "inset(0 0% 0 0)", duration: 0.75, ease: "expo.inOut", stagger: 0.16 }, 0.3)
         .to(q(".hero-copy p, .hero-cta"), { opacity: 1, y: 0, duration: 0.85, stagger: 0.12 }, 0.75)
-        .to(q(".note, .hero-foot span"), { opacity: 1, duration: 0.6, stagger: 0.1 }, 1.6);
+        .to(q(".note"), { opacity: 1, duration: 0.6 }, 1.6);
       q<HTMLElement>(".hung").forEach((h, i) => {
         const r0 = Number(h.dataset.r0 ?? 0);
         tl.fromTo(h, { opacity: 0, y: -170, scale: 1.45, rotation: r0 * 3, transformOrigin: "50% 0%" },
@@ -137,7 +114,7 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
         const b = el.getBoundingClientRect();
         const nx = ((ev.clientX - b.left) / b.width) * 2 - 1, ny = ((ev.clientY - b.top) / b.height) * 2 - 1;
         hungs.forEach((h) => { const d = Number(h.dataset.depth ?? 1); const a = h.querySelector("a"); if (a) gsap.to(a, { x: nx * d * 24, y: ny * d * 15, duration: 0.9, ease: "power3.out", overwrite: "auto" }); });
-        gsap.to(el.querySelector(".word"), { x: -nx * 18, duration: 1.2, ease: "power3.out", overwrite: "auto" });
+        gsap.to(el.querySelector(".word"), { x: -nx * 16, duration: 1.2, ease: "power3.out", overwrite: "auto" });
       };
       el.addEventListener("pointermove", move);
       off = () => el.removeEventListener("pointermove", move);
@@ -151,7 +128,7 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
         <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
           <filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035 .05" numOctaves="3" seed="4" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="9" /></filter>
         </svg>
-        <div className="word" aria-hidden="true"><span className="w">M</span><span className="w">U</span><span className="w">R</span><span className="w">O</span></div>
+        <div className="word" aria-hidden="true"><BrickWord className="hword" title="" solid /></div>
         <div className="hang-stage">
           {SLOTS.map((s) => { const e = bySlug.get(s.slug); return e ? <HungPiece key={s.slug} slot={s} e={e.work.id < 0 ? { ...e, work: { ...e.work, id: 0 } } : e} /> : null; })}
           <span className="note hide-m" style={{ left: "64.5vw", top: "22vw", ["--nr" as string]: "-5deg" }}>¡esto cuenta<br />en vivo!
@@ -166,16 +143,11 @@ function Hero({ entries, source, ready }: { entries: Entry[]; source: string; re
           </h1>
           <p>Colgá una obra en tu bar. Pagá el alquiler por día. Cuando llegás al precio, es tuya.</p>
           <div className="hero-cta">
-            <a className="btn mag" href={href.galeria}>Ver la galería</a>
-            <a className="btn line mag" href="#como" onClick={(e) => { e.preventDefault(); scrollToId("como"); }}>Cómo funciona</a>
+            <a className="btn" href={href.galeria}>Ver la galería</a>
+            <a className="btn line" href="#como" onClick={(e) => { e.preventDefault(); scrollToId("como"); }}>Cómo funciona</a>
           </div>
         </div>
-        <div className="hero-foot">
-          <span>{source === "chain" ? "Cifras en vivo desde Stellar Testnet" : "Cifras de ejemplo (sin conexión a la red)"}</span>
-          <span>Obras de dominio público · FLAT 2026</span>
-        </div>
       </section>
-      <Marquee />
     </>
   );
 }
@@ -309,80 +281,6 @@ function Sim() {
   );
 }
 
-/* --------------------------------------------------------------- CURRÍCULUM */
-const DEMO_HISTORY: { venue: string; start: number; end: number; paid: number; outcome: "Returned" | "Bought" | "Seized" }[] = [
-  { venue: "GDEMO…A1B2", start: 1717200000, end: 1719800000, paid: 60, outcome: "Returned" },
-  { venue: "GDEMO…C3D4", start: 1720000000, end: 1723600000, paid: 84, outcome: "Returned" },
-];
-function Curriculum({ entries, source }: { entries: Entry[]; source: string }) {
-  const withHistory = entries.filter((e) => e.history.length || e.work.status === "Hung");
-  const list = withHistory.length ? withHistory : entries;
-  const [slug, setSlug] = useState<string | null>(null);
-  const cur = list.find((e) => e.work.meta === slug) ?? list[0];
-  const { now } = useStore();
-  if (!cur) return null;
-  const r = resolve(cur.work.meta);
-  const l = live(cur, now);
-  const real = cur.history.length > 0 || (cur.lease != null);
-  return (
-    <section className="sec wall" id="curriculum">
-      <div className="wrap">
-        <p className="kicker">El currículum de la obra</p>
-        <h2 className="big" data-rise style={{ maxWidth: "20ch" }} aria-label="Cada pago es una exposición que costó plata de verdad."><Chars text="Cada pago es una exposición que" /> <em aria-hidden="true"><Chars text="costó plata de verdad." /></em></h2>
-        <p className="lead" data-up>Un artista emergente casi nunca puede probar dónde estuvo su obra. En Muro el historial se arma solo, es público y no lo puede editar ni el artista ni el espacio.</p>
-        <div className="cv">
-          <div data-up>
-            <div className="cv-pick" role="group" aria-label="Elegir obra">
-              {list.map((e) => { const rr = resolve(e.work.meta); return <button key={e.work.id} className="chip" aria-pressed={cur.work.id === e.work.id} onClick={() => setSlug(e.work.meta)}>{rr.title.length > 22 ? rr.title.slice(0, 21) + "…" : rr.title}</button>; })}
-            </div>
-            <a href={href.obra(cur.work.id)} className="frame" style={{ maxWidth: 380 }} data-cursor="Ver obra" aria-label={`Ver ${r.title}`}><span className="mat" style={{ display: "block" }}><img src={r.img} alt={`${r.title}, ${r.artist}`} width={1000} height={Math.round(1000 * r.ratio)} loading="lazy" /></span></a>
-            <div className="cartela" style={{ marginTop: 18 }}><b>{r.title}</b><i>{r.artist}, {r.year}</i><i>Estado: {STATUS_LABEL[cur.work.status]}</i></div>
-          </div>
-          <ol className="line-t" aria-label={`Exposiciones de ${r.title}`}>
-            {l.hung && cur.lease && (
-              <li className="live" data-up><h4>Colgada ahora</h4>
-                <p><span className="tag">{money(l.credited, 1)} cobrados</span>desde el {when(cur.lease.start, true)} · espacio <a className="link mono" href={accountUrl(cur.lease.venue)} target="_blank" rel="noreferrer">{short(cur.lease.venue)}</a></p></li>
-            )}
-            {cur.history.slice().reverse().map((h, i) => (
-              <li key={i} data-up><h4>{h.outcome === "Bought" ? "Vendida al espacio" : h.outcome === "Seized" ? "No fue devuelta" : "Expuesta y devuelta"}</h4>
-                <p><span className={`tag ${h.outcome === "Seized" ? "bad" : "ok"}`}>{money(h.paid, 1)}</span>{when(h.start)} → {when(h.end)} · <a className="link mono" href={accountUrl(h.venue)} target="_blank" rel="noreferrer">{short(h.venue)}</a></p></li>
-            ))}
-            {!real && source !== "chain" && DEMO_HISTORY.map((h, i) => (
-              <li key={i}><h4>Expuesta y devuelta</h4><p><span className="tag ok">{h.paid} {ASSET}</span>{when(h.start)} → {when(h.end)} · {h.venue} <span className="simtag">(ejemplo)</span></p></li>
-            ))}
-            {cur.history.length === 0 && !l.hung && source === "chain" && <li><h4>Todavía sin exposiciones</h4><p>La primera que se pague va a quedar acá, con fecha y monto.</p></li>}
-          </ol>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ EVIDENCIA */
-function Evidence() {
-  const rows = evidence.rows as { label: string; hash: string }[];
-  return (
-    <section className="sec light" id="evidencia">
-      <div className="wrap">
-        <p className="kicker">Lo que ya pasó en Stellar</p>
-        <h2 className="big" data-rise style={{ maxWidth: "18ch" }} aria-label="La transacción es la evidencia."><Chars text="La transacción es la evidencia." /></h2>
-        <p className="lead" data-up>Contrato desplegado en Testnet, con obras publicadas, una colgada cobrando en vivo, una devuelta y una propina. Cada paso tiene su hash verificable.</p>
-        <div className="tbl-wrap" data-up style={{ color: "var(--tinta)" }}>
-          <table className="tbl" style={{ color: "var(--tinta)" }}>
-            <thead><tr><th>Qué pasó</th><th>Hash</th></tr></thead>
-            <tbody>
-              <tr><td>Contrato Muro (instancia de demo)</td><td>{CONTRACT_ID && CONTRACT_ID !== "PENDIENTE" ? <a className="mono" href={contractUrl(CONTRACT_ID)} target="_blank" rel="noreferrer">{short(CONTRACT_ID)}</a> : "pendiente"}</td></tr>
-              {rows.map((r) => (<tr key={r.hash}><td>{r.label}</td><td><a className="mono" href={`https://stellar.expert/explorer/testnet/tx/${r.hash}`} target="_blank" rel="noreferrer">{r.hash.slice(0, 10)}…</a></td></tr>))}
-            </tbody>
-          </table>
-        </div>
-        <p style={{ marginTop: 26, color: "var(--tinta-2)", maxWidth: "58ch", fontSize: ".95rem" }}>En esta demo 1 día dura {DAY_SECS >= 86400 ? "24 horas" : `${DAY_SECS} segundos`} para que el contador se vea correr. El mismo contrato se despliega con días de 24 horas.</p>
-        <p style={{ marginTop: 18 }}><a className="btn mag" href={href.evidencia}>Ver toda la evidencia</a></p>
-      </div>
-    </section>
-  );
-}
-
 /* --------------------------------------------------------------------- FOOT */
 function Foot() {
   return (
@@ -390,11 +288,11 @@ function Foot() {
       <p className="quote" data-scrub aria-label="Antes de existir en el mundo, existió en la imaginación de alguien."><Chars text="Antes de existir en el mundo, existió en la imaginación de alguien." /></p>
       <p className="cite">Texto del sitio de FLAT 2026, junto al Retablo n.º 1 de Hilma af Klint (1915).</p>
       <div className="foot-grid">
-        <div><b>Muro</b><br />Hackathon FLAT 2026 · BAF × Stellar<br />Mendoza, 26 al 28 de noviembre</div>
+        <div><b>Muro</b><br />Hackathon FLAT 2026 · BAF × Stellar<br />Mendoza, 26 al 28 de noviembre<br />Funciona en Stellar Testnet (red de pruebas).</div>
         <div>Obras de dominio público, con fuente en <a className="link" href="https://commons.wikimedia.org" target="_blank" rel="noreferrer">Wikimedia Commons</a>.<br />Los datos de cada obra se contrastan antes de usarse fuera de la demo.</div>
         <div><a className="link" href={href.galeria}>Galería</a><br /><a className="link" href={href.publicar}>Publicar una obra</a><br /><a className="link" href={href.evidencia}>Evidencia</a></div>
       </div>
-      <div className="foot-word" aria-hidden="true"><span>MURO</span><span className="fill">MURO</span></div>
+      <div className="foot-word" aria-hidden="true"><BrickWord className="fword" title="" solid /></div>
     </footer>
   );
 }
@@ -431,7 +329,7 @@ function useScrollFx(root: React.RefObject<HTMLElement | null>) {
       // el cuadro de "cómo se cuelga" gira mientras se avanza
       gsap.fromTo(".how-obj", { rotation: -5 }, { rotation: 4, ease: "none", scrollTrigger: { trigger: ".how-steps", start: "top bottom", end: "bottom top", scrub: true } });
       // el MURO del pie se llena de naranja
-      gsap.fromTo(".foot-word .fill", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", ease: "none", scrollTrigger: { trigger: ".foot", start: "top 85%", end: "bottom bottom", scrub: true } });
+      gsap.fromTo(".fword .b:not(.o)", { opacity: 0.1 }, { opacity: 0.9, ease: "none", stagger: { amount: 1, from: "start" }, scrollTrigger: { trigger: ".foot", start: "top 85%", end: "bottom bottom", scrub: true } });
     }, el);
     const refresh = () => ScrollTrigger.refresh();
     document.fonts?.ready.then(refresh);
@@ -440,22 +338,19 @@ function useScrollFx(root: React.RefObject<HTMLElement | null>) {
   }, [root]);
 }
 
-const shouldIntro = () => {
-  try {
-    const q = new URLSearchParams(location.search).get("intro");
-    if (q === "0" || reduced()) return false;
-    if (q === "1") return true;
-    return !sessionStorage.getItem("muro.intro");
-  } catch { return false; }
-};
+/** La intro corre en cada carga de la página (no al volver al inicio dentro de la misma sesión de navegación). */
+let introPlayed = false;
+const shouldIntro = () => !introPlayed && !reduced();
 
 export default function Landing() {
   const { entries, source } = useStore();
   const [intro, setIntro] = useState(shouldIntro);
+  // si se navega fuera antes de terminar la intro, no vuelve a bloquear el scroll al volver
+  useEffect(() => () => { introPlayed = true; }, []);
   const [ready, setReady] = useState(!intro);
   const root = useRef<HTMLElement>(null);
   const onReady = useCallback(() => setReady(true), []);
-  const onDone = useCallback(() => { setIntro(false); try { sessionStorage.setItem("muro.intro", "1"); } catch { /* sin storage */ } }, []);
+  const onDone = useCallback(() => { introPlayed = true; setIntro(false); }, []);
   useScrollFx(root);
   return (
     <main ref={root}>
@@ -465,8 +360,6 @@ export default function Landing() {
       <How />
       <Wall entries={entries} />
       <Sim />
-      <Curriculum entries={entries} source={source} />
-      <Evidence />
       <Foot />
     </main>
   );
