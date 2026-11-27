@@ -1,0 +1,141 @@
+import { useMemo, useState } from "react";
+import qrcode from "qrcode-generator";
+import { buyNow, claim, confirmReturn, hang, seize, stop, tip, topUp } from "../chain";
+import { Entry } from "../chain";
+import { Meter, Painting, STATUS_CLASS, STATUS_LABEL, useView } from "../components/Art";
+import { ASSET, DAY_SECS, INSTANCE, UNIT } from "../config";
+import { accountUrl, dur, money, short, toStroops, when } from "../format";
+import { href } from "../router";
+import { useStore } from "../store";
+
+export default function Obra({ id }: { id: number }) {
+  const { entries, loading } = useStore();
+  const e = entries.find((x) => x.work.id === id);
+  if (!e) return <main className="page"><div className="skeleton" style={{ height: 420, maxWidth: 720 }} />{!loading && <p className="sub" style={{ marginTop: 20 }}>No encontramos esa obra. <a className="link" href={href.galeria}>Volver a la galería</a></p>}</main>;
+  return <Detail e={e} />;
+}
+
+function Detail({ e }: { e: Entry }) {
+  const { r, l } = useView(e);
+  const { signer, refresh, toast, now, connect } = useStore();
+  const [busy, setBusy] = useState<string | null>(null);
+  const [days, setDays] = useState(10);
+  const [tipAmt, setTipAmt] = useState(2);
+  const w = e.work;
+  const me = signer?.address;
+  const isArtist = me === w.artist;
+  const isVenue = !!e.lease && me === e.lease.venue;
+  const graceSecs = INSTANCE.graceDays * DAY_SECS;
+  const plaqueUrl = `${location.origin}${location.pathname}#/cartela/${w.id}`;
+  const qr = useMemo(() => { const q = qrcode(0, "M"); q.addData(plaqueUrl); q.make(); return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }, [plaqueUrl]);
+
+  const run = async (key: string, ok: string, fn: () => Promise<string>) => {
+    if (!signer) { toast("error", "Conectá una cuenta primero: podés entrar como invitado en un clic."); return; }
+    setBusy(key);
+    try { const h = await fn(); toast("ok", ok, h); await refresh(); }
+    catch (err) { toast("error", err instanceof Error ? err.message : String(err)); }
+    finally { setBusy(null); }
+  };
+
+  const total = w.deposit + w.rate * BigInt(days);
+  const buyCost = w.price - l.credited;
+  const runout = e.lease && l.runsOutIn != null ? now + l.runsOutIn : null;
+  const canSeizeHung = !!e.lease && w.status === "Hung" && l.runsOutIn !== null && l.runsOutIn <= -graceSecs;
+  const canSeizeRet = !!e.lease && w.status === "Returning" && now >= Number(e.lease.ended_at) + graceSecs;
+
+  return (
+    <main className="page">
+      <p style={{ marginBottom: 26 }}><a className="link" href={href.galeria}>← La galería</a></p>
+      <div className="obra">
+        <div className="obra-wall"><Painting r={r} eager /></div>
+        <div className="obra-side">
+          <span className={`state-chip ${STATUS_CLASS[w.status]}`}>{STATUS_LABEL[w.status]}</span>
+          <h1>{r.title}</h1>
+          <p className="who"><b>{r.artist}</b>{r.year ? `, ${r.year}` : ""}{r.medium ? ` · ${r.medium}` : ""}</p>
+          {r.epigraph && <p className="epi">{r.epigraph}</p>}
+          {r.collection && <p style={{ fontSize: ".85rem", color: "var(--tinta-2)" }}>Original en {r.collection}. {r.demo ? "Obra de dominio público usada como ejemplo." : ""}</p>}
+
+          {(l.hung || w.status === "Sold") && <Meter e={e} l={l} />}
+          {l.hung && e.lease && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Colgada hace {dur(l.secsHung, DAY_SECS)} en <a className="link mono" href={accountUrl(e.lease.venue)} target="_blank" rel="noreferrer">{short(e.lease.venue)}</a>.{runout ? ` El prepago alcanza hasta el ${when(runout, true)}` : ""}{runout ? "." : ""}</p>}
+          {w.status === "Sold" && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Hoy es de <a className="link mono" href={accountUrl(w.owner)} target="_blank" rel="noreferrer">{short(w.owner)}</a>. La compra quedó pagada en cuotas de alquiler.</p>}
+
+          <div className="facts">
+            <div><small>Precio</small><b>{money(w.price, 0)}</b></div>
+            <div><small>Alquiler por día</small><b>{money(w.rate, 1)}</b></div>
+            <div><small>Depósito</small><b>{money(w.deposit, 0)}</b></div>
+          </div>
+
+          {w.status === "Available" && !isArtist && (
+            <section className="panel" aria-labelledby="h-colgar">
+              <h3 id="h-colgar">Colgar esta obra en tu espacio</h3>
+              <label className="field">Días prepagos
+                <input type="number" min={1} max={365} value={days} onChange={(ev) => setDays(Math.max(1, Math.min(365, Number(ev.target.value) || 1)))} />
+              </label>
+              <p className="hint">Dejás {money(w.deposit, 0)} de depósito más {money(w.rate * BigInt(days), 0)} de alquiler por adelantado: <b>{money(total, 0)}</b> en total. El depósito vuelve cuando el artista confirma que la recibió.</p>
+              <div className="actions"><button className="btn" disabled={!!busy} onClick={() => (signer ? run("hang", "La obra quedó colgada. El contador ya está corriendo.", () => hang(signer, w.id, days)) : connect("guest"))}>{signer ? (busy === "hang" ? "Colgando…" : "Colgar la obra") : "Conectar como invitado para colgar"}</button></div>
+            </section>
+          )}
+          {w.status === "Available" && isArtist && <p className="notice" style={{ marginTop: 22 }}>Tu obra está disponible. Cuando un espacio la cuelgue, vas a empezar a cobrar por día.</p>}
+
+          {l.hung && (
+            <section className="panel" aria-labelledby="h-obra">
+              <h3 id="h-obra">{isVenue ? "Tu pared" : isArtist ? "Tu obra" : "Qué se puede hacer"}</h3>
+              <p className="hint">Lo devengado hasta ahora: <b>{money(l.accruedNow, 2)}</b>. Cualquiera puede ejecutar el cobro: el dinero siempre va al artista.</p>
+              <div className="actions">
+                <button className="btn sm" disabled={!!busy || l.accruedNow === 0n} onClick={() => run("claim", "Se cobró lo devengado y se acreditó al precio.", () => claim(signer!, w.id))}>{busy === "claim" ? "Cobrando…" : "Cobrar lo devengado"}</button>
+                {isVenue && <>
+                  <button className="btn sm line" disabled={!!busy} onClick={() => run("topup", `Sumaste ${days} días de prepago.`, () => topUp(signer!, w.id, days))}>Sumar {days} días</button>
+                  <button className="btn sm line" disabled={!!busy} onClick={() => run("buy", "La obra es tuya. El depósito volvió a tu cuenta.", () => buyNow(signer!, w.id))}>Quedármela por {money(buyCost > 0n ? buyCost : 0n, 0)}</button>
+                  <button className="btn sm line" disabled={!!busy} onClick={() => run("stop", "Frenaste el alquiler. Ahora hay que devolver la obra.", () => stop(signer!, w.id))}>Devolver la obra</button>
+                </>}
+                {canSeizeHung && isArtist && <button className="btn sm" disabled={!!busy} onClick={() => run("seize", "Se ejecutó el depósito a tu favor.", () => seize(signer!, w.id))}>Ejecutar el depósito</button>}
+              </div>
+              {isVenue && <label className="field" style={{ maxWidth: 220 }}>Días a sumar<input type="number" min={1} max={365} value={days} onChange={(ev) => setDays(Math.max(1, Math.min(365, Number(ev.target.value) || 1)))} /></label>}
+              {!signer && <p className="hint">Conectate para operar. Si sos el espacio o el artista, usá la misma cuenta que usaste al publicar o colgar.</p>}
+            </section>
+          )}
+
+          {w.status === "Returning" && (
+            <section className="panel">
+              <h3>Esperando la devolución</h3>
+              <p className="hint">El espacio frenó el alquiler. Cuando el artista la tenga en la mano, confirma y el depósito vuelve. Si pasan {INSTANCE.graceDays} días de gracia sin devolverla, el depósito es del artista.</p>
+              <div className="actions">
+                {isArtist && <button className="btn sm" disabled={!!busy} onClick={() => run("ret", "Confirmaste la devolución. El depósito volvió al espacio.", () => confirmReturn(signer!, w.id))}>Confirmo que la recibí</button>}
+                {isArtist && canSeizeRet && <button className="btn sm line" disabled={!!busy} onClick={() => run("seize", "Se ejecutó el depósito a tu favor.", () => seize(signer!, w.id))}>Ejecutar el depósito</button>}
+              </div>
+            </section>
+          )}
+
+          <section className="panel" aria-labelledby="h-tip">
+            <h3 id="h-tip">Dejarle una propina al artista</h3>
+            <div className="actions" role="group" aria-label="Monto">{[1, 2, 5, 10].map((n) => <button key={n} className="chip" style={tipAmt === n ? undefined : { boxShadow: "inset 0 0 0 1px var(--tinta-2)" }} aria-pressed={tipAmt === n} onClick={() => setTipAmt(n)}>{n} {ASSET}</button>)}</div>
+            <div className="actions"><button className="btn sm" disabled={!!busy} onClick={() => (signer ? run("tip", `Le dejaste ${tipAmt} ${ASSET} a ${r.artist}.`, () => tip(signer, w.id, toStroops(tipAmt))) : connect("guest"))}>{signer ? (busy === "tip" ? "Enviando…" : `Enviar ${tipAmt} ${ASSET}`) : "Conectar como invitado"}</button></div>
+            <p className="hint">Propinas recibidas por esta obra: {money(e.tips, 1)}.</p>
+          </section>
+        </div>
+      </div>
+
+      <div className="obra" style={{ marginTop: "clamp(60px, 8vw, 120px)" }}>
+        <section className="cv-light" aria-labelledby="h-cv">
+          <h2 id="h-cv" className="serif" style={{ fontSize: "clamp(1.8rem, 3vw, 2.8rem)", letterSpacing: "-.025em", marginBottom: 26 }}>El currículum de la obra</h2>
+          <ol className="line-t">
+            {l.hung && e.lease && <li className="live"><h4>Colgada ahora</h4><p><span className="tag">{money(l.credited, 1)} cobrados</span>desde el {when(e.lease.start, true)} · <a className="link mono" href={accountUrl(e.lease.venue)} target="_blank" rel="noreferrer">{short(e.lease.venue)}</a></p></li>}
+            {e.history.slice().reverse().map((h, i) => (
+              <li key={i}><h4>{h.outcome === "Bought" ? "Vendida al espacio" : h.outcome === "Seized" ? "No fue devuelta" : "Expuesta y devuelta"}</h4>
+                <p><span className={`tag ${h.outcome === "Seized" ? "bad" : "ok"}`}>{money(h.paid, 1)}</span>{when(h.start, true)} → {when(h.end, true)} · <a className="link mono" href={accountUrl(h.venue)} target="_blank" rel="noreferrer">{short(h.venue)}</a></p></li>
+            ))}
+            {e.history.length === 0 && !l.hung && <li><h4>Todavía sin exposiciones</h4><p>La primera que se pague va a quedar acá, con fecha, monto y espacio. No se puede editar ni borrar.</p></li>}
+          </ol>
+        </section>
+        <section aria-labelledby="h-qr">
+          <h2 id="h-qr" className="serif" style={{ fontSize: "clamp(1.8rem, 3vw, 2.8rem)", letterSpacing: "-.025em", marginBottom: 20 }}>La cartela de la pared</h2>
+          <div className="qr">
+            <div dangerouslySetInnerHTML={{ __html: qr }} aria-label="Código QR de la cartela" role="img" />
+            <p className="hint" style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Imprimí este código y pegalo junto a la obra. Quien lo escanee ve cuánto lleva cobrado y puede dejarle una propina al artista, sin instalar nada. <a className="link" href={href.cartela(w.id)}>Abrir la cartela</a></p>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+export { UNIT };
