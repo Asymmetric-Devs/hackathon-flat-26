@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/muro-banner.svg" alt="Muro: la obra cobra por día. Si se enamoran, es suya." width="100%" />
+<img src="docs/assets/muro-banner.svg?v=2" alt="Muro: la obra cobra por día. Si se enamoran, es suya." width="100%" />
 
 <br />
 
