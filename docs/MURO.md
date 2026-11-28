@@ -42,6 +42,29 @@ Además: una landing con intro animada (la palabra MURO se pinta con pincel, let
 
 Trustless Work libera por hitos y cobra 0,3 % por transacción. Muro necesita un pago continuo (devengado por tiempo) que se acredita hacia una compra, con un depósito atado al mismo estado. Un 0,3 % sobre liquidaciones diarias rompe el modelo, y los hitos discretos no representan un alquiler por día.
 
+### Consulta a Stellar Raven
+
+El **28 de noviembre de 2026** consultamos [Stellar Raven Playground](https://raven.stellar.org/playground) para contrastar Muro contra proyectos existentes en el ecosistema (incluyendo proyectos financiados por el Stellar Community Fund) y componentes reutilizables.
+
+> Muro combina alquiler diario acreditable a compra, garantía y registro de exposiciones para arte físico en espacios comerciales. Existen antecedentes en propiedad condicional de NFT, tokenización de arte y streaming de pagos; no identificamos ninguno que combine estas funciones del mismo modo.
+
+**Antecedentes contrastados en Stellar:**
+
+| Proyecto | Qué hace | Diferencia con Muro |
+|---|---|---|
+| [Plutus](https://communityfund.stellar.org/project/plutus-kmw) | **SCF** (marcado inactivo). Propiedad condicional de NFT (alquiler, hipoteca y préstamo). | No cubre obra física, exposiciones en espacios ni alquiler diario acreditable al precio de compra. |
+| [Neftwerk](https://stellarlight.xyz/project/neftwerk) | Transacciones de arte contemporáneo y tokenización con MyPocket Gallery. | No implementa alquiler con opción a compra ni currículum on-chain de exposiciones. |
+| [Kunst21](https://communityfund.stellar.org/project/kunst21com-ray) | **SCF** (marcado inactivo). Crowdinvesting en arte y objetos de colección. | Es inversión colectiva, no alquiler diario en comercios. |
+| [ART Club](https://communityfund.stellar.org/project/art-club-ia2) | **SCF**. Conecta creadores con financiadores. | Financiación de creadores, sin mecanismo rent-to-own en espacios físicos. |
+
+**Componentes evaluados y decisiones técnicas:**
+
+- **Streaming de pagos (`SStream`, `Zentra` — SCF):** repositorios con últimos commits en 2024; resuelven flujos temporales continuos pero no depósito en garantía, crédito acumulado hacia compra ni transferencia de estado.
+- **Escrow (`Mica` — SCF inmobiliario; `Trustless Work`):** referencias útiles para garantías y disputas, pero no cubren devengado diario acoplado a compra automática (y en Trustless Work el esquema por hitos y la comisión del 0,3 % por transacción no encajan con liquidaciones diarias).
+- **NFT y royalties (`Litemint`, `OpenZeppelin Contracts for Stellar`):** siguiendo la advertencia de Raven, no se añadió un NFT en el MVP porque un token no prueba autenticidad, entrega física ni transferencia legal; mantenemos SAC/SEP-41 y registro económico verificable.
+- **UX e indexación hacia producción:** Passkeys (`JS-Capacitor Passkey Kit` / `Soropass`) como evolución frente a Freighter y el modo invitado de testnet; `StreamingFast` (Firehose/Substreams) para indexar el historial completo más allá de las 100 exposiciones almacenadas on-chain.
+- **Controles pre-mainnet:** los puntos críticos señalados por Raven (redondeo y límites del devengo, prepago agotado, TTL, autorización y revisión independiente) ya cuentan con mitigaciones y tests de regresión documentados en [`AUDITORIA.md`](AUDITORIA.md) (38 pruebas).
+
 ## Modelo de negocio
 
 Hoy el contrato **no cobra comisión**. Líneas posibles para una versión real: una comisión chica (por ejemplo 1–2 %) sobre las compras que se completan; servicios para espacios (impresión de cartelas, seguro de la obra) y una galería curada para artistas verificados.
@@ -112,7 +135,7 @@ Hacer esto **hoy** (ver criterio 3):
 - [ ] Video público de 2 a 3 minutos
 - [ ] Al menos un hash en testnet verificable en Stellar Expert (ver `docs/evidencia-testnet.md`)
 - [ ] Validación con alguien de afuera completada en la tabla de arriba
-- [ ] Consultar Raven: ¿ya existe algo parecido en Stellar? (el jurado espera verlo)
+- [x] Consultar Raven: ¿ya existe algo parecido en Stellar? (documentado en la sección [Consulta a Stellar Raven](#consulta-a-stellar-raven))
 
 ## Limitaciones honestas
 

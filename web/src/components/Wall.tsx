@@ -62,9 +62,9 @@ export function Wall({ entries }: { entries: Entry[] }) {
           <div className="hw-intro">
             <p className="kicker">La pared, en vivo</p>
             <h2 className="big" aria-label="Así se ve un muro que paga">Así se ve un muro que <em>paga.</em></h2>
-            <p className="lead">Todas las obras publicadas en el contrato. Seguí con el scroll: cada una muestra lo que ya cobró.</p>
+            <p className="lead">Todas las obras publicadas en el contrato. <span className="hide-m">Seguí con el scroll</span><span className="show-m">Deslizá hacia el costado</span>: cada una muestra lo que ya cobró.</p>
             <div className="hw-total"><b className="num">{money(total, 1)}</b><span>pagados a artistas en Stellar Testnet (demo)</span></div>
-            <span className="hw-hint" aria-hidden="true">Seguí bajando →</span>
+            <span className="hw-hint" aria-hidden="true"><span className="hide-m">Seguí bajando →</span><span className="show-m">Deslizá →</span></span>
           </div>
           {list.map((e, i) => <Item key={e.work.id} e={e} i={i} />)}
           <div className="hw-end">

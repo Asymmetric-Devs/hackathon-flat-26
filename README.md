@@ -60,7 +60,7 @@ Plataforma: https://stellarapex.org/ (registrarse, crear proyecto, **publicarlo 
 - [ ] **Video público de 2 a 3 minutos**
 - [ ] README del repo: qué es, modelo de negocio, por qué blockchain, beneficios para el usuario
 - [ ] Prueba con alguien de afuera del equipo y qué se aprendió
-- [ ] Haber consultado **Raven** (el jurado espera verlo): ¿ya existe algo así en Stellar?
+- [x] Haber consultado **Raven** (ver análisis completo en [docs/MURO.md](docs/MURO.md#consulta-a-stellar-raven))
 
 Lo que mira el jurado en el código: costo de recursos (lo mínimo en cadena, el resto off-chain), tipos de storage (instance / persistent / temporary + TTL), autorizaciones por función, eventos, tests.
 
