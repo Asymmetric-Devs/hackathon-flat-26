@@ -6,11 +6,11 @@ Muro le paga un alquiler diario a una obra mientras cuelga de la pared de un bar
 
 **Eje:** Arte (con Territorio: artistas de Mendoza y el NEA y los lugares que cuelgan su obra).
 
-## El problema (y lo que todavía no validamos)
+## El problema (y qué validamos)
 
 Pinturas, fotos y grabados decoran bares, cafés, bodegas y hoteles de todo el país. La hipótesis de partida es que esa obra suele colgar sin precio, sin contrato claro y sin registro de dónde estuvo.
 
-> **Pendiente de validar.** No encontramos fuentes que confirmen cómo se arreglan hoy esos acuerdos económicos. Antes de presentar hay que hablar con 2 artistas y 1 dueño de un espacio (preguntas abajo) y reemplazar esta sección con lo que aprendimos. El criterio de "Producto y validación" (25 %) lo pide.
+> **Validación con artista ([ver entrevista completa](validacion-laura-zapata.md)).** Hablamos con **Laura Zapata**, artista visual con taller propio en Resistencia (Chaco). Confirmó que en los talleres hay obra terminada guardada que no sale por falta de circuito claro, consideró justo que cada día pagado descuente del precio de venta (incluso como forma de pago en cuotas para el espacio) y señaló una condición clave: debe quedar explícito que el local elige la obra porque le gusta y que alquilar no lo obliga a comprarla. Queda pendiente contrastar la disposición de pago diario con dueños de bares, bodegas u hoteles.
 
 ## Cómo funciona
 
@@ -33,7 +33,7 @@ Además: una landing con intro animada (la palabra MURO se pinta con pincel, let
 
 ## Stellar: qué usamos
 
-- **Soroban** (contrato en Rust, `soroban-sdk 29`): `contracts/muro`. 38 pruebas y una auditoría independiente ([`AUDITORIA.md`](AUDITORIA.md)).
+- **Soroban** (contrato en Rust, `soroban-sdk 29`): `contracts/muro`. 41 pruebas y una auditoría independiente ([`AUDITORIA.md`](AUDITORIA.md)).
 - **SAC / SEP-41:** el activo de pago. En testnet es XLM nativo; en producción sería USDC.
 - **Freighter** (wallet existente) y un **modo invitado** solo para Testnet (cuenta creada en el navegador y fondeada con Friendbot) para que cualquier persona pruebe sin instalar nada.
 - **Stellar Expert** como explorador.
@@ -63,7 +63,7 @@ El **28 de noviembre de 2026** consultamos [Stellar Raven Playground](https://ra
 - **Escrow (`Mica` — SCF inmobiliario; `Trustless Work`):** referencias útiles para garantías y disputas, pero no cubren devengado diario acoplado a compra automática (y en Trustless Work el esquema por hitos y la comisión del 0,3 % por transacción no encajan con liquidaciones diarias).
 - **NFT y royalties (`Litemint`, `OpenZeppelin Contracts for Stellar`):** siguiendo la advertencia de Raven, no se añadió un NFT en el MVP porque un token no prueba autenticidad, entrega física ni transferencia legal; mantenemos SAC/SEP-41 y registro económico verificable.
 - **UX e indexación hacia producción:** Passkeys (`JS-Capacitor Passkey Kit` / `Soropass`) como evolución frente a Freighter y el modo invitado de testnet; `StreamingFast` (Firehose/Substreams) para indexar el historial completo más allá de las 100 exposiciones almacenadas on-chain.
-- **Controles pre-mainnet:** los puntos críticos señalados por Raven (redondeo y límites del devengo, prepago agotado, TTL, autorización y revisión independiente) ya cuentan con mitigaciones y tests de regresión documentados en [`AUDITORIA.md`](AUDITORIA.md) (38 pruebas).
+- **Controles pre-mainnet:** los puntos críticos señalados por Raven (redondeo y límites del devengo, prepago agotado, TTL, autorización y revisión independiente) ya cuentan con mitigaciones y tests de regresión documentados en [`AUDITORIA.md`](AUDITORIA.md) (41 pruebas).
 
 ## Modelo de negocio
 
@@ -107,15 +107,16 @@ La paleta base es un dorado suave (`#e8d282`) sobre un lienzo de papel claro, co
 
 ## Validación con alguien de afuera
 
-Hacer esto **hoy** (ver criterio 3):
+Registro de entrevistas y pruebas con personas ajenas al equipo (criterio 3 — 25 %):
 
-1. A 2 artistas visuales: *¿Hoy exponés en bares, cafés u hoteles? ¿Te pagan algo, o es "por visibilidad"? ¿Aceptarías dejar la obra con un depósito y un alquiler por día? ¿Qué te frenaría?*
-2. A 1 dueño de un espacio: *¿Cuelgan obra? ¿Cómo lo arreglan con el artista? ¿Pagarían un alquiler diario chico con opción a quedársela?*
-3. Prueba de uso: que una persona que no es del equipo escanee la cartela, deje una propina y diga qué entendió. Registrar acá lo que aprendimos:
-
-| Quién | Qué dijo | Qué cambiamos |
+| Quién | Qué dijo | Qué aprendimos / cambiamos |
 |---|---|---|
-| (completar) | | |
+| **Laura Zapata** · artista visual con taller propio (Resistencia, Chaco) — [entrevista y audio](validacion-laura-zapata.md) | Confirmó que los artistas suelen tener mucha obra guardada sin circuito para mostrarla; vio justo el alquiler acreditable a compra e incluso útil como financiamiento en cuotas para el local; pidió que quede claro que al bar o bodega le gusta la obra y no la cuelga solo "por hacer un favor". | Validado el dolor del taller y el modelo rent-to-own. Dejamos explícito que colgar es una elección curatorial del espacio y que devolverla (`stop`) recupera el depósito sin conflicto. Siguiente paso: entrevistar a un dueño de bar/bodega y probar el escaneo de cartela en vivo. |
+
+Preguntas para completar la validación del lado del espacio y prueba física:
+
+1. A un dueño de bar, bodega o café: *¿Cuelgan obra? ¿Cómo lo arreglan con el artista? ¿Pagarían un alquiler diario chico con opción a quedársela?*
+2. Prueba de uso presencial: que una persona externa escanee la cartela, deje una propina y diga qué entendió.
 
 ## Guion del video (2 a 3 minutos)
 
@@ -131,16 +132,16 @@ Hacer esto **hoy** (ver criterio 3):
 ## Checklist de entrega en Apex
 
 - [ ] Proyecto creado en https://stellarapex.org y **publicado en "FLAT Stellar 2026"** (y en público)
-- [ ] Repositorio con este README
+- [x] Repositorio con este README y el [README raíz](../README.md) actualizado
 - [ ] Video público de 2 a 3 minutos
-- [ ] Al menos un hash en testnet verificable en Stellar Expert (ver `docs/evidencia-testnet.md`)
-- [ ] Validación con alguien de afuera completada en la tabla de arriba
+- [x] Al menos un hash en testnet verificable en Stellar Expert (ver [`docs/evidencia-testnet.md`](evidencia-testnet.md))
+- [x] Validación con alguien de afuera completada en la tabla de arriba (ver [`validacion-laura-zapata.md`](validacion-laura-zapata.md))
 - [x] Consultar Raven: ¿ya existe algo parecido en Stellar? (documentado en la sección [Consulta a Stellar Raven](#consulta-a-stellar-raven))
 
 ## Limitaciones honestas
 
 - La obra física no se puede controlar desde la cadena: el contrato retiene dinero, no objetos. La garantía es económica (depósito) y reputacional (currículum público).
-- El problema que resuelve está sin validar con usuarios reales (ver arriba).
+- La entrevista con [Laura Zapata](validacion-laura-zapata.md) validó el lado del artista; queda pendiente contrastar la disposición de pago diario con dueños de bares, bodegas u hoteles.
 - Obras de ejemplo: son de dominio público (fuente: Wikimedia Commons). Los epígrafes son nuestros y la fecha, técnica y colección deben contrastarse antes de usarse fuera de la demo.
 - Modo invitado: existe solo para Testnet. En producción cada persona usaría su propia wallet.
 - Las pruebas automáticas dejaron obras de prueba en la instancia *real*; no afectan a la instancia demo.
