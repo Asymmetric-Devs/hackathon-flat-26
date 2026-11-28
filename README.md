@@ -1,15 +1,12 @@
 <div align="center">
 
-<img src="docs/assets/muro-banner.svg" alt="Muro — La obra cobra por día. Si se enamoran, es suya." width="100%" />
+<img src="docs/assets/muro-banner.svg" alt="Muro: la obra cobra por día. Si se enamoran, es suya." width="100%" />
 
 <br />
 
 [![Demo en vivo](https://img.shields.io/badge/Demo_en_vivo-muro.asymmetric.com.ar-e8d282?style=for-the-badge&labelColor=09090d)](https://muro.asymmetric.com.ar/)
 [![Stellar Testnet](https://img.shields.io/badge/Stellar-Testnet_en_vivo-09090d?style=for-the-badge&logo=stellar&logoColor=e8d282)](https://stellar.expert/explorer/testnet/contract/CD725Z7JTP3BP3SR455WKYJS3AQHHVU7HZALNQBESQ2YGMRYCORN3T2Y)
-[![Soroban SDK 29](https://img.shields.io/badge/Soroban_SDK-v29_%C2%B7_41_tests-1f7a3d?style=for-the-badge)](contracts/muro/src/lib.rs)
-[![Auditoría](https://img.shields.io/badge/Seguridad-Auditor%C3%ADa_independiente-0d1024?style=for-the-badge)](docs/AUDITORIA.md)
-
-**[Qué es](#qué-es-muro)** · **[Cómo funciona](#cómo-funciona)** · **[Por qué Stellar](#por-qué-blockchain-y-por-qué-stellar)** · **[Consulta a Raven](#ecosistema-stellar-y-consulta-a-raven)** · **[Validación](#validación-con-alguien-de-afuera)** · **[Evidencia Testnet](#evidencia-verificable-en-stellar-testnet)** · **[Correrlo local](#cómo-correrlo-localmente)**
+[![Soroban SDK 29](https://img.shields.io/badge/Soroban_SDK-v29_%C2%B7_41_tests-09090d?style=for-the-badge)](contracts/muro/src/lib.rs)
 
 </div>
 

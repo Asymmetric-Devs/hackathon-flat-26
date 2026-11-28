@@ -119,7 +119,7 @@ function Detail({ e }: { e: Entry }) {
               <label className="field">Días prepagos
                 <input type="number" min={1} max={365} value={days} onChange={(ev) => setDays(Math.max(1, Math.min(365, Number(ev.target.value) || 1)))} />
               </label>
-              <p className="hint">Dejás {money(w.deposit, 0)} de depósito más {money(w.rate * BigInt(days), 0)} de alquiler por adelantado: <b>{money(total, 0)}</b> en total. El depósito vuelve cuando el artista confirma que la recibió.</p>
+              <p className="hint">Dejás {money(w.deposit, 0)} de depósito más {money(w.rate * BigInt(days), 0)} de alquiler por adelantado: <b>{money(total, 0)}</b> en total. El depósito vuelve cuando el artista confirma que la recibió. Elegís esta obra porque la querés en tu pared: devolverla no es un conflicto, recuperás el depósito y el artista cobra los días expuestos.</p>
               <div className="actions"><button className="btn" disabled={!!busy} onClick={() => run("hang", "La obra quedó colgada. El contador ya está corriendo.", (s) => hang(s, w.id, days))}>{busy === "hang" ? "Colgando…" : "Colgar la obra"}</button></div>
             </section>
           )}
