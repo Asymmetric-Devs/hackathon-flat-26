@@ -14,10 +14,10 @@ export default function Evidencia() {
           <thead><tr><th>Instancia</th><th>Contrato</th><th>Duración de un "día"</th><th>Gracia</th><th>Despliegue</th></tr></thead>
           <tbody>
             {Object.entries(inst).map(([k, v]) => (
-              <tr key={k}><td>{k === "demo" ? "Demo" : "Real"}</td>
-                <td><a className="mono" href={contractUrl(v.contractId)} target="_blank" rel="noreferrer">{short(v.contractId)}</a></td>
-                <td>{v.daySecs >= 86400 ? "24 horas" : `${v.daySecs} segundos`}</td><td>{v.graceDays} {v.graceDays === 1 ? "día" : "días"}</td>
-                <td>{v.deployTx ? <a className="mono" href={txUrl(v.deployTx)} target="_blank" rel="noreferrer">{v.deployTx.slice(0, 10)}…</a> : "—"}</td></tr>
+              <tr key={k}><td data-label="Instancia">{k === "demo" ? "Demo" : "Real"}</td>
+                <td data-label="Contrato"><a className="mono" href={contractUrl(v.contractId)} target="_blank" rel="noreferrer">{short(v.contractId)}</a></td>
+                <td data-label="Duración de un día">{v.daySecs >= 86400 ? "24 horas" : `${v.daySecs} segundos`}</td><td data-label="Gracia">{v.graceDays} {v.graceDays === 1 ? "día" : "días"}</td>
+                <td data-label="Despliegue">{v.deployTx ? <a className="mono" href={txUrl(v.deployTx)} target="_blank" rel="noreferrer">{v.deployTx.slice(0, 10)}…</a> : "—"}</td></tr>
             ))}
           </tbody>
         </table>
@@ -27,7 +27,7 @@ export default function Evidencia() {
         <table className="tbl">
           <thead><tr><th>Qué pasó</th><th>Hash</th></tr></thead>
           <tbody>{rows.length === 0 ? <tr><td colSpan={2}>Se cargan al correr el seed de Testnet.</td></tr> : rows.map((r) => (
-            <tr key={r.hash}><td>{r.label}</td><td><a className="mono" href={txUrl(r.hash)} target="_blank" rel="noreferrer">{r.hash.slice(0, 16)}…</a></td></tr>))}</tbody>
+            <tr key={r.hash}><td>{r.label}</td><td data-label="Hash"><a className="mono" href={txUrl(r.hash)} target="_blank" rel="noreferrer">{r.hash.slice(0, 16)}…</a></td></tr>))}</tbody>
         </table>
       </div>
       <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)", letterSpacing: "-.025em", margin: "56px 0 12px" }}>Cómo verificar</h2>

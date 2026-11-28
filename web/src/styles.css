@@ -117,6 +117,7 @@ img { display: block; max-width: 100%; }
 .hung .cartela { position: absolute; top: calc(100% + 12px); left: var(--cx, 0); z-index: 5; max-width: min(250px, 17vw); min-width: min(190px, 15vw); }
 @media (prefers-reduced-motion: reduce) { .hung { opacity: 1; animation: none !important; } html { scroll-behavior: auto; } .marquee .belt { animation: none; } * { transition-duration: .01ms !important; } }
 @media (min-width: 901px) { .hero { min-height: max(100svh, 68vw); } }
+.show-m { display: none; }
 @media (max-width: 900px) {
   .hero { display: flex; flex-direction: column; }
   .hero-copy { order: 1; } .hang-stage { order: 2; } .hero-foot { order: 3; }
@@ -125,6 +126,7 @@ img { display: block; max-width: 100%; }
   .hang-stage .hung .cartela { left: 0; max-width: 100%; }
   .hero-copy h1 { font-size: clamp(4.2rem, 24vw, 8rem); }
   .hide-m { display: none; }
+  .show-m { display: inline; }
 }
 
 /* ---------- secciones ---------- */
@@ -631,3 +633,33 @@ html { scrollbar-gutter: stable; overflow-x: clip; }
   .label-print .lp-qr svg { width: 52mm; height: 52mm; }
 }
 
+
+/* ---------- ajustes para celular (no afectan a la compu) ---------- */
+@media (max-width: 900px) {
+  /* "¿Cuánto cobra una obra…?": una sola columna (una regla posterior la rompía en pantallas chicas) */
+  #pregunta .q-head { grid-template-columns: 1fr; align-items: start; }
+  /* portada: la cartela de cada obra queda en el flujo, así no se pisa con la obra siguiente */
+  .hang-stage { gap: 56px; }
+  .hang-stage .hung .cartela { position: relative; top: auto; margin-top: 16px; min-width: 0; width: 100%; max-width: 100%; }
+  /* ficha: los tres números alineados por abajo aunque una etiqueta ocupe dos líneas */
+  .facts div { display: flex; flex-direction: column; justify-content: flex-end; }
+}
+@media (pointer: coarse), (max-width: 900px) {
+  /* áreas táctiles de al menos 40 px */
+  .chip { min-height: 40px; display: inline-flex; align-items: center; }
+  .brand { padding-block: 10px; }
+  .link { display: inline-block; padding-block: 8px; }
+  p .link, footer .link, .foot .link, li .link { display: inline; padding-block: 0; }
+  .tbl a { display: inline-block; padding-block: 8px; }
+}
+
+/* evidencia: en el celular las tablas pasan a tarjetas, sin deslizar hacia el costado */
+@media (max-width: 640px) {
+  .tbl-wrap { overflow: visible; }
+  .tbl, .tbl tbody, .tbl tr, .tbl td { display: block; width: 100%; }
+  .tbl thead { display: none; }
+  .tbl { margin-top: 20px; }
+  .tbl tr { padding: 14px 0; border-bottom: 1px solid rgba(128, 128, 120, .35); }
+  .tbl td { border: 0; padding: 4px 0; display: flex; justify-content: space-between; align-items: baseline; gap: 18px; }
+  .tbl td[data-label]::before { content: attr(data-label); flex: none; font: 500 .74rem var(--mono); opacity: .7; }
+}
