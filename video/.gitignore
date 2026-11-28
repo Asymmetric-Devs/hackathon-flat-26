@@ -1,0 +1,16 @@
+# Salidas renderizadas y previews (no versionar videos ni audios pesados)
+out/
+node_modules/
+
+# Entorno Python, modelos, caché y muestras TTS generadas
+tts/.venv*
+tts/cache/
+tts/models/
+tts/voces/
+tts/__pycache__/
+
+# Medios generados automáticamente por scripts de captura y TTS
+public/clips/
+public/capturas/
+public/voz/
+public/musica/

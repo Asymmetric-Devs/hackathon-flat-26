@@ -1,0 +1,104 @@
+{
+  "es": {
+    "lineas": [
+      {
+        "id": "b01_gancho",
+        "bloque": "01",
+        "pausa_despues": 1.0,
+        "texto": "Imaginá una obra colgada hace un mes en la pared de un bar o una bodega. ¿Cuánto cobró su artista?",
+        "habla": "Imaginá una obra colgada hace un mes en la pared de un bar o una bodega. ¿Cuánto cobró su artista?"
+      },
+      {
+        "id": "b01_nada",
+        "bloque": "01",
+        "pausa_despues": 3.5,
+        "texto": "Nada. Ni un peso, ni un contrato, ni un registro de dónde estuvo.",
+        "habla": "Nada. Ni un peso, ni un contrato, ni un registro de dónde estuvo."
+      },
+      {
+        "id": "b01_muro",
+        "bloque": "01",
+        "pausa_despues": 0.6,
+        "texto": "Eso cambia con Muro: la obra cobra por día. Y si se enamoran, es suya.",
+        "habla": "Eso cambia con Muro: la obra cobra por día. Y si se enamoran, es suya."
+      },
+      {
+        "id": "b02_tres_numeros",
+        "bloque": "02",
+        "pausa_despues": 0.4,
+        "texto": "En Muro, el artista publica su obra con tres números: precio de venta, alquiler por día y un depósito en garantía.",
+        "habla": "En Muro, el artista publica su obra con tres números: precio de venta, alquiler por día y un depósito en garantía."
+      },
+      {
+        "id": "b02_colgar",
+        "bloque": "02",
+        "pausa_despues": 0.4,
+        "texto": "Cuando un bar, una bodega o un hotel decide colgarla, deposita la garantía y prepaga días en un contrato inteligente sobre Stellar.",
+        "habla": "Cuando un bar, una bodega o un hotel decide colgarla, deposita la garantía y prepaga días en un contrato inteligente sobre Estelar."
+      },
+      {
+        "id": "b02_cuotas",
+        "bloque": "02",
+        "pausa_despues": 0.6,
+        "texto": "Cada día colgada genera alquiler para el artista y, al mismo tiempo, descuenta como cuota del precio final. En Argentina todo se compra en cuotas, menos el arte. Hasta ahora.",
+        "habla": "Cada día colgada genera alquiler para el artista y, al mismo tiempo, descuenta como cuota del precio final. En Argentina todo se compra en cuotas, menos el arte. Hasta ahora."
+      },
+      {
+        "id": "b03_laura",
+        "bloque": "03",
+        "pausa_despues": 0.6,
+        "texto": "Salimos a validar la idea con Laura Zapata, artista visual con taller propio en Resistencia, Chaco. Nos confirmó cuánta obra terminada queda guardada sin circuito, vio justo el alquiler como cuota y nos dio un ajuste clave: que colgar sea una elección genuina del local, nunca un favor.",
+        "habla": "Salimos a validar la idea con Laura Zapata, artista visual con taller propio en Resistencia, Chaco. Nos confirmó cuánta obra terminada queda guardada sin circuito, vio justo el alquiler como cuota y nos dio un ajuste clave: que colgar sea una elección genuina del local, nunca un favor."
+      },
+      {
+        "id": "b04_publicar",
+        "bloque": "04",
+        "pausa_despues": 0.4,
+        "texto": "Veámoslo funcionando en vivo en Stellar Testnet. El artista carga su obra y fija sus tres números con vista previa inmediata. En La pared, cada cuadro muestra en tiempo real cuánto lleva cobrado.",
+        "habla": "Veámoslo funcionando en vivo en Estelar Testnet. El artista carga su obra y fija sus tres números con vista previa inmediata. En La pared, cada cuadro muestra en tiempo real cuánto lleva cobrado."
+      },
+      {
+        "id": "b04_ficha",
+        "bloque": "04",
+        "pausa_despues": 0.6,
+        "texto": "Al abrir una obra colgada, podés inspeccionar cada pincelada con lupa y ver el contador correr segundo a segundo, acelerado a un minuto por día para esta demo. Cualquiera puede liquidar lo devengado: el dinero va directo al artista y baja el saldo para comprarla.",
+        "habla": "Al abrir una obra colgada, podés inspeccionar cada pincelada con lupa y ver el contador correr segundo a segundo, acelerado a un minuto por día para esta demo. Cualquiera puede liquidar lo devengado: el dinero va directo al artista y baja el saldo para comprarla."
+      },
+      {
+        "id": "b05_cartela",
+        "bloque": "05",
+        "pausa_despues": 0.4,
+        "texto": "Junto al cuadro físico va esta cartela con QR, lista para imprimir como en un museo. Cualquier cliente del bar la escanea, ve cuánto lleva cobrado y deja una propina directa al artista, sin instalar extensiones gracias al modo invitado en Testnet.",
+        "habla": "Junto al cuadro físico va esta cartela con cu erre, lista para imprimir como en un museo. Cualquier cliente del bar la escanea, ve cuánto lleva cobrado y deja una propina directa al artista, sin instalar extensiones gracias al modo invitado en Testnet."
+      },
+      {
+        "id": "b05_curriculum",
+        "bloque": "05",
+        "pausa_despues": 0.6,
+        "texto": "Y si el espacio decide devolver la obra, el artista confirma que la recibió, el depósito regresa y esa exposición queda grabada para siempre en un currículum que nadie puede editar.",
+        "habla": "Y si el espacio decide devolver la obra, el artista confirma que la recibió, el depósito regresa y esa exposición queda grabada para siempre en un currículum que nadie puede editar."
+      },
+      {
+        "id": "b06_evidencia",
+        "bloque": "06",
+        "pausa_despues": 0.4,
+        "texto": "Todo es verificable en nuestra sección de Evidencia y en Stellar Expert, con dos contratos en Testnet —demo y reloj real de 24 horas— y doce transacciones auditables.",
+        "habla": "Todo es verificable en nuestra sección de Evidencia y en Estelar Expert, con dos contratos en Testnet, demo y reloj real de veinticuatro horas, y doce transacciones auditables."
+      },
+      {
+        "id": "b06_arquitectura",
+        "bloque": "06",
+        "pausa_despues": 0.6,
+        "texto": "Elegimos Stellar porque sus comisiones de fracción de centavo hacen viable liquidar por día, guardando solo estados livianos on-chain sobre SAC/SEP-41 y Freighter. Contrastamos la arquitectura con Stellar Raven: descartamos Trustless Work porque su esquema por hitos y 0,3 % rompe el alquiler diario continuo, evitamos NFTs innecesarios y respaldamos el contrato con 41 tests y auditoría independiente.",
+        "habla": "Elegimos Estelar porque sus comisiones de fracción de centavo hacen viable liquidar por día, guardando solo estados livianos en cadena sobre sac, sep cuarenta y uno y Freiter. Contrastamos la arquitectura con Estelar Reiven: descartamos Trasles Uork porque su esquema por hitos y cero coma tres por ciento rompe el alquiler diario continuo, evitamos ene efe tes innecesarios y respaldamos el contrato con cuarenta y un tests y auditoría independiente."
+      },
+      {
+        "id": "b07_cierre",
+        "bloque": "07",
+        "pausa_despues": 0.0,
+        "texto": "Hoy el contrato cobra cero comisión; hacia producción el modelo se sostiene con un uno o dos por ciento solo cuando una obra se vende, más servicios físicos para espacios. Somos Muro. La obra cobra por día. Si se enamoran, es suya.",
+        "habla": "Hoy el contrato cobra cero comisión; hacia producción el modelo se sostiene con un uno o dos por ciento solo cuando una obra se vende, más servicios físicos para espacios. Somos Muro. La obra cobra por día. Si se enamoran, es suya."
+      }
+    ]
+  }
+}

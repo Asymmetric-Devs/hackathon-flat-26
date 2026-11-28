@@ -1,0 +1,2415 @@
+{
+ "lang": "es",
+ "modelo": "chatterbox-es-mx-latam",
+ "referencia": "voces/ar_m_01523.wav",
+ "lineas": [
+  {
+   "id": "b01_gancho",
+   "bloque": "01",
+   "pausa_despues": 1.0,
+   "texto": "Imaginá una obra colgada hace un mes en la pared de un bar o una bodega. ¿Cuánto cobró su artista?",
+   "archivo": "voz/es/b01_gancho.wav",
+   "duracion": 4.742,
+   "toma": 1,
+   "fidelidad": 1.0,
+   "palabras": [
+    {
+     "w": "Imaginá",
+     "s": 0.0,
+     "e": 0.4
+    },
+    {
+     "w": "una",
+     "s": 0.4,
+     "e": 0.52
+    },
+    {
+     "w": "obra",
+     "s": 0.52,
+     "e": 0.72
+    },
+    {
+     "w": "colgada",
+     "s": 0.72,
+     "e": 1.1
+    },
+    {
+     "w": "hace",
+     "s": 1.1,
+     "e": 1.26
+    },
+    {
+     "w": "un",
+     "s": 1.26,
+     "e": 1.36
+    },
+    {
+     "w": "mes",
+     "s": 1.36,
+     "e": 1.5
+    },
+    {
+     "w": "en",
+     "s": 1.5,
+     "e": 1.6
+    },
+    {
+     "w": "la",
+     "s": 1.6,
+     "e": 1.66
+    },
+    {
+     "w": "pared",
+     "s": 1.66,
+     "e": 1.9
+    },
+    {
+     "w": "de",
+     "s": 1.9,
+     "e": 2.04
+    },
+    {
+     "w": "un",
+     "s": 2.04,
+     "e": 2.16
+    },
+    {
+     "w": "bar",
+     "s": 2.16,
+     "e": 2.34
+    },
+    {
+     "w": "o",
+     "s": 2.34,
+     "e": 2.5
+    },
+    {
+     "w": "una",
+     "s": 2.5,
+     "e": 2.66
+    },
+    {
+     "w": "bodega.",
+     "s": 2.66,
+     "e": 3.0
+    },
+    {
+     "w": "¿Cuánto",
+     "s": 3.68,
+     "e": 4.0
+    },
+    {
+     "w": "cobró",
+     "s": 4.0,
+     "e": 4.2
+    },
+    {
+     "w": "su",
+     "s": 4.2,
+     "e": 4.32
+    },
+    {
+     "w": "artista?",
+     "s": 4.32,
+     "e": 4.6
+    }
+   ]
+  },
+  {
+   "id": "b01_nada",
+   "bloque": "01",
+   "pausa_despues": 3.5,
+   "texto": "Nada. Ni un peso, ni un contrato, ni un registro de dónde estuvo.",
+   "archivo": "voz/es/b01_nada.wav",
+   "duracion": 3.286,
+   "toma": 1,
+   "fidelidad": 0.96,
+   "palabras": [
+    {
+     "w": "Nada.",
+     "s": 0.0,
+     "e": 0.26
+    },
+    {
+     "w": "Ni",
+     "s": 0.68,
+     "e": 0.78
+    },
+    {
+     "w": "un",
+     "s": 0.78,
+     "e": 0.9
+    },
+    {
+     "w": "peso,",
+     "s": 0.9,
+     "e": 1.14
+    },
+    {
+     "w": "ni",
+     "s": 1.38,
+     "e": 1.48
+    },
+    {
+     "w": "un",
+     "s": 1.48,
+     "e": 1.58
+    },
+    {
+     "w": "contrato,",
+     "s": 1.58,
+     "e": 2.0
+    },
+    {
+     "w": "ni",
+     "s": 2.12,
+     "e": 2.2
+    },
+    {
+     "w": "un",
+     "s": 2.2,
+     "e": 2.28
+    },
+    {
+     "w": "registro",
+     "s": 2.28,
+     "e": 2.68
+    },
+    {
+     "w": "de",
+     "s": 2.68,
+     "e": 2.73
+    },
+    {
+     "w": "dónde",
+     "s": 2.68,
+     "e": 2.8
+    },
+    {
+     "w": "estuvo.",
+     "s": 2.8,
+     "e": 3.2
+    }
+   ]
+  },
+  {
+   "id": "b01_muro",
+   "bloque": "01",
+   "pausa_despues": 0.6,
+   "texto": "Eso cambia con Muro: la obra cobra por día. Y si se enamoran, es suya.",
+   "archivo": "voz/es/b01_muro.wav",
+   "duracion": 4.535,
+   "toma": 2,
+   "fidelidad": 1.0,
+   "palabras": [
+    {
+     "w": "Eso",
+     "s": 0.0,
+     "e": 0.2
+    },
+    {
+     "w": "cambia",
+     "s": 0.2,
+     "e": 0.46
+    },
+    {
+     "w": "con",
+     "s": 0.46,
+     "e": 0.62
+    },
+    {
+     "w": "Muro:",
+     "s": 0.62,
+     "e": 0.86
+    },
+    {
+     "w": "la",
+     "s": 1.06,
+     "e": 1.4
+    },
+    {
+     "w": "obra",
+     "s": 1.4,
+     "e": 1.58
+    },
+    {
+     "w": "cobra",
+     "s": 1.58,
+     "e": 1.78
+    },
+    {
+     "w": "por",
+     "s": 1.78,
+     "e": 1.98
+    },
+    {
+     "w": "día.",
+     "s": 1.98,
+     "e": 2.16
+    },
+    {
+     "w": "Y",
+     "s": 2.82,
+     "e": 3.22
+    },
+    {
+     "w": "si",
+     "s": 3.22,
+     "e": 3.34
+    },
+    {
+     "w": "se",
+     "s": 3.34,
+     "e": 3.46
+    },
+    {
+     "w": "enamoran,",
+     "s": 3.46,
+     "e": 3.88
+    },
+    {
+     "w": "es",
+     "s": 3.94,
+     "e": 4.18
+    },
+    {
+     "w": "suya.",
+     "s": 4.18,
+     "e": 4.44
+    }
+   ]
+  },
+  {
+   "id": "b02_tres_numeros",
+   "bloque": "02",
+   "pausa_despues": 0.4,
+   "texto": "En Muro, el artista publica su obra con tres números: precio de venta, alquiler por día y un depósito en garantía.",
+   "archivo": "voz/es/b02_tres_numeros.wav",
+   "duracion": 6.578,
+   "toma": 2,
+   "fidelidad": 1.0,
+   "palabras": [
+    {
+     "w": "En",
+     "s": 0.0,
+     "e": 0.18
+    },
+    {
+     "w": "Muro,",
+     "s": 0.18,
+     "e": 0.42
+    },
+    {
+     "w": "el",
+     "s": 0.76,
+     "e": 1.06
+    },
+    {
+     "w": "artista",
+     "s": 1.06,
+     "e": 1.4
+    },
+    {
+     "w": "publica",
+     "s": 1.4,
+     "e": 1.78
+    },
+    {
+     "w": "su",
+     "s": 1.78,
+     "e": 1.94
+    },
+    {
+     "w": "obra",
+     "s": 1.94,
+     "e": 2.14
+    },
+    {
+     "w": "con",
+     "s": 2.14,
+     "e": 2.34
+    },
+    {
+     "w": "tres",
+     "s": 2.34,
+     "e": 2.5
+    },
+    {
+     "w": "números:",
+     "s": 2.5,
+     "e": 2.84
+    },
+    {
+     "w": "precio",
+     "s": 3.16,
+     "e": 3.48
+    },
+    {
+     "w": "de",
+     "s": 3.48,
+     "e": 3.58
+    },
+    {
+     "w": "venta,",
+     "s": 3.58,
+     "e": 3.98
+    },
+    {
+     "w": "alquiler",
+     "s": 4.38,
+     "e": 4.7
+    },
+    {
+     "w": "por",
+     "s": 4.7,
+     "e": 4.88
+    },
+    {
+     "w": "día",
+     "s": 4.88,
+     "e": 5.1
+    },
+    {
+     "w": "y",
+     "s": 5.1,
+     "e": 5.4
+    },
+    {
+     "w": "un",
+     "s": 5.4,
+     "e": 5.5
+    },
+    {
+     "w": "depósito",
+     "s": 5.5,
+     "e": 5.9
+    },
+    {
+     "w": "en",
+     "s": 5.9,
+     "e": 6.02
+    },
+    {
+     "w": "garantía.",
+     "s": 6.02,
+     "e": 6.4
+    }
+   ]
+  },
+  {
+   "id": "b02_colgar",
+   "bloque": "02",
+   "pausa_despues": 0.4,
+   "texto": "Cuando un bar, una bodega o un hotel decide colgarla, deposita la garantía y prepaga días en un contrato inteligente sobre Stellar.",
+   "archivo": "voz/es/b02_colgar.wav",
+   "duracion": 6.593,
+   "toma": 1,
+   "fidelidad": 1.0,
+   "palabras": [
+    {
+     "w": "Cuando",
+     "s": 0.0,
+     "e": 0.26
+    },
+    {
+     "w": "un",
+     "s": 0.26,
+     "e": 0.42
+    },
+    {
+     "w": "bar,",
+     "s": 0.42,
+     "e": 0.62
+    },
+    {
+     "w": "una",
+     "s": 0.88,
+     "e": 1.0
+    },
+    {
+     "w": "bodega",
+     "s": 1.0,
+     "e": 1.38
+    },
+    {
+     "w": "o",
+     "s": 1.38,
+     "e": 1.54
+    },
+    {
+     "w": "un",
+     "s": 1.54,
+     "e": 1.66
+    },
+    {
+     "w": "hotel",
+     "s": 1.66,
+     "e": 1.9
+    },
+    {
+     "w": "decide",
+     "s": 1.9,
+     "e": 2.56
+    },
+    {
+     "w": "colgarla,",
+     "s": 2.56,
+     "e": 3.16
+    },
+    {
+     "w": "deposita",
+     "s": 3.4,
+     "e": 3.72
+    },
+    {
+     "w": "la",
+     "s": 3.72,
+     "e": 3.82
+    },
+    {
+     "w": "garantía",
+     "s": 3.82,
+     "e": 4.2
+    },
+    {
+     "w": "y",
+     "s": 4.2,
+     "e": 4.3
+    },
+    {
+     "w": "prepaga",
+     "s": 4.3,
+     "e": 4.62
+    },
+    {
+     "w": "días",
+     "s": 4.62,
+     "e": 4.84
+    },
+    {
+     "w": "en",
+     "s": 4.84,
+     "e": 5.02
+    },
+    {
+     "w": "un",
+     "s": 5.02,
+     "e": 5.16
+    },
+    {
+     "w": "contrato",
+     "s": 5.16,
+     "e": 5.44
+    },
+    {
+     "w": "inteligente",
+     "s": 5.44,
+     "e": 5.96
+    },
+    {
+     "w": "sobre",
+     "s": 5.96,
+     "e": 6.18
+    },
+    {
+     "w": "Stellar.",
+     "s": 6.18,
+     "e": 6.5
+    }
+   ]
+  },
+  {
+   "id": "b02_cuotas",
+   "bloque": "02",
+   "pausa_despues": 0.6,
+   "texto": "Cada día colgada genera alquiler para el artista y, al mismo tiempo, descuenta como cuota del precio final. En Argentina todo se compra en cuotas, menos el arte. Hasta ahora.",
+   "archivo": "voz/es/b02_cuotas.wav",
+   "duracion": 9.196,
+   "toma": 1,
+   "fidelidad": 1.0,
+   "palabras": [
+    {
+     "w": "Cada",
+     "s": 0.0,
+     "e": 0.22
+    },
+    {
+     "w": "día",
+     "s": 0.22,
+     "e": 0.38
+    },
+    {
+     "w": "colgada",
+     "s": 0.38,
+     "e": 0.8
+    },
+    {
+     "w": "genera",
+     "s": 0.8,
+     "e": 1.16
+    },
+    {
+     "w": "alquiler",
+     "s": 1.16,
+     "e": 1.44
+    },
+    {
+     "w": "para",
+     "s": 1.44,
+     "e": 1.64
+    },
+    {
+     "w": "el",
+     "s": 1.64,
+     "e": 1.76
+    },
+    {
+     "w": "artista",
+     "s": 1.76,
+     "e": 2.18
+    },
+    {
+     "w": "y,",
+     "s": 2.18,
+     "e": 2.4
+    },
+    {
+     "w": "al",
+     "s": 2.4,
+     "e": 2.46
+    },
+    {
+     "w": "mismo",
+     "s": 2.46,
+     "e": 2.66
+    },
+    {
+     "w": "tiempo,",
+     "s": 2.66,
+     "e": 3.1
+    },
+    {
+     "w": "descuenta",
+     "s": 3.1,
+     "e": 3.58
+    },
+    {
+     "w": "como",
+     "s": 3.58,
+     "e": 3.8
+    },
+    {
+     "w": "cuota",
+     "s": 3.8,
+     "e": 4.08
+    },
+    {
+     "w": "del",
+     "s": 4.08,
+     "e": 4.22
+    },
+    {
+     "w": "precio",
+     "s": 4.22,
+     "e": 4.46
+    },
+    {
+     "w": "final.",
+     "s": 4.46,
+     "e": 4.78
+    },
+    {
+     "w": "En",
+     "s": 5.24,
+     "e": 5.68
+    },
+    {
+     "w": "Argentina",
+     "s": 5.68,
+     "e": 6.12
+    },
+    {
+     "w": "todo",
+     "s": 6.12,
+     "e": 6.38
+    },
+    {
+     "w": "se",
+     "s": 6.38,
+     "e": 6.54
+    },
+    {
+     "w": "compra",
+     "s": 6.54,
+     "e": 6.84
+    },
+    {
+     "w": "en",
+     "s": 6.84,
+     "e": 6.92
+    },
+    {
+     "w": "cuotas,",
+     "s": 6.92,
+     "e": 7.32
+    },
+    {
+     "w": "menos",
+     "s": 7.4,
+     "e": 7.56
+    },
+    {
+     "w": "el",
+     "s": 7.56,
+     "e": 7.76
+    },
+    {
+     "w": "arte.",
+     "s": 7.76,
+     "e": 8.0
+    },
+    {
+     "w": "Hasta",
+     "s": 8.44,
+     "e": 8.8
+    },
+    {
+     "w": "ahora.",
+     "s": 8.8,
+     "e": 9.06
+    }
+   ]
+  },
+  {
+   "id": "b03_laura",
+   "bloque": "03",
+   "pausa_despues": 0.6,
+   "texto": "Salimos a validar la idea con Laura Zapata, artista visual con taller propio en Resistencia, Chaco. Nos confirmó cuánta obra terminada queda guardada sin circuito, vio justo el alquiler como cuota y nos dio un ajuste clave: que colgar sea una elección genuina del local, nunca un favor.",
+   "archivo": "voz/es/b03_laura.wav",
+   "duracion": 15.149,
+   "toma": 1,
+   "fidelidad": 0.938,
+   "palabras": [
+    {
+     "w": "Salimos",
+     "s": 0.0,
+     "e": 0.34
+    },
+    {
+     "w": "a",
+     "s": 0.34,
+     "e": 0.48
+    },
+    {
+     "w": "validar",
+     "s": 0.48,
+     "e": 0.82
+    },
+    {
+     "w": "la",
+     "s": 0.82,
+     "e": 0.92
+    },
+    {
+     "w": "idea",
+     "s": 0.92,
+     "e": 1.1
+    },
+    {
+     "w": "con",
+     "s": 1.1,
+     "e": 1.3
+    },
+    {
+     "w": "Laura",
+     "s": 1.3,
+     "e": 1.5
+    },
+    {
+     "w": "Zapata,",
+     "s": 1.5,
+     "e": 1.98
+    },
+    {
+     "w": "artista",
+     "s": 2.26,
+     "e": 2.64
+    },
+    {
+     "w": "visual",
+     "s": 2.64,
+     "e": 2.96
+    },
+    {
+     "w": "con",
+     "s": 2.96,
+     "e": 3.18
+    },
+    {
+     "w": "taller",
+     "s": 3.18,
+     "e": 3.34
+    },
+    {
+     "w": "propio",
+     "s": 3.34,
+     "e": 3.64
+    },
+    {
+     "w": "en",
+     "s": 3.64,
+     "e": 3.76
+    },
+    {
+     "w": "Resistencia,",
+     "s": 3.76,
+     "e": 4.34
+    },
+    {
+     "w": "Chaco.",
+     "s": 4.5,
+     "e": 4.82
+    },
+    {
+     "w": "Nos",
+     "s": 5.54,
+     "e": 5.96
+    },
+    {
+     "w": "confirmó",
+     "s": 5.96,
+     "e": 6.4
+    },
+    {
+     "w": "cuánta",
+     "s": 6.4,
+     "e": 6.74
+    },
+    {
+     "w": "obra",
+     "s": 6.74,
+     "e": 6.86
+    },
+    {
+     "w": "terminada",
+     "s": 6.86,
+     "e": 7.32
+    },
+    {
+     "w": "queda",
+     "s": 7.32,
+     "e": 7.52
+    },
+    {
+     "w": "guardada",
+     "s": 7.52,
+     "e": 7.88
+    },
+    {
+     "w": "sin",
+     "s": 7.88,
+     "e": 8.06
+    },
+    {
+     "w": "circuito,",
+     "s": 8.06,
+     "e": 8.6
+    },
+    {
+     "w": "vio",
+     "s": 8.86,
+     "e": 9.02
+    },
+    {
+     "w": "justo",
+     "s": 9.02,
+     "e": 9.22
+    },
+    {
+     "w": "el",
+     "s": 9.22,
+     "e": 9.34
+    },
+    {
+     "w": "alquiler",
+     "s": 9.34,
+     "e": 9.64
+    },
+    {
+     "w": "como",
+     "s": 9.64,
+     "e": 9.86
+    },
+    {
+     "w": "cuota",
+     "s": 9.86,
+     "e": 10.22
+    },
+    {
+     "w": "y",
+     "s": 10.22,
+     "e": 10.76
+    },
+    {
+     "w": "nos",
+     "s": 10.76,
+     "e": 10.9
+    },
+    {
+     "w": "dio",
+     "s": 10.9,
+     "e": 11.02
+    },
+    {
+     "w": "un",
+     "s": 11.02,
+     "e": 11.12
+    },
+    {
+     "w": "ajuste",
+     "s": 11.12,
+     "e": 11.5
+    },
+    {
+     "w": "clave:",
+     "s": 11.5,
+     "e": 11.78
+    },
+    {
+     "w": "que",
+     "s": 12.0,
+     "e": 12.38
+    },
+    {
+     "w": "colgar",
+     "s": 12.38,
+     "e": 12.727
+    },
+    {
+     "w": "sea",
+     "s": 12.727,
+     "e": 12.9
+    },
+    {
+     "w": "una",
+     "s": 12.9,
+     "e": 13.0
+    },
+    {
+     "w": "elección",
+     "s": 13.0,
+     "e": 13.32
+    },
+    {
+     "w": "genuina",
+     "s": 13.32,
+     "e": 13.74
+    },
+    {
+     "w": "del",
+     "s": 13.74,
+     "e": 13.9
+    },
+    {
+     "w": "local,",
+     "s": 13.9,
+     "e": 14.18
+    },
+    {
+     "w": "nunca",
+     "s": 14.38,
+     "e": 14.64
+    },
+    {
+     "w": "un",
+     "s": 14.64,
+     "e": 14.8
+    },
+    {
+     "w": "favor.",
+     "s": 14.8,
+     "e": 15.02
+    }
+   ]
+  },
+  {
+   "id": "b04_publicar",
+   "bloque": "04",
+   "pausa_despues": 0.4,
+   "texto": "Veámoslo funcionando en vivo en Stellar Testnet. El artista carga su obra y fija sus tres números con vista previa inmediata. En La pared, cada cuadro muestra en tiempo real cuánto lleva cobrado.",
+   "archivo": "voz/es/b04_publicar.wav",
+   "duracion": 10.244,
+   "toma": 1,
+   "fidelidad": 0.985,
+   "palabras": [
+    {
+     "w": "Veámoslo",
+     "s": 0.0,
+     "e": 0.44
+    },
+    {
+     "w": "funcionando",
+     "s": 0.44,
+     "e": 0.94
+    },
+    {
+     "w": "en",
+     "s": 0.94,
+     "e": 1.08
+    },
+    {
+     "w": "vivo",
+     "s": 1.08,
+     "e": 1.3
+    },
+    {
+     "w": "en",
+     "s": 1.3,
+     "e": 1.52
+    },
+    {
+     "w": "Stellar",
+     "s": 1.52,
+     "e": 1.92
+    },
+    {
+     "w": "Testnet.",
+     "s": 1.92,
+     "e": 2.24
+    },
+    {
+     "w": "El",
+     "s": 2.7,
+     "e": 3.18
+    },
+    {
+     "w": "artista",
+     "s": 3.18,
+     "e": 3.48
+    },
+    {
+     "w": "carga",
+     "s": 3.48,
+     "e": 3.7
+    },
+    {
+     "w": "su",
+     "s": 3.7,
+     "e": 3.9
+    },
+    {
+     "w": "obra",
+     "s": 3.9,
+     "e": 4.16
+    },
+    {
+     "w": "y",
+     "s": 4.16,
+     "e": 4.28
+    },
+    {
+     "w": "fija",
+     "s": 4.28,
+     "e": 4.5
+    },
+    {
+     "w": "sus",
+     "s": 4.5,
+     "e": 4.66
+    },
+    {
+     "w": "tres",
+     "s": 4.66,
+     "e": 4.8
+    },
+    {
+     "w": "números",
+     "s": 4.8,
+     "e": 5.16
+    },
+    {
+     "w": "con",
+     "s": 5.4,
+     "e": 5.56
+    },
+    {
+     "w": "vista",
+     "s": 5.56,
+     "e": 5.76
+    },
+    {
+     "w": "previa",
+     "s": 5.76,
+     "e": 6.06
+    },
+    {
+     "w": "inmediata.",
+     "s": 6.14,
+     "e": 6.48
+    },
+    {
+     "w": "En",
+     "s": 6.94,
+     "e": 7.38
+    },
+    {
+     "w": "La",
+     "s": 7.38,
+     "e": 7.48
+    },
+    {
+     "w": "pared,",
+     "s": 7.48,
+     "e": 7.78
+    },
+    {
+     "w": "cada",
+     "s": 7.98,
+     "e": 8.16
+    },
+    {
+     "w": "cuadro",
+     "s": 8.16,
+     "e": 8.48
+    },
+    {
+     "w": "muestra",
+     "s": 8.48,
+     "e": 8.72
+    },
+    {
+     "w": "en",
+     "s": 8.72,
+     "e": 8.8
+    },
+    {
+     "w": "tiempo",
+     "s": 8.8,
+     "e": 9.0
+    },
+    {
+     "w": "real",
+     "s": 9.0,
+     "e": 9.26
+    },
+    {
+     "w": "cuánto",
+     "s": 9.26,
+     "e": 9.6
+    },
+    {
+     "w": "lleva",
+     "s": 9.6,
+     "e": 9.76
+    },
+    {
+     "w": "cobrado.",
+     "s": 9.76,
+     "e": 10.16
+    }
+   ]
+  },
+  {
+   "id": "b04_ficha",
+   "bloque": "04",
+   "pausa_despues": 0.6,
+   "texto": "Al abrir una obra colgada, podés inspeccionar cada pincelada con lupa y ver el contador correr segundo a segundo, acelerado a un minuto por día para esta demo. Cualquiera puede liquidar lo devengado: el dinero va directo al artista y baja el saldo para comprarla.",
+   "archivo": "voz/es/b04_ficha.wav",
+   "duracion": 12.3,
+   "toma": 1,
+   "fidelidad": 0.921,
+   "palabras": [
+    {
+     "w": "Al",
+     "s": 0.0,
+     "e": 0.16
+    },
+    {
+     "w": "abrir",
+     "s": 0.16,
+     "e": 0.38
+    },
+    {
+     "w": "una",
+     "s": 0.38,
+     "e": 0.54
+    },
+    {
+     "w": "obra",
+     "s": 0.54,
+     "e": 0.7
+    },
+    {
+     "w": "colgada,",
+     "s": 0.7,
+     "e": 1.2
+    },
+    {
+     "w": "podés",
+     "s": 1.36,
+     "e": 1.6
+    },
+    {
+     "w": "inspeccionar",
+     "s": 1.6,
+     "e": 2.08
+    },
+    {
+     "w": "cada",
+     "s": 2.08,
+     "e": 2.26
+    },
+    {
+     "w": "pincelada",
+     "s": 2.26,
+     "e": 2.76
+    },
+    {
+     "w": "con",
+     "s": 2.76,
+     "e": 2.92
+    },
+    {
+     "w": "lupa",
+     "s": 2.92,
+     "e": 3.22
+    },
+    {
+     "w": "y",
+     "s": 3.22,
+     "e": 3.4
+    },
+    {
+     "w": "ver",
+     "s": 3.4,
+     "e": 3.54
+    },
+    {
+     "w": "el",
+     "s": 3.54,
+     "e": 3.64
+    },
+    {
+     "w": "contador",
+     "s": 3.64,
+     "e": 3.98
+    },
+    {
+     "w": "correr",
+     "s": 3.98,
+     "e": 4.28
+    },
+    {
+     "w": "segundo",
+     "s": 4.28,
+     "e": 4.62
+    },
+    {
+     "w": "a",
+     "s": 4.62,
+     "e": 4.74
+    },
+    {
+     "w": "segundo,",
+     "s": 4.74,
+     "e": 5.1
+    },
+    {
+     "w": "acelerado",
+     "s": 5.54,
+     "e": 6.02
+    },
+    {
+     "w": "a",
+     "s": 6.02,
+     "e": 6.07
+    },
+    {
+     "w": "un",
+     "s": 6.02,
+     "e": 6.16
+    },
+    {
+     "w": "minuto",
+     "s": 6.16,
+     "e": 6.4
+    },
+    {
+     "w": "por",
+     "s": 6.4,
+     "e": 6.58
+    },
+    {
+     "w": "día",
+     "s": 6.58,
+     "e": 6.74
+    },
+    {
+     "w": "para",
+     "s": 6.74,
+     "e": 6.94
+    },
+    {
+     "w": "esta",
+     "s": 6.94,
+     "e": 7.12
+    },
+    {
+     "w": "demo.",
+     "s": 7.12,
+     "e": 7.38
+    },
+    {
+     "w": "Cualquiera",
+     "s": 7.9,
+     "e": 8.3
+    },
+    {
+     "w": "puede",
+     "s": 8.3,
+     "e": 8.5
+    },
+    {
+     "w": "liquidar",
+     "s": 8.5,
+     "e": 8.871
+    },
+    {
+     "w": "lo",
+     "s": 8.871,
+     "e": 8.963
+    },
+    {
+     "w": "devengado:",
+     "s": 8.963,
+     "e": 9.38
+    },
+    {
+     "w": "el",
+     "s": 9.5,
+     "e": 9.6
+    },
+    {
+     "w": "dinero",
+     "s": 9.6,
+     "e": 9.82
+    },
+    {
+     "w": "va",
+     "s": 9.82,
+     "e": 9.96
+    },
+    {
+     "w": "directo",
+     "s": 9.96,
+     "e": 10.28
+    },
+    {
+     "w": "al",
+     "s": 10.28,
+     "e": 10.36
+    },
+    {
+     "w": "artista",
+     "s": 10.36,
+     "e": 10.78
+    },
+    {
+     "w": "y",
+     "s": 10.78,
+     "e": 11.0
+    },
+    {
+     "w": "baja",
+     "s": 11.0,
+     "e": 11.16
+    },
+    {
+     "w": "el",
+     "s": 11.16,
+     "e": 11.28
+    },
+    {
+     "w": "saldo",
+     "s": 11.28,
+     "e": 11.56
+    },
+    {
+     "w": "para",
+     "s": 11.56,
+     "e": 11.7
+    },
+    {
+     "w": "comprarla.",
+     "s": 11.7,
+     "e": 12.22
+    }
+   ]
+  },
+  {
+   "id": "b05_cartela",
+   "bloque": "05",
+   "pausa_despues": 0.4,
+   "texto": "Junto al cuadro físico va esta cartela con QR, lista para imprimir como en un museo. Cualquier cliente del bar la escanea, ve cuánto lleva cobrado y deja una propina directa al artista, sin instalar extensiones gracias al modo invitado en Testnet.",
+   "archivo": "voz/es/b05_cartela.wav",
+   "duracion": 11.975,
+   "toma": 1,
+   "fidelidad": 1.0,
+   "palabras": [
+    {
+     "w": "Junto",
+     "s": 0.0,
+     "e": 0.32
+    },
+    {
+     "w": "al",
+     "s": 0.32,
+     "e": 0.4
+    },
+    {
+     "w": "cuadro",
+     "s": 0.4,
+     "e": 0.7
+    },
+    {
+     "w": "físico",
+     "s": 0.7,
+     "e": 1.04
+    },
+    {
+     "w": "va",
+     "s": 1.04,
+     "e": 1.2
+    },
+    {
+     "w": "esta",
+     "s": 1.2,
+     "e": 1.32
+    },
+    {
+     "w": "cartela",
+     "s": 1.32,
+     "e": 1.66
+    },
+    {
+     "w": "con",
+     "s": 1.66,
+     "e": 1.86
+    },
+    {
+     "w": "QR,",
+     "s": 1.86,
+     "e": 2.2
+    },
+    {
+     "w": "lista",
+     "s": 2.52,
+     "e": 3.0
+    },
+    {
+     "w": "para",
+     "s": 3.0,
+     "e": 3.18
+    },
+    {
+     "w": "imprimir",
+     "s": 3.18,
+     "e": 3.54
+    },
+    {
+     "w": "como",
+     "s": 3.54,
+     "e": 3.68
+    },
+    {
+     "w": "en",
+     "s": 3.68,
+     "e": 3.8
+    },
+    {
+     "w": "un",
+     "s": 3.8,
+     "e": 3.9
+    },
+    {
+     "w": "museo.",
+     "s": 3.9,
+     "e": 4.3
+    },
+    {
+     "w": "Cualquier",
+     "s": 4.9,
+     "e": 5.38
+    },
+    {
+     "w": "cliente",
+     "s": 5.38,
+     "e": 5.72
+    },
+    {
+     "w": "del",
+     "s": 5.72,
+     "e": 5.82
+    },
+    {
+     "w": "bar",
+     "s": 5.82,
+     "e": 5.94
+    },
+    {
+     "w": "la",
+     "s": 5.94,
+     "e": 6.04
+    },
+    {
+     "w": "escanea,",
+     "s": 6.04,
+     "e": 6.48
+    },
+    {
+     "w": "ve",
+     "s": 6.66,
+     "e": 6.8
+    },
+    {
+     "w": "cuánto",
+     "s": 6.8,
+     "e": 7.12
+    },
+    {
+     "w": "lleva",
+     "s": 7.12,
+     "e": 7.3
+    },
+    {
+     "w": "cobrado",
+     "s": 7.3,
+     "e": 7.68
+    },
+    {
+     "w": "y",
+     "s": 7.68,
+     "e": 7.76
+    },
+    {
+     "w": "deja",
+     "s": 7.76,
+     "e": 7.92
+    },
+    {
+     "w": "una",
+     "s": 7.92,
+     "e": 8.04
+    },
+    {
+     "w": "propina",
+     "s": 8.04,
+     "e": 8.42
+    },
+    {
+     "w": "directa",
+     "s": 8.42,
+     "e": 8.74
+    },
+    {
+     "w": "al",
+     "s": 8.74,
+     "e": 8.82
+    },
+    {
+     "w": "artista,",
+     "s": 8.82,
+     "e": 9.24
+    },
+    {
+     "w": "sin",
+     "s": 9.38,
+     "e": 9.62
+    },
+    {
+     "w": "instalar",
+     "s": 9.62,
+     "e": 9.92
+    },
+    {
+     "w": "extensiones",
+     "s": 9.92,
+     "e": 10.46
+    },
+    {
+     "w": "gracias",
+     "s": 10.46,
+     "e": 10.64
+    },
+    {
+     "w": "al",
+     "s": 10.64,
+     "e": 10.9
+    },
+    {
+     "w": "modo",
+     "s": 10.9,
+     "e": 11.02
+    },
+    {
+     "w": "invitado",
+     "s": 11.02,
+     "e": 11.38
+    },
+    {
+     "w": "en",
+     "s": 11.38,
+     "e": 11.52
+    },
+    {
+     "w": "Testnet.",
+     "s": 11.52,
+     "e": 11.84
+    }
+   ]
+  },
+  {
+   "id": "b05_curriculum",
+   "bloque": "05",
+   "pausa_despues": 0.6,
+   "texto": "Y si el espacio decide devolver la obra, el artista confirma que la recibió, el depósito regresa y esa exposición queda grabada para siempre en un currículum que nadie puede editar.",
+   "archivo": "voz/es/b05_curriculum.wav",
+   "duracion": 9.537,
+   "toma": 2,
+   "fidelidad": 1.0,
+   "palabras": [
+    {
+     "w": "Y",
+     "s": 0.0,
+     "e": 0.1
+    },
+    {
+     "w": "si",
+     "s": 0.1,
+     "e": 0.22
+    },
+    {
+     "w": "el",
+     "s": 0.22,
+     "e": 0.32
+    },
+    {
+     "w": "espacio",
+     "s": 0.32,
+     "e": 0.62
+    },
+    {
+     "w": "decide",
+     "s": 0.62,
+     "e": 0.96
+    },
+    {
+     "w": "devolver",
+     "s": 0.96,
+     "e": 1.32
+    },
+    {
+     "w": "la",
+     "s": 1.32,
+     "e": 1.44
+    },
+    {
+     "w": "obra,",
+     "s": 1.44,
+     "e": 1.68
+    },
+    {
+     "w": "el",
+     "s": 2.04,
+     "e": 2.38
+    },
+    {
+     "w": "artista",
+     "s": 2.38,
+     "e": 2.7
+    },
+    {
+     "w": "confirma",
+     "s": 2.7,
+     "e": 3.1
+    },
+    {
+     "w": "que",
+     "s": 3.1,
+     "e": 3.2
+    },
+    {
+     "w": "la",
+     "s": 3.2,
+     "e": 3.3
+    },
+    {
+     "w": "recibió,",
+     "s": 3.3,
+     "e": 3.76
+    },
+    {
+     "w": "el",
+     "s": 4.3,
+     "e": 4.66
+    },
+    {
+     "w": "depósito",
+     "s": 4.66,
+     "e": 5.08
+    },
+    {
+     "w": "regresa",
+     "s": 5.08,
+     "e": 5.6
+    },
+    {
+     "w": "y",
+     "s": 5.6,
+     "e": 6.18
+    },
+    {
+     "w": "esa",
+     "s": 6.18,
+     "e": 6.32
+    },
+    {
+     "w": "exposición",
+     "s": 6.32,
+     "e": 6.88
+    },
+    {
+     "w": "queda",
+     "s": 6.88,
+     "e": 7.1
+    },
+    {
+     "w": "grabada",
+     "s": 7.1,
+     "e": 7.42
+    },
+    {
+     "w": "para",
+     "s": 7.42,
+     "e": 7.56
+    },
+    {
+     "w": "siempre",
+     "s": 7.56,
+     "e": 7.84
+    },
+    {
+     "w": "en",
+     "s": 7.84,
+     "e": 8.02
+    },
+    {
+     "w": "un",
+     "s": 8.02,
+     "e": 8.14
+    },
+    {
+     "w": "currículum",
+     "s": 8.14,
+     "e": 8.58
+    },
+    {
+     "w": "que",
+     "s": 8.58,
+     "e": 8.7
+    },
+    {
+     "w": "nadie",
+     "s": 8.7,
+     "e": 8.88
+    },
+    {
+     "w": "puede",
+     "s": 8.88,
+     "e": 9.12
+    },
+    {
+     "w": "editar.",
+     "s": 9.12,
+     "e": 9.42
+    }
+   ]
+  },
+  {
+   "id": "b06_evidencia",
+   "bloque": "06",
+   "pausa_despues": 0.4,
+   "texto": "Todo es verificable en nuestra sección de Evidencia y en Stellar Expert, con dos contratos en Testnet —demo y reloj real de 24 horas— y doce transacciones auditables.",
+   "archivo": "voz/es/b06_evidencia.wav",
+   "duracion": 8.266,
+   "toma": 1,
+   "fidelidad": 0.964,
+   "palabras": [
+    {
+     "w": "Todo",
+     "s": 0.0,
+     "e": 0.16
+    },
+    {
+     "w": "es",
+     "s": 0.16,
+     "e": 0.28
+    },
+    {
+     "w": "verificable",
+     "s": 0.28,
+     "e": 0.72
+    },
+    {
+     "w": "en",
+     "s": 0.72,
+     "e": 0.84
+    },
+    {
+     "w": "nuestra",
+     "s": 0.84,
+     "e": 1.02
+    },
+    {
+     "w": "sección",
+     "s": 1.02,
+     "e": 1.34
+    },
+    {
+     "w": "de",
+     "s": 1.34,
+     "e": 1.44
+    },
+    {
+     "w": "Evidencia",
+     "s": 1.44,
+     "e": 1.82
+    },
+    {
+     "w": "y",
+     "s": 1.82,
+     "e": 1.94
+    },
+    {
+     "w": "en",
+     "s": 1.94,
+     "e": 2.04
+    },
+    {
+     "w": "Stellar",
+     "s": 2.04,
+     "e": 2.34
+    },
+    {
+     "w": "Expert,",
+     "s": 2.34,
+     "e": 2.6
+    },
+    {
+     "w": "con",
+     "s": 2.92,
+     "e": 3.32
+    },
+    {
+     "w": "dos",
+     "s": 3.32,
+     "e": 3.42
+    },
+    {
+     "w": "contratos",
+     "s": 3.42,
+     "e": 3.86
+    },
+    {
+     "w": "en",
+     "s": 3.86,
+     "e": 4.02
+    },
+    {
+     "w": "Testnet",
+     "s": 4.02,
+     "e": 4.4
+    },
+    {
+     "w": "—demo",
+     "s": 4.62,
+     "e": 4.8
+    },
+    {
+     "w": "y",
+     "s": 4.8,
+     "e": 4.92
+    },
+    {
+     "w": "reloj",
+     "s": 4.92,
+     "e": 5.2
+    },
+    {
+     "w": "real",
+     "s": 5.2,
+     "e": 5.42
+    },
+    {
+     "w": "de",
+     "s": 5.42,
+     "e": 5.54
+    },
+    {
+     "w": "24",
+     "s": 5.54,
+     "e": 5.84
+    },
+    {
+     "w": "horas—",
+     "s": 5.84,
+     "e": 6.24
+    },
+    {
+     "w": "y",
+     "s": 6.46,
+     "e": 6.8
+    },
+    {
+     "w": "doce",
+     "s": 6.8,
+     "e": 6.98
+    },
+    {
+     "w": "transacciones",
+     "s": 6.98,
+     "e": 7.54
+    },
+    {
+     "w": "auditables.",
+     "s": 7.54,
+     "e": 8.08
+    }
+   ]
+  },
+  {
+   "id": "b06_arquitectura",
+   "bloque": "06",
+   "pausa_despues": 0.6,
+   "texto": "Elegimos Stellar porque sus comisiones de fracción de centavo hacen viable liquidar por día, guardando solo estados livianos on-chain sobre SAC/SEP-41 y Freighter. Contrastamos la arquitectura con Stellar Raven: descartamos Trustless Work porque su esquema por hitos y 0,3 % rompe el alquiler diario continuo, evitamos NFTs innecesarios y respaldamos el contrato con 41 tests y auditoría independiente.",
+   "archivo": "voz/es/b06_arquitectura.wav",
+   "duracion": 22.81,
+   "toma": 2,
+   "fidelidad": 0.885,
+   "palabras": [
+    {
+     "w": "Elegimos",
+     "s": 0.0,
+     "e": 0.46
+    },
+    {
+     "w": "Stellar",
+     "s": 0.46,
+     "e": 0.86
+    },
+    {
+     "w": "porque",
+     "s": 0.86,
+     "e": 1.06
+    },
+    {
+     "w": "sus",
+     "s": 1.06,
+     "e": 1.24
+    },
+    {
+     "w": "comisiones",
+     "s": 1.24,
+     "e": 1.68
+    },
+    {
+     "w": "de",
+     "s": 1.68,
+     "e": 1.76
+    },
+    {
+     "w": "fracción",
+     "s": 1.76,
+     "e": 2.06
+    },
+    {
+     "w": "de",
+     "s": 2.06,
+     "e": 2.18
+    },
+    {
+     "w": "centavo",
+     "s": 2.18,
+     "e": 2.56
+    },
+    {
+     "w": "hacen",
+     "s": 2.56,
+     "e": 2.86
+    },
+    {
+     "w": "viable",
+     "s": 2.86,
+     "e": 3.08
+    },
+    {
+     "w": "liquidar",
+     "s": 3.08,
+     "e": 3.54
+    },
+    {
+     "w": "por",
+     "s": 3.54,
+     "e": 3.7
+    },
+    {
+     "w": "día,",
+     "s": 3.7,
+     "e": 3.94
+    },
+    {
+     "w": "guardando",
+     "s": 4.34,
+     "e": 4.9
+    },
+    {
+     "w": "solo",
+     "s": 4.9,
+     "e": 5.12
+    },
+    {
+     "w": "estados",
+     "s": 5.12,
+     "e": 5.44
+    },
+    {
+     "w": "livianos",
+     "s": 5.44,
+     "e": 5.84
+    },
+    {
+     "w": "on-chain",
+     "s": 5.84,
+     "e": 6.26
+    },
+    {
+     "w": "sobre",
+     "s": 6.26,
+     "e": 6.48
+    },
+    {
+     "w": "SAC/SEP-41",
+     "s": 6.48,
+     "e": 7.4
+    },
+    {
+     "w": "y",
+     "s": 7.4,
+     "e": 7.86
+    },
+    {
+     "w": "Freighter.",
+     "s": 7.86,
+     "e": 8.22
+    },
+    {
+     "w": "Contrastamos",
+     "s": 8.94,
+     "e": 9.5
+    },
+    {
+     "w": "la",
+     "s": 9.5,
+     "e": 9.6
+    },
+    {
+     "w": "arquitectura",
+     "s": 9.6,
+     "e": 10.08
+    },
+    {
+     "w": "con",
+     "s": 10.08,
+     "e": 10.26
+    },
+    {
+     "w": "Stellar",
+     "s": 10.26,
+     "e": 10.61
+    },
+    {
+     "w": "Raven:",
+     "s": 10.61,
+     "e": 10.86
+    },
+    {
+     "w": "descartamos",
+     "s": 11.24,
+     "e": 11.88
+    },
+    {
+     "w": "Trustless",
+     "s": 11.88,
+     "e": 12.365
+    },
+    {
+     "w": "Work",
+     "s": 12.365,
+     "e": 12.58
+    },
+    {
+     "w": "porque",
+     "s": 12.58,
+     "e": 12.9
+    },
+    {
+     "w": "su",
+     "s": 12.9,
+     "e": 13.08
+    },
+    {
+     "w": "esquema",
+     "s": 13.08,
+     "e": 13.34
+    },
+    {
+     "w": "por",
+     "s": 13.34,
+     "e": 13.54
+    },
+    {
+     "w": "hitos",
+     "s": 13.54,
+     "e": 13.84
+    },
+    {
+     "w": "y",
+     "s": 13.84,
+     "e": 14.02
+    },
+    {
+     "w": "0,3",
+     "s": 14.02,
+     "e": 14.83
+    },
+    {
+     "w": "%",
+     "s": 14.83,
+     "e": 15.1
+    },
+    {
+     "w": "rompe",
+     "s": 15.1,
+     "e": 15.7
+    },
+    {
+     "w": "el",
+     "s": 15.7,
+     "e": 15.78
+    },
+    {
+     "w": "alquiler",
+     "s": 15.78,
+     "e": 16.1
+    },
+    {
+     "w": "diario",
+     "s": 16.1,
+     "e": 16.36
+    },
+    {
+     "w": "continuo,",
+     "s": 16.36,
+     "e": 16.88
+    },
+    {
+     "w": "evitamos",
+     "s": 17.3,
+     "e": 17.94
+    },
+    {
+     "w": "NFTs",
+     "s": 17.94,
+     "e": 18.5
+    },
+    {
+     "w": "innecesarios",
+     "s": 18.5,
+     "e": 19.32
+    },
+    {
+     "w": "y",
+     "s": 19.32,
+     "e": 19.54
+    },
+    {
+     "w": "respaldamos",
+     "s": 19.54,
+     "e": 20.04
+    },
+    {
+     "w": "el",
+     "s": 20.04,
+     "e": 20.18
+    },
+    {
+     "w": "contrato",
+     "s": 20.18,
+     "e": 20.56
+    },
+    {
+     "w": "con",
+     "s": 20.56,
+     "e": 20.7
+    },
+    {
+     "w": "41",
+     "s": 20.7,
+     "e": 21.16
+    },
+    {
+     "w": "tests",
+     "s": 21.16,
+     "e": 21.52
+    },
+    {
+     "w": "y",
+     "s": 21.52,
+     "e": 21.72
+    },
+    {
+     "w": "auditoría",
+     "s": 21.72,
+     "e": 22.12
+    },
+    {
+     "w": "independiente.",
+     "s": 22.12,
+     "e": 22.68
+    }
+   ]
+  },
+  {
+   "id": "b07_cierre",
+   "bloque": "07",
+   "pausa_despues": 0.0,
+   "texto": "Hoy el contrato cobra cero comisión; hacia producción el modelo se sostiene con un uno o dos por ciento solo cuando una obra se vende, más servicios físicos para espacios. Somos Muro. La obra cobra por día. Si se enamoran, es suya.",
+   "archivo": "voz/es/b07_cierre.wav",
+   "duracion": 12.088,
+   "toma": 2,
+   "fidelidad": 0.878,
+   "palabras": [
+    {
+     "w": "Hoy",
+     "s": 0.0,
+     "e": 0.16
+    },
+    {
+     "w": "el",
+     "s": 0.16,
+     "e": 0.28
+    },
+    {
+     "w": "contrato",
+     "s": 0.28,
+     "e": 0.62
+    },
+    {
+     "w": "cobra",
+     "s": 0.62,
+     "e": 0.88
+    },
+    {
+     "w": "cero",
+     "s": 0.88,
+     "e": 1.12
+    },
+    {
+     "w": "comisión;",
+     "s": 1.12,
+     "e": 1.54
+    },
+    {
+     "w": "hacia",
+     "s": 1.7,
+     "e": 1.88
+    },
+    {
+     "w": "producción",
+     "s": 1.88,
+     "e": 2.3
+    },
+    {
+     "w": "el",
+     "s": 2.58,
+     "e": 2.7
+    },
+    {
+     "w": "modelo",
+     "s": 2.7,
+     "e": 2.92
+    },
+    {
+     "w": "se",
+     "s": 2.92,
+     "e": 3.08
+    },
+    {
+     "w": "sostiene",
+     "s": 3.08,
+     "e": 3.42
+    },
+    {
+     "w": "con",
+     "s": 3.42,
+     "e": 3.58
+    },
+    {
+     "w": "un",
+     "s": 3.58,
+     "e": 3.84
+    },
+    {
+     "w": "uno",
+     "s": 3.84,
+     "e": 4.16
+    },
+    {
+     "w": "o",
+     "s": 4.16,
+     "e": 4.24
+    },
+    {
+     "w": "dos",
+     "s": 4.24,
+     "e": 4.355
+    },
+    {
+     "w": "por",
+     "s": 4.355,
+     "e": 4.47
+    },
+    {
+     "w": "ciento",
+     "s": 4.47,
+     "e": 4.7
+    },
+    {
+     "w": "solo",
+     "s": 4.7,
+     "e": 5.08
+    },
+    {
+     "w": "cuando",
+     "s": 5.08,
+     "e": 5.42
+    },
+    {
+     "w": "una",
+     "s": 5.42,
+     "e": 5.56
+    },
+    {
+     "w": "obra",
+     "s": 5.56,
+     "e": 5.7
+    },
+    {
+     "w": "se",
+     "s": 5.7,
+     "e": 5.88
+    },
+    {
+     "w": "vende,",
+     "s": 5.88,
+     "e": 6.18
+    },
+    {
+     "w": "más",
+     "s": 6.34,
+     "e": 6.54
+    },
+    {
+     "w": "servicios",
+     "s": 6.54,
+     "e": 6.86
+    },
+    {
+     "w": "físicos",
+     "s": 6.86,
+     "e": 7.24
+    },
+    {
+     "w": "para",
+     "s": 7.24,
+     "e": 7.42
+    },
+    {
+     "w": "espacios.",
+     "s": 7.42,
+     "e": 7.92
+    },
+    {
+     "w": "Somos",
+     "s": 8.06,
+     "e": 8.4
+    },
+    {
+     "w": "Muro.",
+     "s": 8.4,
+     "e": 8.64
+    },
+    {
+     "w": "La",
+     "s": 8.96,
+     "e": 9.36
+    },
+    {
+     "w": "obra",
+     "s": 9.36,
+     "e": 9.52
+    },
+    {
+     "w": "cobra",
+     "s": 9.52,
+     "e": 9.76
+    },
+    {
+     "w": "por",
+     "s": 9.76,
+     "e": 9.96
+    },
+    {
+     "w": "día.",
+     "s": 9.96,
+     "e": 10.18
+    },
+    {
+     "w": "Si",
+     "s": 10.48,
+     "e": 10.88
+    },
+    {
+     "w": "se",
+     "s": 10.88,
+     "e": 10.98
+    },
+    {
+     "w": "enamoran,",
+     "s": 10.98,
+     "e": 11.42
+    },
+    {
+     "w": "es",
+     "s": 11.5,
+     "e": 11.72
+    },
+    {
+     "w": "suya.",
+     "s": 11.72,
+     "e": 11.98
+    }
+   ]
+  }
+ ]
+}

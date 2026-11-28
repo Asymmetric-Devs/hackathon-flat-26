@@ -1,0 +1,25 @@
+{
+  "name": "muro-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render MuroES out/muro-es.mp4",
+    "storyboard": "node scripts/storyboard.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.539",
+    "@remotion/media": "4.0.539",
+    "@remotion/transitions": "4.0.539",
+    "@remotion/shapes": "4.0.539",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.539"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "playwright": "1.59.1",
+    "typescript": "5.9.3"
+  }
+}
