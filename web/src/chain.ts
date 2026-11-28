@@ -33,9 +33,11 @@ const ERRORS: { [k: string]: string } = {
   NotFound: "Esa obra no existe.", BadState: "La obra no está en un estado que permita esto.", BadAmount: "El monto no es válido.",
   Early: "Todavía es pronto: no pasó el plazo de gracia.", Unauthorized: "Esta cuenta no puede hacer eso en esta obra.", BadMeta: "Los datos de la obra son demasiado largos.",
 };
+/** Mismo orden que `enum Error` del contrato (el RPC devuelve solo el número: Error(Contract, #N)). */
+const CODES: { [n: string]: keyof typeof ERRORS } = { "1": "NotFound", "2": "BadState", "3": "BadAmount", "4": "Early", "5": "Unauthorized", "6": "BadMeta" };
 function explain(raw: string): string {
   const hit = /Error\(Contract, #(\d+)\)/.exec(raw);
-  if (hit) return `El contrato rechazó la operación (código ${hit[1]}).`;
+  if (hit) return ERRORS[CODES[hit[1]]] ?? `El contrato rechazó la operación (código ${hit[1]}).`;
   for (const k of Object.keys(ERRORS)) if (raw.includes(k)) return ERRORS[k];
   if (/insufficient|underfunded|balance/i.test(raw)) return "No alcanza el saldo de esta cuenta. En Testnet podés fondearla con Friendbot.";
   return raw.length > 220 ? raw.slice(0, 220) + "…" : raw;
@@ -48,6 +50,7 @@ export async function submit(who: Signer, method: string, ...args: xdr.ScVal[]):
     const prepared = await server.prepareTransaction(built);
     const signed = await who.sign(prepared.toXDR());
     const sent = await server.sendTransaction(TransactionBuilder.fromXDR(signed, PASSPHRASE));
+    if (sent.status === "TRY_AGAIN_LATER") throw new Error("La red está ocupada en este momento. Probá de nuevo en unos segundos.");
     if (sent.status === "ERROR") throw new Error("La red rechazó la transacción.");
     for (let i = 0; i < 40; i++) {
       const r = await server.getTransaction(sent.hash);

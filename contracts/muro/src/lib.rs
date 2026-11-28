@@ -157,6 +157,14 @@ pub struct Stopped {
 }
 
 #[contractevent]
+pub struct ToppedUp {
+    #[topic]
+    pub work_id: u32,
+    pub amount: i128,
+    pub prepaid: i128,
+}
+
+#[contractevent]
 pub struct Returned {
     #[topic]
     pub work_id: u32,
@@ -446,6 +454,7 @@ impl Muro {
         let add = w.rate.checked_mul(days as i128).ok_or(Error::BadAmount)?;
         l.prepaid = l.prepaid.checked_add(add).ok_or(Error::BadAmount)?;
         put_lease(&e, work_id, &l);
+        ToppedUp { work_id, amount: add, prepaid: l.prepaid }.publish(&e);
         token_client(&e).transfer(&venue, &e.current_contract_address(), &add);
         Ok(())
     }
@@ -516,6 +525,8 @@ impl Muro {
         }
         let mut l = get_lease(&e, work_id)?;
         require_venue(&l, &venue)?;
+        // Vencimiento del prepago, calculado antes de liquidar (igual que en `seize`).
+        let runout = (l.from as i128).saturating_add(l.prepaid.saturating_mul(day_secs(&e)) / w.rate);
         let due = settle(&e, &w, &mut l);
         if due > 0 {
             Claimed { work_id, amount: due, paid: l.paid }.publish(&e);
@@ -529,7 +540,9 @@ impl Muro {
         }
         let refund = l.prepaid;
         l.prepaid = 0;
-        l.ended_at = e.ledger().timestamp();
+        // Si el prepago ya venció, el plazo de gracia corre desde el vencimiento: frenar tarde no regala más gracia.
+        let now = e.ledger().timestamp();
+        l.ended_at = if (now as i128) > runout { runout as u64 } else { now };
         w.status = Status::Returning;
         put_lease(&e, work_id, &l);
         put_work(&e, &w);
@@ -597,6 +610,9 @@ impl Muro {
                 payout = l.prepaid;
                 l.paid += payout;
                 l.prepaid = 0;
+                if payout > 0 {
+                    Claimed { work_id, amount: payout, paid: l.paid }.publish(&e);
+                }
             }
             Status::Returning => {
                 if now < l.ended_at.saturating_add(grace) {

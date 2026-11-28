@@ -58,6 +58,10 @@ function Explorer({ r, onClose }: { r: Resolved; onClose: () => void }) {
   const [pct, setPct] = useState(100);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const pinch = useRef(0);
+  // onClose llega como función nueva en cada render del padre (que se redibuja cada segundo por el reloj):
+  // se guarda en una ref para que el efecto del visor no se reinicie ni le robe el foco al usuario.
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
 
   const apply = useCallback((anim = false) => {
     const { s, x, y } = st.current;
@@ -84,21 +88,21 @@ function Explorer({ r, onClose }: { r: Resolved; onClose: () => void }) {
   }, [apply, clamp]);
   const center = () => { const b = box.current!.getBoundingClientRect(); return [b.left + b.width / 2, b.top + b.height / 2]; };
 
+  useEffect(() => { (box.current?.parentElement?.querySelector(".ex-close") as HTMLElement | null)?.focus(); }, []);
   useEffect(() => {
     lockScroll(true);
     const el = box.current!;
     const onWheel = (e: WheelEvent) => { e.preventDefault(); zoomAt(st.current.s * Math.exp(-e.deltaY * 0.0018), e.clientX, e.clientY); };
     el.addEventListener("wheel", onWheel, { passive: false });
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") closeRef.current();
       else if (e.key === "+" || e.key === "=") { const [cx, cy] = center(); zoomAt(st.current.s * 1.4, cx, cy, true); }
       else if (e.key === "-") { const [cx, cy] = center(); zoomAt(st.current.s / 1.4, cx, cy, true); }
       else if (e.key === "0") { st.current = { s: 1, x: 0, y: 0 }; apply(true); }
     };
     addEventListener("keydown", onKey);
-    (el.querySelector(".ex-close") as HTMLElement | null)?.focus();
     return () => { el.removeEventListener("wheel", onWheel); removeEventListener("keydown", onKey); lockScroll(false); };
-  }, [apply, onClose, zoomAt]);
+  }, [apply, zoomAt]);
 
   const down = (e: React.PointerEvent) => {
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);

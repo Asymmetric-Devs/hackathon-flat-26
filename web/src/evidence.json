@@ -2,51 +2,51 @@
  "rows": [
   {
    "label": "Se publica. Un bar aux Folies-Bergère → obra #0 (precio 300 XLM, 3 XLM/día, depósito 40 XLM)",
-   "hash": "85b7fdd1ef4ff5fcc2f1be0396ea5a14388f1e2ecd8cc8249dd41ce8e496b5ee"
+   "hash": "5ceaac971e65d3c951b8fd75bd7ca0956646fec00d2120cbf8717fe5e110a15f"
   },
   {
    "label": "Se publica. Después de la batalla de Curupaytí → obra #1 (precio 150 XLM, 2 XLM/día, depósito 20 XLM)",
-   "hash": "5fb18e811f9cdc0b6f39509b9a38bf197baff7250d0c889f83535db0098d923c"
+   "hash": "36c88f2647d9dce594cc8ded38528fc6181ba9e43265c8a67d1c5afb925dd70f"
   },
   {
    "label": "Se publica. Los mantones de Manila → obra #2 (precio 200 XLM, 2 XLM/día, depósito 30 XLM)",
-   "hash": "568daf69e3730d7c20f06e9fe8b4fd5dd9af8b39de910330b0cdd4ee12ab33dc"
+   "hash": "7f3c8f5b2540fe467c00b7036aaae876b518e7884e878bc7ba30a8b772dd62aa"
   },
   {
    "label": "Se publica. Un alto en el campo → obra #3 (precio 400 XLM, 4 XLM/día, depósito 60 XLM)",
-   "hash": "c7d47c32a5c539c1440875431f1f229ef373407bffec34bca51b7e29da1a6101"
+   "hash": "40723c7b4b2b04e2afbba7bca84f37618b757606be1380fc8187d597e9dccaec"
   },
   {
    "label": "Se publica. Retablo n.º 1 → obra #4 (precio 250 XLM, 3 XLM/día, depósito 40 XLM)",
-   "hash": "a6742b100ff1f9b8a9ff15990ded6ddc32795c3c9ddfc57b7a0426bfd8b921eb"
+   "hash": "0db8864277b2ac43b3462238e4d8ff329440593ccfd9832ca6ef8e70c8309f1d"
   },
   {
    "label": "Se publica. Terraza de café por la noche → obra #5 (precio 100 XLM, 1 XLM/día, depósito 25 XLM)",
-   "hash": "76ee5dbdee7da06422d3712333a31bcce8f4f2dee3ae825cd60129b41a2bf56b"
+   "hash": "b7b42e7c474e9b23404ce0f4b975a0e7ef45baa4e8b462cd6b9ad86aed8c7a53"
   },
   {
-   "label": "Se cuelga. El espacio cuelga Un bar aux Folies-Bergère por 30 días (depósito 40 XLM + 90 XLM prepago)",
-   "hash": "710f9225520e9b850cb2a06fffa3d295f7bb77f78110a991327cc73c8608f5bc"
+   "label": "Se cuelga. El espacio cuelga Un bar aux Folies-Bergère por 120 días (depósito 40 XLM + 360 XLM prepago)",
+   "hash": "040333bd25a6ceb081c5fa258e3ded5b108c975c3fc0db4588d92a370ec52457"
   },
   {
    "label": "Se cuelga. El espacio cuelga Después de la batalla de Curupaytí por 3 días (depósito 20 XLM + 6 XLM)",
-   "hash": "3b10d1a319c0ed9fb341f97472e4b64dbd293bd93a690f43f3eab0ab66f3e529"
+   "hash": "a5cc1811abe8ccbf72951ac9ee40ace322c0ee8c07e18c87484595e503b8225a"
   },
   {
    "label": "Se frena y se devuelve. El espacio devuelve Después de la batalla de Curupaytí (liquida lo devengado, reembolsa prepago, retiene depósito)",
-   "hash": "f5b6619a07c63e6bd51e48b2dc3e5dc0cfdb0ecafeea96a78b884be3c0bcd28e"
+   "hash": "eae4e15c1b1698e2993c1309d1c795d1f4827f1e705ca7e7b6a0755bb1a68709"
   },
   {
    "label": "El artista confirma la devolución. El artista confirma la devolución (depósito 20 XLM vuelve al venue; queda en el historial)",
-   "hash": "b235312a9ed72350cbbcaae77eed22ab44223394e8bba4099552060672038bdb"
+   "hash": "3f95bf73604c145bcf466efa54ec8cccbad66402c195baa6a42e11c54f4449a3"
   },
   {
-   "label": "Cobro de lo devengado. Un visitante ejecuta claim sobre Un bar aux Folies-Bergère: devengado previo 65000000 stroops, pagado al artista 70000000 stroops",
-   "hash": "7711e6b7d2ba23792099637a44b11d8b5f452c15b6b2d368b2ca7d0d6c0f044b"
+   "label": "Cobro de lo devengado. Un visitante ejecuta claim sobre Un bar aux Folies-Bergère: devengado previo 65000000 stroops, pagado al artista 67500000 stroops",
+   "hash": "43b4375a0983bc13c493e04b61a4c6031be0e8017a0c6355de6b6da241b9329f"
   },
   {
    "label": "Propina al artista. Un visitante da propina de 5 XLM al artista por Un bar aux Folies-Bergère",
-   "hash": "efa2c8edf3f33bf239dbc8247ab57bc64593a158b476258c5fdcabc83504217b"
+   "hash": "67e12f32a96d7458f1d1c9ae45507639f8bfc528c7e3cf8f984556d7c4e67232"
   }
  ]
 }

@@ -1,6 +1,6 @@
 import { getNetworkDetails, isConnected, requestAccess, signTransaction as freighterSign } from "@stellar/freighter-api";
-import { Keypair, Networks, TransactionBuilder } from "@stellar/stellar-sdk";
-import { FRIENDBOT, PASSPHRASE } from "./config";
+import { Keypair, Networks, rpc, TransactionBuilder } from "@stellar/stellar-sdk";
+import { FRIENDBOT, PASSPHRASE, RPC_URL } from "./config";
 
 export type Signer = { address: string; kind: "freighter" | "guest"; sign: (xdr: string) => Promise<string> };
 export type WalletIssue = "missing" | "denied" | "network" | "other";
@@ -42,27 +42,53 @@ export async function connectFreighter(): Promise<Signer> {
 }
 
 const GUEST_KEY = "muro.guest";
-/**
- * Modo invitado (solo Testnet): se crea una cuenta en el navegador y se fondea con Friendbot.
- * Existe para que cualquier persona pueda probar Muro en un minuto, sin instalar una billetera.
- */
-export async function guestSigner(): Promise<Signer> {
-  // La clave vive en el navegador y firma sola: solo es aceptable en la red de pruebas.
-  if (PASSPHRASE !== Networks.TESTNET) throw new WalletError("network", "El modo invitado solo existe en Testnet.");
-  let secret: string | null = null;
-  try { secret = localStorage.getItem(GUEST_KEY); } catch { /* sin storage */ }
-  const fresh = !secret;
-  const kp = secret ? Keypair.fromSecret(secret) : Keypair.random();
+const chain = new rpc.Server(RPC_URL);
+
+/** Fondea la cuenta con Friendbot solo si todavía no existe en la red (evita pegarle a Friendbot en cada recarga). */
+async function fundIfNeeded(address: string) {
+  try { await chain.getAccount(address); return; } catch { /* todavía no existe: se fondea */ }
+  let last = "";
+  for (let i = 0; i < 2; i++) {
+    try {
+      const res = await fetch(`${FRIENDBOT}?addr=${address}`);
+      if (res.ok) return;
+      last = await res.text().catch(() => "");
+      if (/already|exist/i.test(last)) return; // otra llamada la fondeó un instante antes
+    } catch { /* red caída: se reintenta una vez */ }
+    await sleep(800);
+  }
+  throw new WalletError("other", "Friendbot no pudo fondear la cuenta de invitado. Probá de nuevo en un momento.");
+}
+
+async function makeGuest(): Promise<Signer> {
+  let kp: Keypair | null = null;
+  try { const s = localStorage.getItem(GUEST_KEY); if (s) kp = Keypair.fromSecret(s); } catch { /* sin storage o clave dañada: se crea otra */ }
+  const fresh = !kp;
+  if (!kp) kp = Keypair.random();
+  await fundIfNeeded(kp.publicKey());
+  // la clave se guarda recién cuando la cuenta existe de verdad: así no queda una cuenta sin fondos en el navegador
   if (fresh) try { localStorage.setItem(GUEST_KEY, kp.secret()); } catch { /* sin storage */ }
-  const res = await fetch(`${FRIENDBOT}?addr=${kp.publicKey()}`);
-  if (!res.ok && fresh) throw new WalletError("other", "Friendbot no pudo fondear la cuenta de invitado.");
+  const key = kp;
   return {
-    address: kp.publicKey(), kind: "guest",
+    address: key.publicKey(), kind: "guest",
     sign: async (xdr) => {
       const tx = TransactionBuilder.fromXDR(xdr, PASSPHRASE);
-      tx.sign(kp);
+      tx.sign(key);
       return tx.toXDR();
     },
   };
 }
-export const forgetGuest = () => { try { localStorage.removeItem(GUEST_KEY); } catch { /* */ } };
+
+let guest: Promise<Signer> | null = null;
+/**
+ * Modo invitado (solo Testnet): se crea una cuenta en el navegador y se fondea con Friendbot.
+ * Existe para que cualquier persona pueda probar Muro en un minuto, sin instalar una billetera.
+ * Las llamadas simultáneas comparten la misma cuenta (una sola ida a Friendbot).
+ */
+export function guestSigner(): Promise<Signer> {
+  // La clave vive en el navegador y firma sola: solo es aceptable en la red de pruebas.
+  if (PASSPHRASE !== Networks.TESTNET) return Promise.reject(new WalletError("network", "El modo invitado solo existe en Testnet."));
+  if (!guest) guest = makeGuest().catch((e) => { guest = null; throw e; });
+  return guest;
+}
+export const forgetGuest = () => { guest = null; try { localStorage.removeItem(GUEST_KEY); } catch { /* */ } };

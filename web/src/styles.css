@@ -363,6 +363,7 @@ footer.foot .cite { margin-top: 18px; font: 450 .8rem var(--mono); color: var(--
 .panel.strong .btn.line { background: rgba(251, 250, 245, .12); color: var(--papel); }
 .panel.strong .btn.line:hover:not(:disabled) { background: rgba(251, 250, 245, .22); }
 .panel.strong .field { color: rgba(251, 250, 245, .85); }
+.panel.strong .field input { color: var(--tinta); }
 .panel.strong :focus-visible { outline-color: var(--papel); }
 .confirm { background: rgba(251, 250, 245, .08); border-radius: 14px; padding: 16px; display: grid; gap: 14px; font-size: .95rem; }
 .sub-actions { border-top: 1px solid rgba(251, 250, 245, .16); padding-top: 16px; align-items: flex-end; }
@@ -426,6 +427,7 @@ small.bad { color: #c24a22; font-weight: 500; }
 
 /* barra: logo a la izquierda, navegación al centro, acciones a la derecha */
 .top { position: fixed; z-index: 60; inset: 0 0 auto 0; height: 78px; padding: 0 var(--gutter); display: flex; align-items: center; color: var(--tinta); transition: transform .55s var(--ease), background .35s, color .3s; view-transition-name: topbar; }
+.top.menu-open { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 .top.solid { background: color-mix(in srgb, var(--crema) 84%, transparent); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4); }
 .top.dark { color: var(--papel); }
 .top.dark.solid { background: color-mix(in srgb, var(--asfalto) 82%, transparent); }
@@ -624,7 +626,8 @@ html { scrollbar-gutter: stable; overflow-x: clip; }
   @page { size: A5 landscape; margin: 0; }
   html, body { height: auto !important; overflow: visible !important; background: #fff !important; }
   body::before { display: none !important; }
-  body > *:not(.print-root) { display: none !important; }
+  /* solo se oculta el resto de la página cuando hay una cartela para imprimir (si no, saldría una hoja en blanco) */
+  body:has(.print-root) > *:not(.print-root) { display: none !important; }
   .print-root { display: block; padding: 12mm; }
   .print-root .label-print { box-shadow: none; border: 2px solid #09090d; border-radius: 0; padding: 10mm; gap: 10mm; grid-template-columns: minmax(0, 1fr) auto !important; break-inside: avoid; page-break-inside: avoid; }
   .label-print h3 { font-size: 40pt; }

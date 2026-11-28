@@ -3,7 +3,7 @@ import { count, publish } from "../chain";
 import { Cartela, Painting } from "../components/Art";
 import { CATALOG, resolve } from "../catalog";
 import { ASSET } from "../config";
-import { toStroops } from "../format";
+import { MAX_XLM, toStroops } from "../format";
 import { live } from "../live";
 import { navigate, href } from "../router";
 import { useStore } from "../store";
@@ -21,13 +21,14 @@ export default function Publicar() {
     setF((x) => (p ? { ...x, cat: slug, title: p.title, artist: p.artist, year: p.year, medium: p.medium, img: "" } : { ...x, cat: "", title: "", artist: "", year: "", medium: "" }));
   };
   const imgOk = !f.img || /^https:\/\/[^\s"'<>]+$/i.test(f.img);
-  const valid = !!f.title.trim() && !!f.artist.trim() && f.price > 0 && f.rate > 0 && f.deposit > 0 && imgOk;
+  const inRange = (n: number) => n > 0 && n <= MAX_XLM;
+  const valid = !!f.title.trim() && !!f.artist.trim() && inRange(f.price) && inRange(f.rate) && inRange(f.deposit) && imgOk;
   const days = f.rate > 0 ? Math.ceil(f.price / f.rate) : 0;
 
   const meta = useMemo(() => f.cat || JSON.stringify({ title: f.title.trim(), artist: f.artist.trim(), year: f.year.trim(), medium: f.medium.trim(), img: f.img.trim() }), [f]);
   const preview = useMemo(() => {
     const r = resolve(meta);
-    const safe = (n: number) => BigInt(Math.max(0, Math.round((Number.isFinite(n) ? n : 0) * 1e7)));
+    const safe = (n: number) => BigInt(Math.round(Math.min(MAX_XLM, Math.max(0, Number.isFinite(n) ? n : 0)) * 1e7));
     const e: Entry = { work: { id: -1, artist: "", owner: "", price: safe(f.price), rate: safe(f.rate), deposit: safe(f.deposit), meta, status: "Available" }, lease: null, history: [], tips: 0n };
     const rr = f.cat ? r : { ...r, title: f.title.trim() || "Título de tu obra", artist: f.artist.trim() || "Tu nombre" };
     return { r: rr, e };

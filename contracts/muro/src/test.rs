@@ -693,3 +693,43 @@ fn constructor_rejects_zero_grace() {
     let t = Address::generate(&e);
     e.register(Muro, (t, 60u64, 0u32));
 }
+
+// --- auditoría: gracia desde el vencimiento y eventos -------------------------------------------
+
+#[test]
+fn late_stop_does_not_extend_grace() {
+    let s = setup();
+    let id = s.publish();
+    s.muro.hang(&s.venue, &id, &3); // prepaid 30, runout = T0+300
+    s.at(T0 + 300 + GRACE / 2); // vencido hace media gracia
+    s.muro.stop(&s.venue, &id); // antes: ended_at = ahora (gracia completa de nuevo)
+    s.at(T0 + 300 + GRACE - 1);
+    assert_eq!(s.muro.try_seize(&s.artist, &id), Err(Ok(Error::Early)));
+    s.at(T0 + 300 + GRACE); // la gracia corre desde el vencimiento
+    s.muro.seize(&s.artist, &id);
+    assert_eq!(s.muro.work(&id).status, Status::Lost);
+}
+
+#[test]
+fn timely_stop_still_uses_stop_time() {
+    let s = setup();
+    let id = s.publish();
+    s.muro.hang(&s.venue, &id, &10);
+    s.at(T0 + 100);
+    s.muro.stop(&s.venue, &id);
+    assert_eq!(s.muro.lease(&id).unwrap().ended_at, T0 + 100);
+}
+
+#[test]
+fn top_up_and_seize_emit_events() {
+    use soroban_sdk::testutils::Events;
+    let s = setup();
+    let id = s.publish();
+    s.muro.hang(&s.venue, &id, &3);
+    s.muro.top_up(&s.venue, &id, &2);
+    // solo los eventos del contrato Muro (los de transferencia del token vienen de otra dirección)
+    assert_eq!(s.e.events().all().filter_by_contract(&s.contract).events().len(), 1);
+    s.at(T0 + 500 + GRACE);
+    s.muro.seize(&s.artist, &id);
+    assert_eq!(s.e.events().all().filter_by_contract(&s.contract).events().len(), 2); // Claimed + Seized
+}

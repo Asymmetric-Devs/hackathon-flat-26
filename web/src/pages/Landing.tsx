@@ -8,7 +8,7 @@ import { Chars } from "../components/Split";
 import { Wall } from "../components/Wall";
 import { gsap, reduced, ScrollTrigger, scrollToId } from "../fx";
 import { demoEntries } from "../live";
-import { href } from "../router";
+import { anchorNavigating, href } from "../router";
 import { useStore } from "../store";
 import { ASSET } from "../config";
 
@@ -336,7 +336,7 @@ function useScrollFx(root: React.RefObject<HTMLElement | null>) {
 
 /** La intro corre en cada carga de la página (no al volver al inicio dentro de la misma sesión de navegación). */
 let introPlayed = false;
-const shouldIntro = () => !introPlayed && !reduced();
+const shouldIntro = () => !introPlayed && !reduced() && !anchorNavigating();
 
 export default function Landing() {
   const { entries, source } = useStore();

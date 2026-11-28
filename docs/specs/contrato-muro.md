@@ -20,13 +20,13 @@ Un contrato por despliegue. Alquiler diario de obras con depósito en garantía,
 |---|---|---|
 | `publish(artist, price, rate, deposit, meta) -> u32` | artist | Crea la obra (`Available`). Valida `price>0`, `rate>0`, `deposit>0` (obligatorio), cada monto <= 1e18 stroops y `meta` de 1 a 512 bytes. |
 | `hang(venue, work_id, days: u32)` | venue | Solo `Available`. Transfiere `deposit + rate*days` del venue al contrato. Crea el lease, `Hung`. `days>=1`. |
-| `top_up(venue, work_id, days: u32)` | venue del lease | Suma `rate*days` a `prepaid`. Solo `Hung`. |
+| `top_up(venue, work_id, days: u32)` | venue del lease | Suma `rate*days` a `prepaid` y emite `topped_up`. Solo `Hung`. |
 | `accrued(work_id) -> i128` | vista | `min(floor((now-from)*rate/day_secs), prepaid, price-paid)`; 0 si no está `Hung`. |
 | `claim(work_id) -> i128` | nadie (cualquiera puede llamarla) | Paga `accrued` al artista, baja `prepaid`, sube `paid`, avanza `from`. Si `paid == price` completa la venta (ver `sold`). |
 | `buy_now(venue, work_id)` | venue del lease | Liquida lo devengado, cobra `price - paid` al venue, completa la venta. |
-| `stop(venue, work_id)` | venue del lease | Liquida lo devengado al artista, devuelve el `prepaid` sobrante al venue, estado `Returning`, `ended_at = now`. El depósito queda retenido. |
+| `stop(venue, work_id)` | venue del lease | Liquida lo devengado al artista, devuelve el `prepaid` sobrante al venue, estado `Returning`. `ended_at = now`, salvo que el prepago ya hubiera vencido: entonces `ended_at = runout`, para que frenar tarde no regale más plazo de gracia. El depósito queda retenido. |
 | `confirm_return(artist, work_id)` | artist | Solo `Returning`. Devuelve el depósito al venue, agrega `Record(Returned)`, vuelve a `Available`. |
-| `seize(artist, work_id)` | artist | Permitido si (`Hung` y `prepaid` agotado y `now >= runout + grace`) o (`Returning` y `now >= ended_at + grace`). El depósito pasa al artista, `Record(Seized)`, estado `Lost`. `runout = from + prepaid*day_secs/rate`. |
+| `seize(artist, work_id)` | artist | Permitido si (`Hung` y `prepaid` agotado y `now >= runout + grace`) o (`Returning` y `now >= ended_at + grace`). El depósito pasa al artista, `Record(Seized)`, estado `Lost`. `runout = from + prepaid*day_secs/rate`. Si el prepago era lo único que quedaba, también se emite `Claimed` por ese saldo. |
 | `tip(from, work_id, amount)` | from | Transfiere `amount` de `from` al artista (cualquier estado menos inexistente). Suma a `tips(work_id)`. |
 | `work(id) -> Work`, `lease(id) -> Option<Lease>`, `history(id) -> Vec<Record>`, `count() -> u32`, `tips(id) -> i128`, `config() -> (Address, u64, u32)` | vistas | |
 
@@ -34,11 +34,11 @@ Un contrato por despliegue. Alquiler diario de obras con depósito en garantía,
 Se dispara desde `claim` o `buy_now`. `owner = venue`, estado `Sold`, devuelve al venue el depósito y el `prepaid` sobrante, `Record(Bought)` con `paid = price`, borra el lease.
 
 ## Eventos
-`published`, `hung`, `claimed`, `sold`, `stopped`, `returned`, `seized`, `tipped`. Cada uno con `work_id` como topic y los montos relevantes como data.
+`published`, `hung`, `claimed`, `sold`, `stopped`, `topped_up`, `returned`, `seized`, `tipped`. Cada uno con `work_id` como topic y los montos relevantes como data.
 
 ## Reglas
 - Una obra tiene como máximo un lease activo.
-- Redondeo: pagos hacia abajo; `from` avanza `paid_now * day_secs / rate` (nunca se cobra de más).
+- Redondeo: los pagos se redondean hacia abajo; `from` avanza con **techo** acotado por el tiempo transcurrido (ver más abajo), así un `claim` repetido nunca cobra de más.
 - Errores con `#[contracterror]` (`NotFound`, `BadState`, `BadAmount`, `Early`, `Unauthorized`, ...).
 - Storage persistente por obra (`Work`, `Lease`, `History`, `Tips`) con extensión de TTL en cada escritura; config en instance.
 - Toda transferencia usa el cliente `token::Client`. `require_auth()` en cada función con auth.

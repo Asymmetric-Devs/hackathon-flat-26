@@ -1,14 +1,15 @@
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
-import { reduced, scrollJump, toTop } from "./fx";
+import { reduced, scrollJump, scrollToId, toTop } from "./fx";
 
 export type Route =
   | { page: "inicio" } | { page: "galeria" } | { page: "obra"; id: number }
   | { page: "cartela"; id: number } | { page: "publicar" } | { page: "evidencia" } | { page: "cuenta" };
 
 export function parseHash(hash: string): Route {
-  const [seg, p] = hash.replace(/^#\/?/, "").split("/");
-  const id = Number(p);
+  // se ignora todo lo que va después de "?" (por ejemplo ?acento=… o ?utm=… al escanear un QR)
+  const [seg, p] = hash.replace(/^#\/?/, "").split("?")[0].split("/");
+  const id = /^\d+$/.test(p ?? "") ? Number(p) : NaN;
   switch (seg) {
     case "galeria": return { page: "galeria" };
     case "obra": return Number.isInteger(id) ? { page: "obra", id } : { page: "galeria" };
@@ -91,8 +92,24 @@ function go(next: Route, source?: Element | null) {
 /** Navega a un hash (por ejemplo `href.obra(3)`), con transición. */
 export function navigate(hash: string, source?: Element | null) {
   if (location.hash !== hash) history.pushState(null, "", hash);
+  // enlaces con ancla ("#/#como"): se marca antes de cambiar de página para que la portada no repita la intro
+  const anchor = /^#\/#([\w-]+)$/.exec(hash)?.[1];
+  if (anchor) anchorPending = true;
   go(parseHash(hash), source);
+  if (anchor) {
+    // una vez en la portada, se baja hasta la sección
+    let tries = 0;
+    const seek = () => {
+      if (document.getElementById(anchor) && !document.querySelector(".intro")) { scrollToId(anchor); anchorPending = false; }
+      else if (tries++ < 300) requestAnimationFrame(seek);
+      else anchorPending = false;
+    };
+    setTimeout(seek, 450);
+  }
 }
+/** Hay una navegación con ancla en curso (la portada se salta la intro para llegar directo a la sección). */
+let anchorPending = false;
+export const anchorNavigating = () => anchorPending;
 
 let started = false;
 export function initRouter() {

@@ -80,14 +80,14 @@ docs/                 especificación del contrato, evidencia en testnet, este d
 
 Dos instancias desplegadas en Testnet (ver `web/src/deployed.json` y la página *Evidencia* de la web):
 
-- **demo:** 1 "día" dura 60 segundos para que el contador se vea correr en vivo (la web lo avisa en la cabecera).
+- **demo:** 1 "día" dura 60 segundos para que el contador se vea correr en vivo (la web lo aclara en la ficha de cada obra colgada).
 - **real:** 1 día dura 24 horas.
 
 ## Cómo correrlo
 
 ```bash
 # contrato
-cargo test                      # 38 pruebas
+cargo test                      # 41 pruebas
 stellar contract build
 
 # web
@@ -97,13 +97,13 @@ npm run build                              # sitio estático en web/dist
 # testnet
 scripts/deploy-testnet.sh       # despliega las dos instancias y escribe web/src/deployed.json
 scripts/seed-testnet.sh         # publica obras de ejemplo y corre un flujo real
-scripts/refresh-demo.sh 0 600   # recarga el prepago de la obra #0
+scripts/refresh-demo.sh 0 100   # recarga el prepago de la obra #0 (100 días = ~100 min de demo)
 scripts/reset-demo.sh           # reinicia toda la demo (despliega, siembra y regenera la evidencia)
 ```
 
 **Antes de presentar:** con 1 día = 1 minuto, la obra colgada llega al 100 % del precio en ~100 minutos y se vende sola. Correr `scripts/reset-demo.sh` (~5 min) justo antes para tener la demo fresca. No conviene recargar con `top_up` una obra cuyo prepago ya venció: el contrato cobra de golpe todo el tiempo vencido y la obra se vende.
 
-La paleta base es un violeta suave sobre un lienzo cálido. Se puede probar otra con `?acento=ultramar|bermellon|tinta-roja|amarillo|viridian|naranja` en la URL; se recuerda en el navegador.
+La paleta base es un dorado suave (`#e8d282`) sobre un lienzo de papel claro, con el negro como tinta. Se puede probar otra con `?acento=acuarela|ultramar|bermellon|tinta-roja|amarillo|viridian|naranja` en la URL; se recuerda en el navegador.
 
 ## Validación con alguien de afuera
 

@@ -75,8 +75,9 @@ function Detail({ e }: { e: Entry }) {
 
   const total = w.deposit + w.rate * BigInt(days);
   const buyCost = w.price - l.credited;
-  const runout = e.lease && l.runsOutIn != null ? now + l.runsOutIn : null;
-  const canSeizeHung = !!e.lease && w.status === "Hung" && l.runsOutIn !== null && l.runsOutIn <= -graceSecs;
+  const runout = l.runoutAt;
+  // el contrato no deja embargar si cobrar todo el prepago completaría el precio (en ese caso corresponde la venta)
+  const canSeizeHung = !!e.lease && w.status === "Hung" && l.runsOutIn !== null && l.runsOutIn <= -graceSecs && e.lease.paid + e.lease.prepaid < w.price;
   const canSeizeRet = !!e.lease && w.status === "Returning" && now >= Number(e.lease.ended_at) + graceSecs;
 
   const label = (
@@ -103,7 +104,7 @@ function Detail({ e }: { e: Entry }) {
           {r.collection && <p style={{ fontSize: ".85rem", color: "var(--tinta-2)" }}>Original en {r.collection}. {r.demo ? "Obra de dominio público usada como ejemplo." : ""}</p>}
 
           {(l.hung || w.status === "Sold") && <Meter e={e} l={l} />}
-          {l.hung && e.lease && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Colgada hace {dur(l.secsHung, DAY_SECS)} en <a className="link mono" href={accountUrl(e.lease.venue)} target="_blank" rel="noreferrer">{short(e.lease.venue)}</a>.{runout ? ` El prepago alcanza hasta el ${when(runout, true).replace(/\.$/, "")}.` : ""}{IS_DEMO_CLOCK ? " (En esta demo 1 día dura 1 minuto.)" : ""}</p>}
+          {l.hung && e.lease && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Colgada hace {dur(l.secsHung, DAY_SECS)} en <a className="link mono" href={accountUrl(e.lease.venue)} target="_blank" rel="noreferrer">{short(e.lease.venue)}</a>.{runout ? (l.runsOutIn! > 0 ? ` El prepago alcanza hasta el ${when(runout, true).replace(/\.$/, "")}.` : ` El prepago se agotó el ${when(runout, true).replace(/\.$/, "")}.`) : ""}{IS_DEMO_CLOCK ? " (En esta demo 1 día dura 1 minuto.)" : ""}</p>}
           {w.status === "Sold" && <p style={{ fontSize: ".92rem", color: "var(--tinta-2)" }}>Hoy es de <a className="link mono" href={accountUrl(w.owner)} target="_blank" rel="noreferrer">{short(w.owner)}</a>. La compra quedó pagada en cuotas de alquiler.</p>}
 
           <div className="facts">

@@ -31,9 +31,15 @@ export function Wall({ entries }: { entries: Entry[] }) {
   const track = useRef<HTMLDivElement>(null);
   const list = useMemo(() => entries.slice(0, 6), [entries]);
 
+  // Total pagado a artistas, sin contar dos veces el mismo dinero:
+  // - Vendida: el precio completo (el registro "Bought" de la venta ya está dentro del precio) + exposiciones anteriores.
+  // - Perdida (embargada): todo está en el historial; el contrato conserva el lease con el mismo "paid".
+  // - El resto: lo acreditado hoy + lo cobrado en exposiciones anteriores.
   const total = useMemo(() => entries.reduce((sum, e) => {
-    if (e.work.status === "Sold") return sum + e.work.price;
-    return sum + live(e, now).credited + e.history.reduce((a, h) => a + h.paid, 0n);
+    const past = (skip?: string) => e.history.reduce((a, h) => (h.outcome === skip ? a : a + h.paid), 0n);
+    if (e.work.status === "Sold") return sum + e.work.price + past("Bought");
+    if (e.work.status === "Lost") return sum + past();
+    return sum + live(e, now).credited + past();
   }, 0n), [entries, now]);
 
   useLayoutEffect(() => {

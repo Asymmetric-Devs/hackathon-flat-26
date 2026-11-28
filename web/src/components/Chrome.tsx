@@ -102,7 +102,7 @@ export function Nav({ route }: { route: Route }) {
         </div>
       </div>
       {menu && (
-        <nav className="mmenu" aria-label="Principal">
+        <nav className="mmenu" aria-label="Principal" onClick={(ev) => { if ((ev.target as Element).closest("a")) setMenu(false); }}>
           <a href={href.galeria}>Galería</a>
           <a href={href.publicar}>Publicar una obra</a>
           <a href={href.cuenta}>Mis obras</a>

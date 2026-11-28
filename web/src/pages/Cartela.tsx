@@ -6,25 +6,23 @@ import { ASSET, DAY_SECS } from "../config";
 import { dur, short, toStroops } from "../format";
 import { href } from "../router";
 import { useStore } from "../store";
-import { guestSigner } from "../wallet";
 
 /** Lo que se ve al escanear el QR de la pared: la cartela viva de la obra y una propina en un toque. */
 export default function Cartela({ id }: { id: number }) {
-  const { entries, signer, connect, refresh, toast } = useStore();
+  const { entries, ensure, refresh, toast } = useStore();
   const e = entries.find((x) => x.work.id === id);
   const [busy, setBusy] = useState(false);
   const [amt, setAmt] = useState(2);
   if (!e) return <main className="plaque"><div className="plaque-card"><div className="skeleton" style={{ height: 200 }} /><p style={{ marginTop: 16 }}><a className="link" href={href.galeria}>Ir a la galería</a></p></div></main>;
-  return <Plaque e={e} id={id} busy={busy} setBusy={setBusy} amt={amt} setAmt={setAmt} signer={signer} connect={connect} refresh={refresh} toast={toast} />;
+  return <Plaque e={e} id={id} busy={busy} setBusy={setBusy} amt={amt} setAmt={setAmt} ensure={ensure} refresh={refresh} toast={toast} />;
 }
 
-function Plaque({ e, id, busy, setBusy, amt, setAmt, signer, connect, refresh, toast }: any) {
+function Plaque({ e, id, busy, setBusy, amt, setAmt, ensure, refresh, toast }: any) {
   const { r, l } = useView(e);
   const give = async () => {
     setBusy(true);
     try {
-      let s = signer;
-      if (!s) { s = await guestSigner(); await connect("guest"); }
+      const s = await ensure();
       const h = await tip(s, id, toStroops(amt));
       toast("ok", `Le dejaste ${amt} ${ASSET} a ${r.artist}. Llegó directo, sin intermediarios.`, h);
       await refresh();

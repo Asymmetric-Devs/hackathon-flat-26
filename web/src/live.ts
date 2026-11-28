@@ -4,17 +4,17 @@ import { pct } from "./format";
 
 export type Live = {
   paid: bigint; accruedNow: bigint; credited: bigint; pct: number; remaining: bigint;
-  secsHung: number; runsOutIn: number | null; hung: boolean;
+  secsHung: number; runsOutIn: number | null; runoutAt: number | null; hung: boolean;
 };
 
 /** Cuánto lleva cobrado una obra, incluyendo lo devengado y todavía no reclamado (se estima con el reloj local). */
 export function live(e: Entry, now: number): Live {
   const { work, lease } = e;
   const hung = work.status === "Hung" && !!lease;
-  if (work.status === "Sold") return { paid: work.price, accruedNow: 0n, credited: work.price, pct: 100, remaining: 0n, secsHung: 0, runsOutIn: null, hung: false };
+  if (work.status === "Sold") return { paid: work.price, accruedNow: 0n, credited: work.price, pct: 100, remaining: 0n, secsHung: 0, runsOutIn: null, runoutAt: null, hung: false };
   if (!hung || !lease) {
     const paid = lease?.paid ?? 0n;
-    return { paid, accruedNow: 0n, credited: paid, pct: pct(paid, work.price), remaining: work.price - paid, secsHung: 0, runsOutIn: null, hung: false };
+    return { paid, accruedNow: 0n, credited: paid, pct: pct(paid, work.price), remaining: work.price - paid, secsHung: 0, runsOutIn: null, runoutAt: null, hung: false };
   }
   const elapsed = Math.max(0, now - Number(lease.from));
   let accrued = (BigInt(elapsed) * work.rate) / BigInt(DAY_SECS);
@@ -22,10 +22,11 @@ export function live(e: Entry, now: number): Live {
   const room = work.price - lease.paid;
   if (accrued > room) accrued = room;
   const credited = lease.paid + accrued;
-  const left = lease.prepaid - accrued;
-  const runsOutIn = work.rate > 0n ? Number((left * BigInt(DAY_SECS)) / work.rate) : null;
+  // Igual que el contrato: runout = from + prepaid * día / tasa. Es un instante fijo; "runsOutIn" pasa a negativo cuando vence.
+  const runoutAt = work.rate > 0n ? Number(lease.from) + Number((lease.prepaid * BigInt(DAY_SECS)) / work.rate) : null;
+  const runsOutIn = runoutAt === null ? null : runoutAt - now;
   return { paid: lease.paid, accruedNow: accrued, credited, pct: pct(credited, work.price), remaining: work.price - credited,
-    secsHung: Math.max(0, now - Number(lease.start)), runsOutIn, hung: true };
+    secsHung: Math.max(0, now - Number(lease.start)), runsOutIn, runoutAt, hung: true };
 }
 
 /** Obras de ejemplo para cuando todavía no hay contrato desplegado o la red no responde. Se marcan como simulación. */
