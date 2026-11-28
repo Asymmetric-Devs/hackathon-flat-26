@@ -16,7 +16,7 @@ export type LineaPlan = Linea & { start: number } // segundos absolutos
 export type Escena = { id: string; bloque: string; from: number; dur: number } // frames
 export type Plan = { lines: LineaPlan[]; scenes: Escena[]; total: number }
 
-const LEAD = 0.6     // respiro inicial en el plano del bar
+const LEAD = 3.0     // apertura: el logo se pinta y chorrea antes de la primera palabra
 const DEFAULT_GAP = 0.45
 const TAIL = 3.2     // hold final sobre el wordmark MURO y la URL
 const PRE = 0.12     // la escena entra ligeramente antes de su primera palabra

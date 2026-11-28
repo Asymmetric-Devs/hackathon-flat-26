@@ -15,6 +15,8 @@ import {
   ramp,
   useScene,
 } from './components'
+import { HandLayer, HandPath, NumTag, Scrawl, wordFrame } from './hand'
+import { PaintedWordmark } from './wordmark'
 import { C, F, H, W } from './theme'
 import type { LineaPlan } from './timing'
 
@@ -100,10 +102,24 @@ const KineticBeat: React.FC<{
 
 // ================================================================== BLOQUE 01 · APERTURA
 /** 01a: 2 cortes en 6 s — Bar de noche (Manet) → golpe visual ¿Cuánto cobró? sobre Van Gogh. */
-const B01Gancho: React.FC<SceneProps> = ({ dur }) => {
+const B01Gancho: React.FC<SceneProps> = ({ dur, lead }) => {
   const { f } = useScene()
-  const cut = Math.round(dur * 0.56)
-  const sc1 = interpolate(f, [0, cut], [1.0, 1.12], clamp)
+  // Apertura: el logo de Muro se pinta y chorrea, igual que en la intro de la app.
+  const openEnd = Math.max(30, lead - 6)
+  if (f < openEnd) {
+    const out = ramp(f, openEnd - 8, openEnd)
+    return (
+      <AbsoluteFill style={{ background: C.crema }}>
+        <AbsoluteFill style={{ background: 'radial-gradient(60% 50% at 20% 18%, rgba(255,253,244,.9), transparent 70%), radial-gradient(50% 45% at 85% 85%, rgba(232,210,130,.28), transparent 70%)' }} />
+        <AbsoluteFill style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 90, opacity: 1 - out }}>
+          <PaintedWordmark at={3} width={1280} />
+        </AbsoluteFill>
+      </AbsoluteFill>
+    )
+  }
+  const f0 = f - openEnd
+  const cut = openEnd + Math.round((dur - openEnd) * 0.56)
+  const sc1 = interpolate(f, [openEnd, cut], [1.0, 1.12], clamp)
   const sc2 = interpolate(f, [cut, dur], [1.08, 1.0], clamp)
 
   if (f < cut) {
@@ -118,15 +134,12 @@ const B01Gancho: React.FC<SceneProps> = ({ dur }) => {
             style={{ background: 'linear-gradient(95deg, rgba(13,16,36,0.92) 0%, rgba(13,16,36,0.52) 100%)' }}
           />
         </AbsoluteFill>
-        <div style={{ position: 'absolute', left: 104, top: 210, width: 1240 }}>
-          <Kicker at={0} dark>
-            ARTE Y TERRITORIO · MENDOZA &amp; NEA
-          </Kicker>
+        <div style={{ position: 'absolute', left: 104, top: 260, width: 1240 }}>
           <Rise
             text="UNA OBRA COLGADA UN MES EN UN BAR."
-            at={3}
+            at={openEnd + 3}
             stagger={2}
-            style={{ marginTop: 24, font: `900 132px/0.89 ${F.display}`, color: C.papel }}
+            style={{ font: `900 132px/0.89 ${F.display}`, color: C.papel }}
           />
         </div>
       </AsphaltBg>
@@ -135,6 +148,7 @@ const B01Gancho: React.FC<SceneProps> = ({ dur }) => {
 
   const lf = f - cut
   const p = pop(lf, 0, 13, 0.55)
+  void f0
   return (
     <AsphaltBg>
       <AbsoluteFill style={{ overflow: 'hidden' }}>
@@ -154,44 +168,53 @@ const B01Gancho: React.FC<SceneProps> = ({ dur }) => {
         >
           <MarkText at={cut + 2}>¿CUÁNTO COBRÓ SU ARTISTA?</MarkText>
         </div>
-        <div
-          style={{
-            marginTop: 28,
-            font: `600 22px/1 ${F.mono}`,
-            letterSpacing: '0.16em',
-            color: C.ac,
-            opacity: ramp(lf, 8, 18),
-          }}
-        >
-          30 DÍAS EN LA PARED · SIN CONTRATO
-        </div>
       </AbsoluteFill>
     </AsphaltBg>
   )
 }
 
 /** 01b: Golpe "NADA." → 3 flashes rápidos ($0 / SIN CONTRATO / SIN HISTORIAL) → Intro real 30fps MURO. */
-const B01Nada: React.FC<SceneProps> = ({ line }) => {
+const B01Nada: React.FC<SceneProps> = ({ line, lead }) => {
   const { f } = useScene()
-  const introStart = Math.max(36, Math.round(line.duracion * 30) + 4)
-
-  if (f >= introStart) {
-    return (
-      <AbsoluteFill style={{ background: C.crema }}>
-        <OffthreadVideo src={staticFile('clips/intro.mp4')} muted startFrom={0} style={clipStyle} />
-      </AbsoluteFill>
-    )
-  }
-
-  // 4 golpes rápidos sincronizados con "Nada. Ni un peso, ni un contrato, ni un registro..."
-  const b1 = Math.round(introStart * 0.30)
-  const b2 = Math.round(introStart * 0.54)
-  const b3 = Math.round(introStart * 0.76)
-
-  if (f < b1) return <KineticBeat big="NADA." accentBig startFrame={0} />
-  if (f < b2) return <KineticBeat kicker="01" big="NI UN PESO." dark={false} startFrame={b1} />
-  if (f < b3) return <KineticBeat kicker="02" big="NI UN CONTRATO." dark startFrame={b2} />
-  return <KineticBeat kicker="03" big="NI UN REGISTRO." accentBig startFrame={b3} />
+  // Una sola vista: "NADA." y, debajo, lo que no hay, escrito a mano a medida que se nombra.
+  const tNada = wordFrame(line, lead, 'nada', 2)
+  const rows = [
+    { t: wordFrame(line, lead, 'peso', 14), text: 'ni un peso' },
+    { t: wordFrame(line, lead, 'contrato', 24), text: 'ni un contrato' },
+    { t: wordFrame(line, lead, 'registro', 34), text: 'ni un registro de dónde estuvo' },
+  ]
+  const p = pop(f, tNada, 12, 0.55)
+  return (
+    <AsphaltBg>
+      <div style={{ position: 'absolute', left: 150, top: 150 }}>
+        <div
+          style={{
+            font: `900 360px/0.8 ${F.display}`,
+            color: C.ac,
+            letterSpacing: '-0.01em',
+            transform: `scale(${0.9 + 0.1 * p}) rotate(${-1.2 * p}deg)`,
+            transformOrigin: 'left bottom',
+            opacity: interpolate(p, [0, 0.2], [0, 1], clamp),
+          }}
+        >
+          NADA.
+        </div>
+      </div>
+      <div style={{ position: 'absolute', left: 170, top: 540, display: 'grid', rowGap: 26 }}>
+        {rows.map((r, i) => {
+          const a = ramp(f, r.t, r.t + 10)
+          return (
+            <div key={i} style={{ position: 'relative', opacity: a, transform: `translateX(${(1 - a) * -26}px)`, font: `400 62px/1.05 ${F.marker}`, color: C.papel }}>
+              {r.text}
+              <svg width="100%" height="14" viewBox="0 0 600 14" preserveAspectRatio="none" style={{ position: 'absolute', left: -6, right: 0, bottom: -10, width: 'calc(100% + 12px)' }}>
+                <path d="M2 8 C 120 2, 260 12, 398 6 S 560 9, 598 5" fill="none" stroke={C.ac} strokeWidth="5" strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ramp(f, r.t + 6, r.t + 22)} />
+              </svg>
+            </div>
+          )
+        })}
+      </div>
+    </AsphaltBg>
+  )
 }
 
 /** 01c: Hero vivo a 30 fps (caída de obras + hover 3D real). */
@@ -209,22 +232,58 @@ const B01Muro: React.FC<SceneProps> = ({ dur }) => {
 
 // ================================================================== BLOQUE 02 · LA IDEA (DINÁMICO)
 /** 02a: Video real #pregunta (30fps) → 3 golpes rápidos de los 3 números. */
-const B02TresNumeros: React.FC<SceneProps> = ({ dur }) => {
+const B02TresNumeros: React.FC<SceneProps> = ({ line, lead }) => {
   const { f } = useScene()
-  const c1 = Math.round(dur * 0.44)
-  const c2 = Math.round(dur * 0.62)
-  const c3 = Math.round(dur * 0.80)
+  // Cada número aparece cuando la voz lo nombra; todo vive en una sola vista y se va uniendo.
+  const tObra = Math.max(0, lead - 6)
+  const tPrecio = wordFrame(line, lead, 'precio', 40)
+  const tAlq = wordFrame(line, lead, 'alquiler', 70)
+  const tDep = wordFrame(line, lead, 'deposito', 100)
+  const tJoin = tDep + 34
+  const po = pop(f, tObra, 14, 0.7)
+  const slide = ramp(f, tPrecio - 22, tPrecio + 4)
+  return (
+    <PaperBg tone="crema">
+      {/* la obra, pegada en la pared con cinta: arranca al centro y le hace lugar a los números */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 130 + (1 - slide) * 330,
+          top: 250 - (1 - slide) * 30,
+          width: 600 + (1 - slide) * 120,
+          padding: 16,
+          background: '#fff',
+          boxShadow: '0 30px 50px -26px rgba(13,16,36,.6)',
+          transform: `rotate(-2.4deg) scale(${0.9 + 0.1 * po})`,
+          opacity: interpolate(po, [0, 0.25], [0, 1], clamp),
+        }}
+      >
+        <Img src={staticFile('obras/manet-bar.jpg')} style={{ width: '100%', display: 'block' }} />
+        <div style={{ position: 'absolute', top: -14, left: 40, width: 96, height: 26, background: C.tape, transform: 'rotate(-6deg)' }} />
+        <div style={{ position: 'absolute', top: -14, right: 40, width: 96, height: 26, background: C.tape, transform: 'rotate(5deg)' }} />
+      </div>
 
-  if (f < c1) {
-    return (
-      <AbsoluteFill style={{ background: C.asfalto }}>
-        <OffthreadVideo src={staticFile('clips/pregunta.mp4')} muted style={clipStyle} />
-      </AbsoluteFill>
-    )
-  }
-  if (f < c2) return <KineticBeat kicker="NÚMERO 01" big="PRECIO DE VENTA" sub="Lo fija el artista al publicar su obra" dark={false} startFrame={c1} />
-  if (f < c3) return <KineticBeat kicker="NÚMERO 02" big="ALQUILER POR DÍA" sub="Se devenga cada día que cuelga en la pared" dark accentBig startFrame={c2} />
-  return <KineticBeat kicker="NÚMERO 03" big="DEPÓSITO EN GARANTÍA" sub="Custodiado en el contrato inteligente sobre Stellar" dark={false} startFrame={c3} />
+      {/* trazos a mano de la obra a cada número */}
+      <HandLayer>
+        <HandPath d="M742 380 C 860 330, 980 250, 1090 236" at={tPrecio - 4} len={20} />
+        <HandPath d="M744 500 C 880 520, 1020 520, 1140 524" at={tAlq - 4} len={20} />
+        <HandPath d="M738 620 C 860 700, 980 770, 1100 786" at={tDep - 4} len={20} />
+        {/* al final: precio y alquiler se unen en una llave que dice "esto es lo mismo" */}
+        <HandPath d="M1680 262 C 1790 300, 1800 440, 1690 520" at={tJoin} len={22} color={C.acInk} w={5.5} />
+      </HandLayer>
+
+      <NumTag label="Precio de venta" value="300" unit="XLM" note="Lo fija el artista" at={tPrecio} x={1100} y={150} rot={1.2} />
+      <NumTag label="Alquiler por día" value="3" unit="XLM / día" note="Corre mientras cuelga" at={tAlq} x={1150} y={430} rot={-1.4} />
+      <NumTag label="Depósito en garantía" value="40" unit="XLM" note="Vuelve si todo sale bien" at={tDep} x={1110} y={690} rot={0.9} />
+
+      <Scrawl at={tJoin + 8} x={1700} y={338} size={40} rot={-5}>
+        100 días
+      </Scrawl>
+      <Scrawl at={tJoin + 16} x={1700} y={392} size={40} rot={-3}>
+        y es suya
+      </Scrawl>
+    </PaperBg>
+  )
 }
 
 /** 02b: Video real #como a 30 fps con punch-in suave hacia la cartela en la segunda mitad. */
@@ -266,81 +325,62 @@ const B02Cuotas: React.FC<SceneProps> = ({ dur }) => {
 }
 
 // ================================================================== BLOQUE 03 · VALIDACIÓN LAURA ZAPATA (4 CORTES VIVOS)
-const B03Laura: React.FC<SceneProps> = ({ dur }) => {
+const B03Laura: React.FC<SceneProps> = ({ dur, line, lead }) => {
   const { f } = useScene()
-  const c1 = Math.round(dur * 0.24)
-  const c2 = Math.round(dur * 0.56)
-  const c3 = Math.round(dur * 0.76)
+  const c1 = Math.round(dur * 0.58)
+  const tName = wordFrame(line, lead, 'laura', 6)
+  const tTaller = wordFrame(line, lead, 'taller', 40)
 
-  // Beat 1: Quién es Laura Zapata + onda de audio
+  // Primera mitad: la voz de Laura, sobre papel, escrita como una cita de catálogo.
   if (f < c1) {
-    const p = pop(f, 0, 14, 0.6)
-    return (
-      <AsphaltBg>
-        <AbsoluteFill style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 26 }}>
-          <Kicker at={0} dark>
-            VALIDACIÓN EXTERNA · RESISTENCIA, CHACO
-          </Kicker>
-          <div style={{ font: `900 154px/0.88 ${F.display}`, color: C.papel, transform: `scale(${0.92 + 0.08 * p})` }}>
-            LAURA ZAPATA
-          </div>
-          <div style={{ font: `450 28px/1.2 ${F.sans}`, color: 'rgba(253,251,244,0.75)' }}>
-            Artista visual con taller propio · Entrevista documentada (2m 24s)
-          </div>
-          <div style={{ marginTop: 14 }}>
-            <AudioWave bars={36} color={C.ac} />
-          </div>
-        </AbsoluteFill>
-      </AsphaltBg>
-    )
-  }
-
-  // Beat 2: Cita real en grande
-  if (f < c2) {
-    const lf = f - c1
-    const p = ramp(lf, 0, 12)
+    const p = ramp(f, 0, 14)
+    const q = ramp(f, Math.max(8, tName + 6), tName + 28)
     return (
       <PaperBg tone="crema">
-        <AbsoluteFill style={{ padding: '120px 140px 160px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div style={{ font: `600 18px/1 ${F.mono}`, letterSpacing: '0.14em', color: C.acInk, marginBottom: 28 }}>
-            TESTIMONIO REAL · LAURA ZAPATA
+        <div style={{ position: 'absolute', left: 150, top: 150, opacity: p }}>
+          <div style={{ font: `600 19px/1 ${F.mono}`, letterSpacing: '.16em', color: C.acInk }}>RESISTENCIA · CHACO</div>
+          <div style={{ marginTop: 16, font: `900 150px/0.88 ${F.display}`, color: C.tinta }}>LAURA ZAPATA</div>
+          <div style={{ marginTop: 14, font: `450 28px/1.2 ${F.sans}`, color: C.tinta2, opacity: ramp(f, tTaller - 4, tTaller + 10) }}>
+            Artista visual, con su propio taller
           </div>
-          <div
-            style={{
-              font: `400 72px/1.14 ${F.serif}`,
-              fontStyle: 'italic',
-              color: C.tinta,
-              opacity: p,
-              transform: `translateY(${(1 - p) * 20}px)`,
-            }}
-          >
-            «La usaría así como está... Es una manera de ir pagándola cuando quizás no cuenta con todo el dinero junto y le gusta.»
+        </div>
+        <div style={{ position: 'absolute', left: 150, right: 260, top: 560, opacity: q, transform: `translateY(${(1 - q) * 18}px)` }}>
+          <div style={{ font: `400 64px/1.16 ${F.serif}`, fontStyle: 'italic', color: C.tinta }}>
+            «La usaría así como está… Es una manera de ir pagándola cuando quizás no cuenta con todo el dinero junto y le gusta.»
           </div>
-        </AbsoluteFill>
+        </div>
       </PaperBg>
     )
   }
 
-  // Beat 3: El ajuste concreto en display gigante
-  if (f < c3) {
-    return (
-      <KineticBeat
-        kicker="AJUSTE INCORPORADO AL PRODUCTO"
-        big="ELECCIÓN GENUINA. NUNCA UN FAVOR."
-        accentBig
-        dark
-        startFrame={c2}
-      />
-    )
-  }
-
-  // Beat 4: Zoom directo sobre el cambio en la UI real (/obra/2)
-  const reg = lerpRegion({ x: 180, y: 40, w: 1620 }, { x: 460, y: 130, w: 1280 }, ramp(f, c3, dur))
+  // Segunda mitad: lo que cambió en la app por su comentario, señalado a mano sobre la pantalla real.
+  const lf = f - c1
+  const reg = lerpRegion({ x: 180, y: 40, w: 1620 }, { x: 420, y: 120, w: 1300 }, ramp(f, c1, dur))
   return (
     <AbsoluteFill style={{ background: C.crema }}>
       <Cam region={reg} vw={W}>
         <Img src={staticFile('capturas/laura_ui.png')} style={{ width: W, height: H, objectFit: 'cover' }} />
       </Cam>
+      <div
+        style={{
+          position: 'absolute',
+          left: 120,
+          bottom: 150,
+          padding: '20px 34px 22px',
+          background: C.papel,
+          boxShadow: '0 22px 38px -20px rgba(13,16,36,.6)',
+          transform: `rotate(-2deg) translateY(${(1 - ramp(f, c1 + 10, c1 + 26)) * 30}px)`,
+          opacity: ramp(f, c1 + 10, c1 + 26),
+          zIndex: 12,
+        }}
+      >
+        <div style={{ position: 'absolute', top: -12, left: 28, width: 84, height: 24, background: C.tape, transform: 'rotate(-5deg)' }} />
+        <div style={{ font: `400 50px/1.05 ${F.marker}`, color: C.tinta }}>
+          Elegir la obra,
+          <br />
+          <span style={{ background: C.ac, padding: '0 10px' }}>nunca un favor.</span>
+        </div>
+      </div>
     </AbsoluteFill>
   )
 }
@@ -478,12 +518,13 @@ const B05Cartela: React.FC<SceneProps> = ({ dur }) => {
   )
 }
 
-const B05Curriculum: React.FC<SceneProps> = ({ dur }) => {
+const B05Curriculum: React.FC<SceneProps> = ({ dur, line, lead }) => {
   const { f } = useScene()
-  const c1 = Math.round(dur * 0.44)
-  const c2 = Math.round(dur * 0.68)
+  const c1 = Math.round(dur * 0.5)
+  const tDev = wordFrame(line, lead, 'devuelve', c1 + 8)
+  const tCv = wordFrame(line, lead, 'curriculum', c1 + 40)
+  const tFin = wordFrame(line, lead, 'editar', Math.round(dur * 0.85))
 
-  // Beat 1: Zoom dinámico al currículum en /obra/1
   if (f < c1) {
     const reg = lerpRegion({ x: 0, y: 120, w: 1800 }, { x: 40, y: 340, w: 1460 }, ramp(f, 0, c1))
     return (
@@ -494,29 +535,68 @@ const B05Curriculum: React.FC<SceneProps> = ({ dur }) => {
       </AbsoluteFill>
     )
   }
-
-  // Beat 2: Cierre del ciclo on-chain
-  if (f < c2) {
-    return (
-      <KineticBeat
-        kicker="DEVOLUCIÓN LIMPIA"
-        big="STOP → CONFIRM_RETURN"
-        sub="El depósito regresa al espacio y la exposición queda grabada para siempre"
-        dark
-        accentBig
-        startFrame={c1}
-      />
-    )
-  }
-
-  // Beat 3: Golpe final currículum inmutable
+  const lf = f - c1
+  const po = pop(lf, 0, 14, 0.7)
+  const card = pop(f, Math.max(c1 + 6, Math.min(tDev, c1 + 30)), 13, 0.6)
+  const head = ramp(f, Math.max(c1 + 12, tCv - 6), Math.max(c1 + 12, tCv - 6) + 16)
   return (
-    <KineticBeat
-      kicker="CURUPAYTÍ · EXPUESTA Y DEVUELTA"
-      big="UN CURRÍCULUM QUE NADIE PUEDE EDITAR."
-      dark={false}
-      startFrame={c2}
-    />
+    <PaperBg tone="crema">
+      <div
+        style={{
+          position: 'absolute',
+          left: 130,
+          top: 300,
+          width: 520,
+          padding: 15,
+          background: '#fff',
+          boxShadow: '0 30px 50px -26px rgba(13,16,36,.6)',
+          transform: `rotate(-2.2deg) scale(${0.9 + 0.1 * po})`,
+          opacity: interpolate(po, [0, 0.25], [0, 1], clamp),
+        }}
+      >
+        <Img src={staticFile('obras/candido-curupayti.jpg')} style={{ width: '100%', display: 'block' }} />
+        <div style={{ position: 'absolute', top: -13, left: 36, width: 90, height: 24, background: C.tape, transform: 'rotate(-6deg)' }} />
+        <div style={{ position: 'absolute', top: -13, right: 36, width: 90, height: 24, background: C.tape, transform: 'rotate(5deg)' }} />
+      </div>
+
+      {/* titular, con aire entre renglones para que el resaltado no pise nada */}
+      <div style={{ position: 'absolute', left: 760, top: 110, opacity: head, transform: `translateY(${(1 - head) * 22}px)` }}>
+        <div style={{ font: `900 116px/1 ${F.display}`, color: C.tinta }}>UN CURRÍCULUM</div>
+        <div style={{ marginTop: 14 }}>
+          <span style={{ display: 'inline-block', font: `900 116px/1.04 ${F.display}`, color: C.on, background: C.ac, padding: '4px 22px 0' }}>QUE NADIE PUEDE EDITAR.</span>
+        </div>
+      </div>
+
+      {/* la entrada del currículum, como en la ficha de la app */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 760,
+          top: 560,
+          width: 960,
+          padding: '28px 36px 30px',
+          background: C.papel,
+          borderRadius: 4,
+          boxShadow: '0 1px 0 rgba(13,16,36,.06), 0 24px 40px -22px rgba(13,16,36,.55)',
+          transform: `rotate(0.6deg) translateY(${(1 - card) * 34}px)`,
+          opacity: interpolate(card, [0, 0.3], [0, 1], clamp),
+        }}
+      >
+        <div style={{ position: 'absolute', top: -11, left: 30, width: 84, height: 22, background: C.tape, transform: 'rotate(-4deg)' }} />
+        <div style={{ font: `600 19px/1 ${F.mono}`, letterSpacing: '.14em', color: C.gris }}>CURRÍCULUM DE LA OBRA</div>
+        <div style={{ marginTop: 14, display: 'flex', alignItems: 'baseline', gap: 22 }}>
+          <span style={{ font: `900 70px/0.95 ${F.display}`, color: C.tinta }}>EXPUESTA Y DEVUELTA</span>
+          <span style={{ font: `600 22px/1 ${F.mono}`, background: C.ac, color: C.on, padding: '8px 14px', borderRadius: 999 }}>1,2 XLM</span>
+        </div>
+        <div style={{ marginTop: 10, font: `450 26px/1.3 ${F.sans}`, color: C.tinta2 }}>Con fecha, monto y espacio. No se puede editar ni borrar.</div>
+      </div>
+      <HandLayer>
+        <HandPath d="M690 700 C 720 690, 740 690, 756 694" at={tDev} len={10} color={C.acInk} w={5} />
+      </HandLayer>
+      <Scrawl at={Math.max(c1 + 20, tFin - 4)} x={1180} y={880} size={44} rot={-3}>
+        queda grabado para siempre
+      </Scrawl>
+    </PaperBg>
   )
 }
 
@@ -545,98 +625,86 @@ const B06Evidencia: React.FC<SceneProps> = ({ dur }) => {
 }
 
 /** 4 planos individuales de ~5 s cada uno (en vez de 22 s viendo la misma diapositiva!). */
-const B06Arquitectura: React.FC<SceneProps> = ({ dur }) => {
+const B06Arquitectura: React.FC<SceneProps> = ({ line, lead }) => {
   const { f } = useScene()
-  const c1 = Math.round(dur * 0.28)
-  const c2 = Math.round(dur * 0.52)
-  const c3 = Math.round(dur * 0.78)
-
-  if (f < c1) {
-    return (
-      <KineticBeat
-        kicker="01 · POR QUÉ STELLAR"
-        big="FRACCIÓN DE CENTAVO."
-        sub="Liquidaciones diarias viables · SAC / SEP-41 · Freighter · solo estados livianos on-chain"
-        dark
-        accentBig
-        startFrame={0}
-      />
-    )
-  }
-  if (f < c2) {
-    return (
-      <KineticBeat
-        kicker="02 · VALIDADO CON STELLAR RAVEN"
-        big="SIN PRECEDENTES EQUIVALENTES."
-        sub="Alquiler diario acreditable a compra + depósito en garantía + currículum físico inmutable"
-        dark={false}
-        startFrame={c1}
-      />
-    )
-  }
-  if (f < c3) {
-    return (
-      <KineticBeat
-        kicker="03 · CRITERIO TÉCNICO"
-        big="¿POR QUÉ NO TRUSTLESS WORK?"
-        sub="Su esquema por hitos y 0,3 % por transacción rompe el alquiler diario continuo · Sin NFTs innecesarios"
-        dark
-        startFrame={c2}
-      />
-    )
-  }
+  // Una sola vista: la obra al centro y, alrededor, lo que la sostiene. Cada tarjeta entra cuando la voz la nombra.
+  const tObra = Math.max(0, lead - 4)
+  const t1 = wordFrame(line, lead, 'stellar', 8)
+  const t2 = wordFrame(line, lead, 'raven', 150)
+  const t3 = wordFrame(line, lead, 'trustless', 200)
+  const t4 = wordFrame(line, lead, 'tests', 330)
+  const po = pop(f, tObra, 14, 0.7)
   return (
-    <KineticBeat
-      kicker="04 · SEGURIDAD EN SOROBAN SDK 29"
-      big="41 TESTS Y AUDITORÍA."
-      sub="Storage instance + persistent con TTL · require_auth por rol · 9 eventos auditables"
-      dark={false}
-      startFrame={c3}
-    />
+    <PaperBg tone="crema">
+      <div
+        style={{
+          position: 'absolute',
+          left: 770,
+          top: 250,
+          width: 380,
+          padding: 14,
+          background: '#fff',
+          boxShadow: '0 30px 50px -26px rgba(13,16,36,.6)',
+          transform: `rotate(2deg) scale(${0.9 + 0.1 * po})`,
+          opacity: interpolate(po, [0, 0.25], [0, 1], clamp),
+        }}
+      >
+        <Img src={staticFile('obras/afklint-retablo.jpg')} style={{ width: '100%', display: 'block' }} />
+        <div style={{ position: 'absolute', top: -13, left: 34, width: 84, height: 24, background: C.tape, transform: 'rotate(-6deg)' }} />
+        <div style={{ position: 'absolute', top: -13, right: 34, width: 84, height: 24, background: C.tape, transform: 'rotate(5deg)' }} />
+      </div>
+
+      <HandLayer>
+        <HandPath d="M770 360 C 700 300, 640 250, 600 238" at={t1 - 4} len={18} />
+        <HandPath d="M1160 350 C 1230 300, 1280 255, 1320 240" at={t2 - 4} len={18} />
+        <HandPath d="M780 700 C 710 760, 650 790, 610 800" at={t3 - 4} len={18} />
+        <HandPath d="M1150 700 C 1220 760, 1280 800, 1320 810" at={t4 - 4} len={18} />
+      </HandLayer>
+
+      <NumTag label="Por qué Stellar" value="Fracción de centavo" note="Cobrar por día es viable" at={t1} x={90} y={120} w={540} rot={-1.2} vs={58} />
+      <NumTag label="Revisado con Stellar Raven" value="Sin equivalente" note="Alquiler a cuotas, depósito y currículum" at={t2} x={1290} y={130} w={540} rot={1.1} vs={58} />
+      <NumTag label="Por qué no Trustless Work" value="Por hitos · 0,3 %" note="No encaja con un alquiler diario" at={t3} x={90} y={660} w={540} rot={1} vs={58} />
+      <NumTag label="Respaldo" value="41 tests" note="y una auditoría de seguridad" at={t4} x={1290} y={670} w={540} rot={-1.3} vs={64} />
+      <Scrawl at={t4 + 18} x={760} y={900} size={46} rot={-2}>
+        por eso se sostiene
+      </Scrawl>
+    </PaperBg>
   )
 }
 
 // ================================================================== BLOQUE 07 · MODELO DE NEGOCIO Y CIERRE (3 CORTES)
-const B07Cierre: React.FC<SceneProps> = ({ dur }) => {
+const B07Cierre: React.FC<SceneProps> = ({ line, lead, dur }) => {
   const { f } = useScene()
-  const c1 = Math.round(dur * 0.25)
-  const c2 = Math.round(dur * 0.52)
+  const c2 = Math.round(dur * 0.6)
+  const tHoy = wordFrame(line, lead, 'hoy', 4)
+  const tProd = wordFrame(line, lead, 'produccion', 60)
 
-  if (f < c1) {
-    return (
-      <KineticBeat
-        kicker="HOY · MVP EN TESTNET"
-        big="0 % DE COMISIÓN."
-        sub="El contrato inteligente no retiene porcentaje alguno"
-        dark={false}
-        startFrame={0}
-      />
-    )
-  }
   if (f < c2) {
     return (
-      <KineticBeat
-        kicker="MODELO DE NEGOCIO · PRODUCCIÓN"
-        big="1 – 2 % SOLO SI SE VENDE."
-        sub="Alineado al éxito del artista + servicios físicos para bares, bodegas y hoteles"
-        dark
-        accentBig
-        startFrame={c1}
-      />
+      <PaperBg tone="crema">
+        <NumTag label="Hoy · MVP en Testnet" value="0 %" note="de comisión" at={tHoy} x={170} y={290} w={620} rot={-1.4} vs={190} />
+        <NumTag label="En producción" value="1–2 %" note="solo cuando una obra se vende" at={tProd} x={1020} y={330} w={700} rot={1.2} vs={190} />
+        <HandLayer>
+          <HandPath d="M800 470 C 860 440, 930 440, 1010 470" at={tProd - 6} len={18} color={C.acInk} w={6} />
+          <HandPath d="M978 440 L1012 470 L972 490" at={tProd + 8} len={8} color={C.acInk} w={6} />
+        </HandLayer>
+      </PaperBg>
     )
   }
 
+  // Cierre: el logo se pinta y chorrea, como en la intro de la app, con la frase y la dirección.
+  const lf = f - c2
+  const tag = ramp(lf, 64, 80)
   return (
-    <AbsoluteFill style={{ background: C.asfalto }}>
-      <Img
-        src={staticFile('capturas/footer.png')}
-        style={{
-          width: W,
-          height: H,
-          objectFit: 'cover',
-          transform: `scale(${interpolate(f, [c2, dur], [1.05, 1.0], clamp)})`,
-        }}
-      />
+    <AbsoluteFill style={{ background: C.crema }}>
+      <AbsoluteFill style={{ background: 'radial-gradient(60% 50% at 20% 18%, rgba(255,253,244,.9), transparent 70%), radial-gradient(50% 45% at 85% 85%, rgba(232,210,130,.28), transparent 70%)' }} />
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 120, display: 'flex', justifyContent: 'center' }}>
+        <PaintedWordmark at={c2 + 4} width={1280} />
+      </div>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 170, textAlign: 'center', opacity: tag, transform: `translateY(${(1 - tag) * 14}px)` }}>
+        <div style={{ font: `500 40px/1.2 ${F.sans}`, letterSpacing: '-0.01em', color: C.tinta }}>La obra cobra por día. Si se enamoran, es suya.</div>
+        <div style={{ marginTop: 18, font: `600 24px/1 ${F.mono}`, letterSpacing: '.14em', color: C.acInk }}>MURO.ASYMMETRIC.COM.AR</div>
+      </div>
     </AbsoluteFill>
   )
 }

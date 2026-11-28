@@ -42,28 +42,62 @@ function Detail({ e }: { e: Entry }) {
     const x = c.getContext("2d")!; x.fillStyle = "#fff"; x.fillRect(0, 0, 1024, 1024); x.drawImage(q, 0, 0, 1024, 1024);
     download(c, `muro-qr-${w.id}.png`);
   };
-  /** La cartela entera como imagen (A5 apaisado a 150 ppp), lista para imprimir en cualquier lado sin encabezados del navegador. */
+  /**
+   * La cartela como PDF (A5 apaisado, listo para imprimir): la misma tarjeta que se ve en pantalla, centrada en la hoja
+   * y con un borde finito para recortarla. Se dibuja en un canvas y se guarda como JPEG dentro de un PDF de una página.
+   */
   const saveLabel = async () => {
     const q = await qrImage();
-    try { await document.fonts.load('900 100px "Big Shoulders Display Variable"'); } catch { /* usa la tipografía de reserva */ }
-    const W = 1748, H = 1240, P = 110;
-    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    try { await Promise.all(['900 100px "Big Shoulders Display Variable"', '400 30px "Geist Variable"', '600 24px "Geist Mono Variable"'].map((f) => document.fonts.load(f))); } catch { /* usa la tipografía de reserva */ }
+    const PW = 1748, PH = 1240;                     // A5 apaisado a 150 ppp
+    const CW = 1560, CH = 560, CX = (PW - CW) / 2, CY = (PH - CH) / 2, PAD = 64;
+    const c = document.createElement("canvas"); c.width = PW; c.height = PH;
     const x = c.getContext("2d")!;
-    x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
-    x.strokeStyle = "#09090d"; x.lineWidth = 8; x.strokeRect(40, 40, W - 80, H - 80);
-    const qs = 520, qx = W - P - qs, tw = qx - P - 60;
-    x.drawImage(q, qx, (H - qs) / 2, qs, qs);
+    x.fillStyle = "#fff"; x.fillRect(0, 0, PW, PH);
+    x.strokeStyle = "rgba(9,9,13,.55)"; x.lineWidth = 2; x.strokeRect(CX, CY, CW, CH);   // borde finito: guía de corte
+    const QS = 300, qx = CX + CW - PAD - QS, tw = qx - (CX + PAD) - 56, tx = CX + PAD;
+    x.drawImage(q, qx, CY + (CH - QS) / 2, QS, QS);
+    const DISPLAY = (s: number) => `900 ${s}px "Big Shoulders Display Variable", "Arial Narrow", sans-serif`;
+    const SANS = (s: number) => `400 ${s}px "Geist Variable", system-ui, sans-serif`;
     const wrap = (t: string, font: string, max: number) => { x.font = font; const out: string[] = []; let line = ""; for (const wd of t.split(" ")) { const tr = line ? `${line} ${wd}` : wd; if (x.measureText(tr).width > max && line) { out.push(line); line = wd; } else line = tr; } if (line) out.push(line); return out; };
-    let y = P + 40;
-    x.fillStyle = "#6b6a62"; x.font = '600 26px "Geist Mono Variable", monospace'; x.fillText("MURO · EN ESTA PARED", P, y); y += 40;
+    const title = r.title.toUpperCase();
+    // el título más grande que entre en una línea; si ni al mínimo entra, baja a dos líneas
+    let ts = 128; x.font = DISPLAY(ts);
+    while (ts > 72 && (x.font = DISPLAY(ts), x.measureText(title).width > tw)) ts -= 4;
+    const titleLines = wrap(title, DISPLAY(ts), tw);
+    const sub = wrap(`${r.artist}${r.year ? `, ${r.year}` : ""}${r.medium ? ` · ${r.medium}` : ""}`, SANS(36), tw);
+    const cta = wrap("Escaneá y dejale una propina al artista. Cada día colgada cuenta como cuota de su precio.", SANS(30), tw);
+    const tl = Math.round(ts * 0.98);
+    const total = 24 + 26 + titleLines.length * tl + 16 + sub.length * 46 + 26 + 2 + 34 + cta.length * 42;
+    let y = CY + (CH - total) / 2;
+    x.fillStyle = "#6b6a62"; x.font = '600 24px "Geist Mono Variable", ui-monospace, monospace';
+    (x as CanvasRenderingContext2D & { letterSpacing?: string }).letterSpacing = "3px";
+    x.fillText("MURO · EN ESTA PARED", tx, y + 20); y += 24 + 26;
+    (x as CanvasRenderingContext2D & { letterSpacing?: string }).letterSpacing = "0px";
     x.fillStyle = "#09090d";
-    const tf = '900 150px "Big Shoulders Display Variable", "Arial Narrow", sans-serif';
-    for (const ln of wrap(r.title.toUpperCase(), tf, tw)) { y += 138; x.font = tf; x.fillText(ln, P, y); }
-    y += 52; x.fillStyle = "#3d3c44";
-    for (const ln of wrap(`${r.artist}${r.year ? `, ${r.year}` : ""}${r.medium ? ` · ${r.medium}` : ""}`, '400 38px "Geist Variable", sans-serif', tw)) { x.font = '400 38px "Geist Variable", sans-serif'; x.fillText(ln, P, y); y += 50; }
-    y += 20; x.fillStyle = "rgba(18,18,18,.18)"; x.fillRect(P, y, tw, 3); y += 52; x.fillStyle = "#3d3c44";
-    for (const ln of wrap("Escaneá y dejale una propina al artista. Cada día colgada cuenta como cuota de su precio.", '400 34px "Geist Variable", sans-serif', tw)) { x.font = '400 34px "Geist Variable", sans-serif'; x.fillText(ln, P, y); y += 46; }
-    download(c, `muro-cartela-${w.id}.png`);
+    for (const ln of titleLines) { y += tl; x.font = DISPLAY(ts); x.fillText(ln, tx, y - Math.round(ts * 0.06)); }
+    y += 16; x.fillStyle = "#3d3c44";
+    for (const ln of sub) { x.font = SANS(36); y += 46; x.fillText(ln, tx, y - 12); }
+    y += 26; x.fillStyle = "rgba(18,18,18,.16)"; x.fillRect(tx, y, tw, 2); y += 2 + 34; x.fillStyle = "#3d3c44";
+    for (const ln of cta) { x.font = SANS(30); y += 42; x.fillText(ln, tx, y - 12); }
+    // JPEG -> PDF de una página
+    const b64 = c.toDataURL("image/jpeg", 0.95).split(",")[1], bin = atob(b64), jpg = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) jpg[i] = bin.charCodeAt(i);
+    const PTW = 595.28, PTH = 419.53;               // A5 apaisado en puntos
+    const enc = new TextEncoder(), parts: Uint8Array[] = [], at: number[] = []; let len = 0;
+    const push = (d: string | Uint8Array) => { const bts = typeof d === "string" ? enc.encode(d) : d; parts.push(bts); len += bts.length; };
+    const content = `q ${PTW} 0 0 ${PTH} 0 0 cm /Im0 Do Q`;
+    push("%PDF-1.4\n");
+    at[1] = len; push("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+    at[2] = len; push("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+    at[3] = len; push(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PTW} ${PTH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n`);
+    at[4] = len; push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${PW} /Height ${PH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`); push(jpg); push("\nendstream\nendobj\n");
+    at[5] = len; push(`5 0 obj\n<< /Length ${content.length} >>\nstream\n${content}\nendstream\nendobj\n`);
+    const xref = len;
+    push(`xref\n0 6\n0000000000 65535 f \n${[1, 2, 3, 4, 5].map((i) => `${String(at[i]).padStart(10, "0")} 00000 n \n`).join("")}trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+    const url = URL.createObjectURL(new Blob(parts as BlobPart[], { type: "application/pdf" }));
+    const link = document.createElement("a"); link.href = url; link.download = `muro-cartela-${w.id}.pdf`; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
   };
 
   const run = async (key: string, ok: string, fn: (s: Signer) => Promise<string>) => {
@@ -202,7 +236,7 @@ function Detail({ e }: { e: Entry }) {
             {label}
             <div className="label-actions">
               <button className="btn sm" type="button" onClick={() => window.print()}>Imprimir</button>
-              <button className="btn sm line" type="button" onClick={saveLabel}>Bajar cartela</button>
+              <button className="btn sm line" type="button" onClick={saveLabel}>Bajar cartela (PDF)</button>
               <button className="btn sm line" type="button" onClick={savePng}>Bajar solo el QR</button>
             </div>
           </div>

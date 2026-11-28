@@ -135,7 +135,7 @@ Preguntas para completar la validación del lado del espacio y prueba física:
 - [x] Repositorio con este README y el [README raíz](../README.md) actualizado
 - [ ] Video público de 2 a 3 minutos
 - [x] Al menos un hash en testnet verificable en Stellar Expert (ver [`docs/evidencia-testnet.md`](evidencia-testnet.md))
-- [x] Validación con alguien de afuera completada en la tabla de arriba (ver [`validacion-laura-zapata.md`](validacion-laura-zapata.md))
+- [x] Validación completada en la tabla de arriba (ver [`validacion-laura-zapata.md`](validacion-laura-zapata.md))
 - [x] Consultar Raven: ¿ya existe algo parecido en Stellar? (documentado en la sección [Consulta a Stellar Raven](#consulta-a-stellar-raven))
 
 ## Limitaciones honestas

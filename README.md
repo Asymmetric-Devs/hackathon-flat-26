@@ -106,17 +106,23 @@ Consultamos [Stellar Raven Playground](https://raven.stellar.org/playground) par
 
 ---
 
-## Validación con alguien de afuera
+## Validación con el territorio
 
-Entrevistamos a **Laura Zapata**, artista visual con taller propio en **Resistencia (Chaco)**, enviándole el prototipo vivo en Testnet ([`muro.asymmetric.com.ar`](https://muro.asymmetric.com.ar/)) y 4 preguntas concretas (audio completo de 2 min 24 s transcripto en [`docs/validacion-laura-zapata.md`](docs/validacion-laura-zapata.md)).
+**El problema, contado desde el NEA.** En 2019, cuando Corrientes armó su primera feria de arte, La Nación lo resumió así: la feria fue «una oportunidad de venta en una ciudad donde no hay galerías» ([La Nación, 21/05/2019](https://www.lanacion.com.ar/cultura/en-primera-feria-correntina-gioconda-le-cebo-nid2249995)). En cuatro días, un pintor que trabaja en una habitación de dos por dos metros, donde vive y crea, vendió veinte pinturas. La demanda existe. Lo que falta es un lugar donde la obra esté a la vista el resto del año, y un acuerdo claro para quien la muestra y para quien la compra.
 
-> *«La usaría así como está... Es una manera de ir pagándola [para quien expone] cuando quizás no cuenta con todo el dinero junto y le gusta. Solamente tendría que quedar claro que al dueño del bar o la bodega realmente le guste la obra, que no sea solo para darnos una mano».* — **Laura Zapata**
+**Una voz de taller.** Para contrastarlo con alguien de afuera del equipo hablamos con **Laura Zapata**, artista visual con taller propio en **Resistencia (Chaco)**. Le mandamos el prototipo vivo en Testnet ([`muro.asymmetric.com.ar`](https://muro.asymmetric.com.ar/)) y cuatro preguntas. Respondió con un audio de 2 min 24 s, que transcribimos completo en [`docs/validacion-laura-zapata.md`](docs/validacion-laura-zapata.md).
 
-**Qué aprendimos y ajustamos:**
-1. **Problema validado en taller:** confirmó que muchas obras terminadas quedan guardadas sin mostrarse por falta de reglas y circuito claros.
-2. **Alquiler como cuota entendido al instante:** lo percibió justo para ambas partes e incluso valioso como financiamiento en cuotas para el espacio.
-3. **Claridad en el acuerdo ("favor" vs. elección curatorial):** incorporamos la explicación explícita de que el espacio elige la obra porque la quiere en su pared y que devolverla (`stop`) no es un conflicto — recupera su depósito y el artista cobra los días expuestos.
-4. **Siguiente paso:** contrastar disposición de pago diario con dueños de bares/bodegas y probar el flujo presencial de escaneo de cartela.
+> *«La usaría así como está... Es una manera de ir pagándola [para quien expone] cuando quizás no cuenta con todo el dinero junto y le gusta. Solamente tendría que quedar claro que al dueño del bar o la bodega realmente le guste la obra, que no sea solo para darnos una mano».* — **Laura Zapata**, artista visual, Resistencia (Chaco)
+
+Es un primer testimonio, de una artista, y lo tratamos como tal: confirma el problema y el esquema, no pretende representar a todo el NEA. Nos dio tres cosas concretas:
+
+1. **El problema se vive en el taller.** Hay obra terminada que no conoce nadie, no porque se esconda a propósito sino porque falta un circuito con reglas claras para animarse a mostrarla.
+2. **El alquiler como cuota se entiende a la primera.** Ella misma vio un beneficio que nosotros pensábamos del lado del espacio: ir pagando una obra de a poco cuando no se tiene todo el dinero junto.
+3. **El riesgo del «favor».** En ciudades como Resistencia es común que un bar ceda una pared «de onda». Si eso se mezcla con un alquiler con opción a compra sin expectativas claras, aparece el roce cuando el local deja de pagar.
+
+**Qué cambiamos por eso.** Colgar una obra en Muro es una elección del espacio, que pone depósito y días por adelantado. Ahora la ficha de la obra lo dice explícitamente, justo en el panel donde el local la cuelga: devolverla no es un conflicto, recupera su depósito y el artista cobra los días expuestos.
+
+**Lo que falta.** Un segundo testimonio, del otro lado del mostrador: un dueño de bar o bodega que nos diga cuánto está dispuesto a pagar por día por tener obra original en su pared. Sumamos más voces de artistas a medida que las tengamos.
 
 ---
 

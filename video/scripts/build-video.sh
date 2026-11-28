@@ -26,7 +26,7 @@ read -r DUR ENTRADA DUCK_INI DUCK_FIN FIN < <("$PY" -c '
 import json
 from pathlib import Path
 v = json.loads(Path("src/data/voz-es.json").read_text())
-t = 0.6
+t = 3.0
 starts, durs = {}, {}
 for l in v["lineas"]:
     starts[l["id"]] = t

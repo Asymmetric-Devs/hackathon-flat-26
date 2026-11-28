@@ -629,7 +629,7 @@ html { scrollbar-gutter: stable; overflow-x: clip; }
   /* solo se oculta el resto de la página cuando hay una cartela para imprimir (si no, saldría una hoja en blanco) */
   body:has(.print-root) > *:not(.print-root) { display: none !important; }
   .print-root { display: block; padding: 12mm; }
-  .print-root .label-print { box-shadow: none; border: 2px solid #09090d; border-radius: 0; padding: 10mm; gap: 10mm; grid-template-columns: minmax(0, 1fr) auto !important; break-inside: avoid; page-break-inside: avoid; }
+  .print-root .label-print { box-shadow: none; border: 1px solid rgba(9, 9, 13, .55); border-radius: 0; padding: 10mm; gap: 10mm; grid-template-columns: minmax(0, 1fr) auto !important; break-inside: avoid; page-break-inside: avoid; }
   .label-print h3 { font-size: 40pt; }
   .label-print p { font-size: 12pt; }
   .label-print .lp-cta { font-size: 11pt; }

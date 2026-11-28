@@ -2,7 +2,7 @@ import React from 'react'
 import { useCurrentFrame } from 'remotion'
 import { C, F, FPS } from './theme'
 import type { LineaPlan, Palabra } from './timing'
-import { Tape, ramp } from './components'
+import { ramp } from './components'
 
 type Chunk = { words: Palabra[]; start: number; end: number }
 
@@ -13,12 +13,13 @@ function chunks(lines: LineaPlan[]): Chunk[] {
     for (const w of l.palabras) {
       const prev = ws[ws.length - 1]
       if (prev && /^[%.,:;!?]+$/.test(w.w)) {
-        ws[ws.length - 1] = { w: prev.w + (w.w.startsWith('%') ? '\u202f' : '') + w.w, s: prev.s, e: w.e }
+        ws[ws.length - 1] = { w: prev.w + (w.w.startsWith('%') ? ' ' : '') + w.w, s: prev.s, e: w.e }
       } else {
         ws.push({ ...w })
       }
     }
-    const k = Math.max(1, Math.ceil(ws.length / 8))
+    // Frases cortas (≈6 palabras) para que el subtítulo sea una sola línea corta y no tape la imagen
+    const k = Math.max(1, Math.ceil(ws.length / 6))
     const size = ws.length / k
     let cur: Palabra[] = []
     const flush = () => {
@@ -35,20 +36,22 @@ function chunks(lines: LineaPlan[]): Chunk[] {
       cur.push(w)
       const left = ws.length - i - 1
       const punct = /[,:.;!?]$/.test(w.w)
-      if (left === 0 || (left >= 3 && ((punct && cur.length >= 3) || cur.length >= Math.round(size)))) flush()
+      if (left === 0 || (left >= 2 && ((punct && cur.length >= 3) || cur.length >= Math.round(size)))) flush()
     })
   }
   out.forEach((c, i) => {
-    c.start = c.words[0].s - 0.08
+    c.start = c.words[0].s - 0.06
     const nxt = out[i + 1]
     const lastE = c.words[c.words.length - 1].e
-    c.end = nxt && nxt.words[0].s - lastE < 0.55 ? nxt.words[0].s - 0.08 : lastE + 0.35
+    c.end = nxt && nxt.words[0].s - lastE < 0.5 ? nxt.words[0].s - 0.04 : lastE + 0.3
   })
   return out
 }
 
-/** Subtítulo estilo cartela de museo de Muro: papel crema (#fdfbf4), borde tinta,
- * sombra dura editorial, cinta adhesiva en las esquinas y resaltado dorado (#e8d282) palabra por palabra. */
+/**
+ * Subtítulo simple: una línea corta en la fuente de la app (Geist), sobre una cinta de tinta apenas translúcida.
+ * La palabra que se dice va en dorado de Muro; el resto, en papel. Sin cintas adhesivas ni sombras duras.
+ */
 export const Subtitles: React.FC<{ lines: LineaPlan[] }> = ({ lines }) => {
   const f = useCurrentFrame()
   const t = f / FPS
@@ -56,48 +59,31 @@ export const Subtitles: React.FC<{ lines: LineaPlan[] }> = ({ lines }) => {
   const c = list.find((x) => t >= x.start && t < x.end)
   if (!c) return null
   const a = Math.round(c.start * FPS)
-  const p = ramp(f, a, a + 6)
-  const out = ramp(f, Math.round(c.end * FPS) - 4, Math.round(c.end * FPS))
+  const p = ramp(f, a, a + 5)
+  const out = ramp(f, Math.round(c.end * FPS) - 3, Math.round(c.end * FPS))
   return (
-    <div style={{ position: 'absolute', left: 64, right: 64, bottom: 38, display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 45 }}>
+    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 44, display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 45 }}>
       <div
         style={{
-          position: 'relative',
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
-          alignItems: 'center',
-          columnGap: '0.24em',
-          rowGap: 6,
-          maxWidth: 1460,
-          padding: '15px 32px 16px',
-          borderRadius: 4,
-          background: C.papel,
-          border: `2.5px solid ${C.asfalto}`,
-          boxShadow: '6px 6px 0 rgba(13, 16, 36, 0.92), 0 22px 44px -18px rgba(13, 16, 36, 0.55)',
-          font: `600 35px/1.2 ${F.sans}`,
-          letterSpacing: '-0.012em',
+          columnGap: '0.28em',
+          maxWidth: 1300,
+          padding: '9px 22px 10px',
+          borderRadius: 8,
+          background: 'rgba(13, 16, 36, 0.72)',
+          font: `500 29px/1.25 ${F.sans}`,
+          letterSpacing: '-0.005em',
           opacity: p * (1 - out),
-          transform: `rotate(-0.45deg) translateY(${(1 - p) * 14}px) scale(${0.97 + 0.03 * p})`,
+          transform: `translateY(${(1 - p) * 8}px)`,
         }}
       >
-        <Tape w={56} h={16} rot={-8} style={{ top: -9, left: 18 }} />
-        <Tape w={56} h={16} rot={7} style={{ top: -9, right: 18 }} />
         {c.words.map((w, i) => {
           const on = t >= w.s - 0.03
-          const active = on && t < w.e + 0.06
+          const active = on && t < w.e + 0.05
           return (
-            <span
-              key={i}
-              style={{
-                position: 'relative',
-                padding: '1px 6px',
-                borderRadius: 4,
-                background: active ? C.ac : 'transparent',
-                color: active ? C.on : on ? C.tinta : 'rgba(13, 16, 36, 0.36)',
-                transition: 'none',
-              }}
-            >
+            <span key={i} style={{ color: active ? C.ac : on ? C.papel : 'rgba(253, 251, 244, 0.5)' }}>
               {w.w}
             </span>
           )
